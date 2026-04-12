@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #6366f1;
+    --color-secondary: #8b5cf6;
+    --color-background: #f8fafc;
+    --color-surface: #ffffff;
+    --color-text: #1e293b;
+  }
+
+  .dark {
+    --color-primary: #818cf8;
+    --color-secondary: #a78bfa;
+    --color-background: #0f172a;
+    --color-surface: #1e293b;
+    --color-text: #f1f5f9;
+  }
+
+  body {
+    @apply bg-day-background text-day-text dark:bg-night-background dark:text-night-text transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105;
+    @apply bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary;
+    @apply text-white shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105;
+    @apply border-2 border-day-primary dark:border-night-primary;
+    @apply text-day-primary dark:text-night-primary hover:bg-day-primary/10 dark:hover:bg-night-primary/10;
+  }
+
+  .card {
+    @apply rounded-xl p-6 shadow-lg transition-all duration-300;
+    @apply bg-day-surface dark:bg-night-surface;
+    @apply hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold mb-8;
+    @apply bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary;
+    @apply bg-clip-text text-transparent;
+  }
+}
