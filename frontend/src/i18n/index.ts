@@ -22,7 +22,7 @@ const messages = {
     },
     about: {
       title: 'About Me',
-      description: 'I\'m a frontend engineer specializing in building modern web applications. Pursuing simple, consistent design and performance optimization.',
+      description: 'As a senior frontend engineer, I specialize in building high-performance, modern web applications. I have transitioned to an AI-assisted frontend full-stack developer, deeply integrating tools like bolt.new and cursor. This portfolio project demonstrates full-stack development from scratch with Docker deployment, showcasing the practical impact of AI toolchains on development efficiency.',
       skills: 'Professional Skills',
       experience: 'Work Experience',
       projects: 'Project Experience',
@@ -231,7 +231,7 @@ const messages = {
     },
     about: {
       title: '关于我',
-      description: '我是一名前端工程师，专注于构建现代化网络应用。追求简约一致的设计和性能上的优化',
+      description: '一名资深前端工程师，专注于构建高性能、现代化的Web应用。转型为AI辅助开发领域的前端全栈工程师，深度融合bolt.new、cursor等智能编程工具。本作品集项目从0到1完整覆盖前后端全栈部署，使用Docker容器化部署，展现AI工具链在提升开发效率方面的实践成果。',
       skills: '专业技能',
       experience: '工作经历',
       projects: '项目经验',
