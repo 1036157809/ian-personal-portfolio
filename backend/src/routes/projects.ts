@@ -37,7 +37,7 @@ router.get('/:id', async (ctx) => {
 // Create project (admin only - simplified for demo)
 router.post('/', async (ctx) => {
   try {
-    const project = await Project.create(ctx.request.body);
+    const project = await Project.create(ctx.request.body as any);
     ctx.body = project;
     ctx.status = 201;
   } catch (error) {
@@ -55,7 +55,7 @@ router.put('/:id', async (ctx) => {
       ctx.body = { error: 'Project not found' };
       return;
     }
-    await project.update(ctx.request.body);
+    await project.update(ctx.request.body as any);
     ctx.body = project;
   } catch (error) {
     ctx.status = 400;

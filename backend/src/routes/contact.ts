@@ -8,7 +8,7 @@ const router = new Router({
 // Submit contact form
 router.post('/', async (ctx) => {
   try {
-    const { name, email, message } = ctx.request.body;
+    const { name, email, message } = ctx.request.body as { name: string; email: string; message: string };
     
     if (!name || !email || !message) {
       ctx.status = 400;
