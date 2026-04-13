@@ -105,36 +105,40 @@
         <!-- Screenshots -->
         <div class="mb-6">
           <p class="text-sm font-semibold text-day-text dark:text-night-text mb-3">{{ $t('projects.pcIpad') }}</p>
-          <img
-            :src="selectedProject.imageUrl"
-            :alt="languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh"
-            class="w-full rounded-lg shadow-lg mb-4"
-          />
-          <div v-if="selectedProject.additionalImages && selectedProject.additionalImages.length > 0" class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-3 gap-4">
+            <img
+              :src="selectedProject.imageUrl"
+              :alt="languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh"
+              class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+              @click="openImageModal(selectedProject.imageUrl)"
+            />
             <img
               v-for="(img, idx) in selectedProject.additionalImages.filter((i: string) => i.includes('/pc/'))"
               :key="img"
               :src="img"
               :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} - PC Screenshot ${idx + 1}`"
-              class="w-full rounded-lg shadow-lg"
+              class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+              @click="openImageModal(img)"
             />
           </div>
         </div>
         
         <div v-if="selectedProject.mobileImageUrl" class="mb-6">
           <p class="text-sm font-semibold text-day-text dark:text-night-text mb-3">{{ $t('projects.mobile') }}</p>
-          <img
-            :src="selectedProject.mobileImageUrl"
-            :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} (Mobile)`"
-            class="w-full max-w-md mx-auto rounded-lg shadow-lg mb-4"
-          />
-          <div v-if="selectedProject.additionalImages && selectedProject.additionalImages.length > 0" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+          <div class="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <img
+              :src="selectedProject.mobileImageUrl"
+              :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} (Mobile)`"
+              class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+              @click="openImageModal(selectedProject.mobileImageUrl)"
+            />
             <img
               v-for="(img, idx) in selectedProject.additionalImages.filter((i: string) => i.includes('/mobile/'))"
               :key="img"
               :src="img"
               :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} - Mobile Screenshot ${idx + 1}`"
-              class="w-full rounded-lg shadow-lg"
+              class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+              @click="openImageModal(img)"
             />
           </div>
         </div>
@@ -199,11 +203,53 @@
         </div>
       </div>
     </div>
+
+    <!-- Image Modal -->
+    <div
+      v-if="showModal"
+      class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+      @click="closeImageModal"
+    >
+      <!-- Previous Button -->
+      <button
+        @click.stop="navigateImage('prev')"
+        class="absolute left-4 text-white text-5xl hover:text-gray-300 transition-colors p-2"
+      >
+        &#10094;
+      </button>
+      
+      <img
+        :src="currentImage"
+        alt="Zoomed image"
+        class="max-w-[90vw] max-h-[90vh] object-contain"
+        @click.stop
+      />
+      
+      <!-- Next Button -->
+      <button
+        @click.stop="navigateImage('next')"
+        class="absolute right-4 text-white text-5xl hover:text-gray-300 transition-colors p-2"
+      >
+        &#10095;
+      </button>
+      
+      <button
+        @click="closeImageModal"
+        class="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 transition-colors"
+      >
+        &times;
+      </button>
+      
+      <!-- Image Counter -->
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
+        {{ currentImageIndex + 1 }} / {{ imageList.length }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLanguageStore } from '../stores/language'
 import axios from 'axios'
@@ -214,6 +260,10 @@ const projects = ref<any[]>([])
 const loading = ref(true)
 const error = ref('')
 const selectedProject = ref<any>(null)
+const showModal = ref(false)
+const currentImage = ref('')
+const currentImageIndex = ref(0)
+const imageList = ref<string[]>([])
 
 const fetchProjects = async () => {
   try {
@@ -235,7 +285,51 @@ const closeProjectDetail = () => {
   selectedProject.value = null
 }
 
+const openImageModal = (imageUrl: string) => {
+  if (!selectedProject.value) return
+  
+  // Build image list based on whether it's PC or mobile
+  const pcImages = [selectedProject.value.imageUrl, ...selectedProject.value.additionalImages.filter((i: string) => i.includes('/pc/'))]
+  const mobileImages = [selectedProject.value.mobileImageUrl, ...selectedProject.value.additionalImages.filter((i: string) => i.includes('/mobile/'))]
+  
+  imageList.value = imageUrl.includes('/pc/') ? pcImages : mobileImages
+  currentImageIndex.value = imageList.value.indexOf(imageUrl)
+  currentImage.value = imageUrl
+  showModal.value = true
+}
+
+const closeImageModal = () => {
+  showModal.value = false
+  currentImage.value = ''
+}
+
+const navigateImage = (direction: 'prev' | 'next') => {
+  if (direction === 'prev') {
+    currentImageIndex.value = currentImageIndex.value > 0 ? currentImageIndex.value - 1 : imageList.value.length - 1
+  } else {
+    currentImageIndex.value = currentImageIndex.value < imageList.value.length - 1 ? currentImageIndex.value + 1 : 0
+  }
+  currentImage.value = imageList.value[currentImageIndex.value]
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (!showModal.value) return
+  
+  if (event.key === 'ArrowLeft') {
+    navigateImage('prev')
+  } else if (event.key === 'ArrowRight') {
+    navigateImage('next')
+  } else if (event.key === 'Escape') {
+    closeImageModal()
+  }
+}
+
 onMounted(() => {
   fetchProjects()
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
