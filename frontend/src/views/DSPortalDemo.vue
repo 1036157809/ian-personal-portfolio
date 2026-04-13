@@ -598,7 +598,7 @@ const showConfirmDialog = (message: string, onConfirm: () => void) => {
 const fetchFiles = async () => {
   try {
     isLoading.value = true
-    const response = await fetch('http://localhost:3001/api/files')
+    const response = await fetch('/api/files')
     const data = await response.json()
     uploadedFiles.value = data
   } catch (error) {
@@ -615,7 +615,7 @@ const handleFileUpload = async (event: Event) => {
   if (file) {
     try {
       isLoading.value = true
-      const response = await fetch('http://localhost:3001/api/files/upload', {
+      const response = await fetch('/api/files/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -653,7 +653,7 @@ const deleteFile = async (id: string) => {
   showConfirmDialog('确定要删除此文件吗？', async () => {
     try {
       isLoading.value = true
-      const response = await fetch(`http://localhost:3001/api/files/${id}`, {
+      const response = await fetch(`/api/files/${id}`, {
         method: 'DELETE'
       })
       
