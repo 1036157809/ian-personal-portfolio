@@ -5,6 +5,7 @@ import Router from '@koa/router';
 import { initDatabase } from './database';
 import projectRoutes from './routes/projects';
 import contactRoutes from './routes/contact';
+import fileRoutes from './routes/files';
 
 const app = new Koa();
 const router = new Router();
@@ -27,6 +28,8 @@ app.use(projectRoutes.routes());
 app.use(projectRoutes.allowedMethods());
 app.use(contactRoutes.routes());
 app.use(contactRoutes.allowedMethods());
+app.use(fileRoutes.routes());
+app.use(fileRoutes.allowedMethods());
 
 // Initialize database and start server
 async function start() {

@@ -198,18 +198,25 @@
           <ul class="space-y-1 text-day-text dark:text-night-text text-sm">
             <li class="flex items-start">
               <span class="mr-2">•</span>
-              <span>{{ $t('about.project2.highlight1') }}</span>
+              <span>{{ $t('about.project2.challenge1') }}</span>
             </li>
             <li class="flex items-start">
               <span class="mr-2">•</span>
-              <span>{{ $t('about.project2.highlight2') }}</span>
+              <span>{{ $t('about.project2.challenge2') }}</span>
             </li>
             <li class="flex items-start">
               <span class="mr-2">•</span>
-              <span>{{ $t('about.project2.highlight3') }}</span>
+              <span>{{ $t('about.project2.challenge3') }}</span>
+            </li>
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>{{ $t('about.project2.challenge4') }}</span>
             </li>
           </ul>
         </div>
+
+        <!-- Divider between companies -->
+        <div class="border-t-2 border-gray-300 dark:border-gray-600 my-6"></div>
 
         <div class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
           <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project3.name') }}</h3>
@@ -235,6 +242,9 @@
             </li>
           </ul>
         </div>
+
+        <!-- Divider between companies -->
+        <div class="border-t-2 border-gray-300 dark:border-gray-600 my-6"></div>
 
         <div class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
           <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project4.name') }}</h3>

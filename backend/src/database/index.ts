@@ -50,6 +50,8 @@ async function seedProjects() {
         '/images/pc/ipos-pc-2.jpg',
         '/images/pc/ipos-pc-3.jpg',
         '/images/pc/ipos-pc-4.jpg',
+        '/images/pc/ipos-pc-5.jpg',
+        '/images/pc/ipos-pc-6.jpg',
         '/images/mobile/ipos-mobile-2.jpg',
         '/images/mobile/ipos-mobile-3.jpg',
         '/images/mobile/ipos-mobile-4.jpg'
@@ -59,11 +61,11 @@ async function seedProjects() {
       order: 1
     },
     {
-      title: 'DS-portal Recruitment Website',
-      titleZh: 'DS-portal 招聘网站',
-      description: 'A cross-platform recruitment system covering PC, mobile, and iOS, implementing multi-role login, candidate information management, meeting booking, and conference room management.',
-      descriptionZh: '一款跨端招聘系统，覆盖 PC、移动端及 iOS，实现多角色登录、面试者信息管理、会议预定与会议室管理等完整招聘流程。',
-      technologies: ['React 18 (RTK Query, Redux Toolkit)', 'Ant Design', 'Node.js + Sequelize'],
+      title: 'DS-portal Recruitment Due Diligence Portal System',
+      titleZh: 'DS-portal 招聘尽职调查门户系统',
+      description: 'The system covering the complete recruitment process management from FSC application to final certification. Includes 20+ due diligence check modules (Nice Actimize AML check, Questnet check, CEA check, FATCA tax compliance check, MediSave liability check, professional qualification check, employment reference check, financial soundness check, etc.), supports multi-role permission control (TD Ops Staff, Manager), file management, PDF preview, REEF regulatory exam management and other complex business scenarios.',
+      descriptionZh: '该系统，覆盖完整的招聘流程管理，从FSC申请到最终发证的全流程数字化。系统包含20+个尽职调查检查模块（Nice Actimize反洗钱检查、Questnet检查、CEA检查、FATCA税务合规检查、MediSave责任检查、专业资格检查、就业参考检查、财务稳健性检查等），支持多角色权限控制（TD Ops Staff、Manager）、文件管理、PDF预览、REEF监管考试管理等复杂业务场景。',
+      technologies: ['React 18', 'Redux Toolkit + RTK Query', 'React Router 6', 'Okta OAuth 2.0', 'Ant Design', 'styled-components', 'react-pdf', 'Application Insights', 'Jest', 'Docker'],
       imageUrl: '',
       demoUrl: '',
       githubUrl: '',

@@ -5,6 +5,7 @@ import About from '../views/About.vue'
 import Contact from '../views/Contact.vue'
 import TongdaoDemo from '../views/TongdaoDemo.vue'
 import ShougangPermissionDemo from '../views/ShougangPermissionDemo.vue'
+import DSPortalDemo from '../views/DSPortalDemo.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/shougang-permission-demo',
       name: 'shougang-permission-demo',
       component: ShougangPermissionDemo
+    },
+    {
+      path: '/ds-portal-demo',
+      name: 'ds-portal-demo',
+      component: DSPortalDemo
     }
   ]
 })

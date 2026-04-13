@@ -10,7 +10,7 @@
         
         <div class="flex space-x-6">
           <a
-            href="https://github.com"
+            href="https://github.com/1036157809/ian-personal-portfolio"
             target="_blank"
             rel="noopener noreferrer"
             class="text-day-text dark:text-night-text hover:text-day-primary dark:hover:text-night-primary transition-colors"

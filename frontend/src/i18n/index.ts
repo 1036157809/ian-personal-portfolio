@@ -8,6 +8,10 @@ const messages = {
       about: 'About',
       contact: 'Contact'
     },
+    common: {
+      back: 'Back',
+      backToProjects: 'Back to Projects'
+    },
     home: {
       greeting: 'Hi, I\'m',
       name: 'Ian Zhang',
@@ -18,7 +22,7 @@ const messages = {
     },
     about: {
       title: 'About Me',
-      description: 'I\'m a frontend engineer specializing in building modern web applications. I specialize in Vue 2/3, React 18, and cross-platform development with a strong focus on performance optimization and architectural design.',
+      description: 'I\'m a frontend engineer specializing in building modern web applications. Pursuing simple, consistent design and performance optimization.',
       skills: 'Professional Skills',
       experience: 'Work Experience',
       projects: 'Project Experience',
@@ -43,7 +47,7 @@ const messages = {
         desc3: 'Deeply involved in cross-platform (PC, mobile, iOS) consistent experience design, solving compatibility issues in hybrid development.',
         desc4: 'Built local mock services with Node.js (Express), assisted backend in defining API specifications, improving frontend-backend collaboration efficiency.',
         desc5: 'Responsible for production environment issue localization and fixes, ensuring high system availability.',
-        desc6: 'Technical Impact: Pioneered React 18 + Redux Toolkit + RTK Query in DS-portal recruitment system, organized technical sharing internally, promoted the tech stack across multiple teams, unified frontend state management standards, improved development efficiency by ~30%, and established reusable project templates.'
+        desc6: 'Technical Impact: Pioneered React 18 + Redux Toolkit + RTK Query in the system. Organized technical sharing internally, promoted the tech stack across multiple teams, unified frontend state management standards, improved development efficiency by ~30%, and established reusable project templates. System includes 20+ due diligence check modules with complex business process state machine management.'
       },
       workExp2: {
         company: 'Tongdao Weiye',
@@ -74,13 +78,14 @@ const messages = {
         challenge4: 'Intelligent Integration: Integrated OCR technology for automatic ID recognition, reducing user input with 95%+ accuracy.'
       },
       project2: {
-        name: 'DS-portal Recruitment Website',
+        name: 'DS-portal Recruitment Due Diligence Portal System',
         period: '2023.06 – 2023.11',
-        desc: 'A cross-platform recruitment system covering PC, mobile, and iOS, implementing multi-role login, candidate information management, meeting booking, and conference room management.',
-        tech: 'React 18 (RTK Query, Redux Toolkit), Ant Design, Node.js + Sequelize',
-        highlight1: 'Architectural Innovation: Adopted React 18 features, using Redux Toolkit and RTK Query to replace traditional Redux + manual request state management. Solved pain points of boilerplate code, manual loading/error handling, and lack of request caching. Reduced code by ~40%, improved development efficiency by ~30%.',
-        highlight2: 'Technology Promotion: Organized technical sharing internally, systematically explaining React 18 + RTKQ practices and advantages, promoted the tech stack across multiple frontend teams, unified state management standards, and established reusable project templates.',
-        highlight3: 'Engineering Practice: Encapsulated reusable layout and form components based on Ant Design for multi-platform adaptation. Collaborated with backend to define API specifications, assisted in data layer debugging with Sequelize.'
+        desc: 'The system covering the complete recruitment process management from FSC application to final certification. Includes 20+ due diligence check modules (Nice Actimize AML check, Questnet check, CEA check, FATCA tax compliance check, MediSave liability check, professional qualification check, employment reference check, financial soundness check, etc.), supports multi-role permission control (TD Ops Staff, Manager), file management, PDF preview, REEF regulatory exam management and other complex business scenarios.',
+        tech: 'React 18, Redux Toolkit + RTK Query, React Router 6, Okta OAuth 2.0, Ant Design, styled-components, react-pdf, Application Insights, Jest, Docker',
+        challenge1: 'Modern state management architecture: Pioneered React 18 + Redux Toolkit + RTK Query to replace traditional Redux + manual request state management. Through RTK Query\'s automatic caching, request deduplication, and automatic loading/error state management, reduced code volume by ~40% and improved development efficiency by ~30%. Established unified API layer architecture with 20+ API modules.',
+        challenge2: 'Enterprise-grade authentication: Integrated Okta OAuth 2.0 + PKCE authentication flow for secure enterprise single sign-on. Configured multi-environment authentication strategies (Development/UAT/Production) supporting automatic token refresh and session management.',
+        challenge3: 'Complex business process engine: Designed and implemented state machine management for 9 main process states (FSC application, application review, interview and signing, due diligence, management review, RNF lodgement, issuance, completion of hiring), each containing multiple sub-steps and conditional judgments to ensure strict compliance of business processes.',
+        challenge4: 'High-performance file processing system: Developed intelligent file upload component supporting single/multiple file upload, file renaming templates, size/format validation, and resumable upload. Implemented PDF online preview (based on react-pdf), Blob streaming download, file classification management and other core functions.'
       },
       project3: {
         name: 'Tongdao Intelligent Cloud Platform & Big Data Backend',
@@ -156,6 +161,40 @@ const messages = {
       hidden: 'Hidden',
       backToProjects: 'Back to Projects'
     },
+    dsPortalDemo: {
+      title: 'DS-portal Recruitment Website - Feature Demo',
+      demoTitle: 'Demo',
+      codeTitle: 'React 18 + RTKQ Code',
+      stateMachine: 'Recruitment Process State Machine',
+      currentState: 'Current State',
+      stateDescription: 'State Description',
+      nextState: 'Next State',
+      reset: 'Reset',
+      fileManagement: 'File Management',
+      uploadFile: 'Upload File',
+      fileName: 'File Name',
+      fileSize: 'File Size',
+      fileType: 'File Type',
+      actions: 'Actions',
+      preview: 'Preview',
+      download: 'Download',
+      delete: 'Delete',
+      stateMachineCodeTitle: 'State Machine Definition & Route Guard',
+      createAppApiTitle: 'RTK Query Base API Configuration',
+      homePageApiTitle: 'Home Page API Example',
+      uploadComponentTitle: 'File Upload Component',
+      routerConfigTitle: 'Router Configuration with Okta Auth',
+      oktaConfigTitle: 'Okta OAuth Configuration',
+      stateCreated: 'Initial recruitment process created',
+      stateFscApplication: 'FSC application submitted',
+      stateReviewApplication: 'Application under review',
+      stateInterviewSigning: 'Interview and contract signing phase',
+      stateDueDiligence: 'Due diligence checks in progress',
+      stateTdOpsReview: 'TD Ops management review',
+      stateRnfLodgement: 'RNF lodgement process',
+      stateIssuedFscCode: 'FSC code issued',
+      stateCompletionHiring: 'Completion and hiring process'
+    },
     contact: {
       title: 'Get In Touch',
       subtitle: 'Have a project in mind? Let\'s work together!',
@@ -178,6 +217,10 @@ const messages = {
       about: '关于',
       contact: '联系'
     },
+    common: {
+      back: '返回',
+      backToProjects: '返回项目'
+    },
     home: {
       greeting: '你好，我是',
       name: 'Ian Zhang',
@@ -188,7 +231,7 @@ const messages = {
     },
     about: {
       title: '关于我',
-      description: '我是一名前端工程师，专注于构建现代化网络应用。我擅长 Vue 2/3、React 18 和跨端开发，在性能优化和架构设计方面有深入研究。',
+      description: '我是一名前端工程师，专注于构建现代化网络应用。追求简约一致的设计和性能上的优化',
       skills: '专业技能',
       experience: '工作经历',
       projects: '项目经验',
@@ -213,7 +256,7 @@ const messages = {
         desc3: '深度参与跨端（PC、移动、iOS）一致性体验设计，解决混合开发中的兼容性问题。',
         desc4: '使用 Node.js（Express）搭建本地 Mock 服务，协助后端定义接口规范，提高前后端联调效率。',
         desc5: '负责生产环境问题定位与修复，分析用户上报的深层原因，追溯代码问题并安排版本修复，确保系统高可用。',
-        desc6: '技术影响力：在 DS-portal 招聘系统项目中，率先引入 React 18 + Redux Toolkit + RTK Query 方案，并在公司内部组织技术分享，推动该技术栈在多个团队落地，统一了前端状态管理标准，平均开发效率提升约 30%，并建立了可复用的项目模板。'
+        desc6: '技术影响力：在该系统中，率先引入 React 18 + Redux Toolkit + RTK Query 方案，并在公司内部组织技术分享，推动该技术栈在多个团队落地，统一了前端状态管理标准，平均开发效率提升约 30%，并建立了可复用的项目模板。系统包含20+个尽职调查检查模块，具备复杂业务流程状态机管理。'
       },
       workExp2: {
         company: '同道伟业',
@@ -244,13 +287,14 @@ const messages = {
         challenge4: '智能化集成：集成 OCR 技术自动识别证件信息，减少用户输入，识别准确率达 95% 以上。'
       },
       project2: {
-        name: 'DS-portal 招聘网站',
+        name: 'DS-portal 招聘尽职调查门户系统',
         period: '2023.06 – 2023.11',
-        desc: '一款跨端招聘系统，覆盖 PC、移动端及 iOS，实现多角色登录、面试者信息管理、会议预定与会议室管理等完整招聘流程。',
-        tech: 'React 18（RTK Query、Redux Toolkit）、Ant Design、Node.js + Sequelize',
-        highlight1: '架构创新：采用 React 18 新特性，使用 Redux Toolkit 和 RTK Query 替代传统 Redux + 手动管理请求状态的方案，解决了大量样板代码、手动处理 loading/error 状态、缺乏请求缓存等痛点，代码量减少约 40%，开发效率提升约 30%。',
-        highlight2: '技术推广：在公司内部组织专题技术分享，系统讲解 React 18 + RTKQ 的实践与优势，推动该技术栈在多个前端团队落地，统一了状态管理标准，并沉淀出可复用的项目模板。',
-        highlight3: '工程化实践：基于 Ant Design 封装可复用布局与表单组件，实现多端适配；与后端协同定义接口规范，基于 Sequelize 辅助完成部分数据层联调，确保业务流程顺畅。'
+        desc: '该系统，覆盖完整的招聘流程管理，从FSC申请到最终发证的全流程数字化。系统包含20+个尽职调查检查模块（Nice Actimize反洗钱检查、Questnet检查、CEA检查、FATCA税务合规检查、MediSave责任检查、专业资格检查、就业参考检查、财务稳健性检查等），支持多角色权限控制（TD Ops Staff、Manager）、文件管理、PDF预览、REEF监管考试管理等复杂业务场景。',
+        tech: 'React 18、Redux Toolkit + RTK Query、React Router 6、Okta OAuth 2.0、Ant Design、styled-components、react-pdf、Application Insights、Jest、Docker',
+        challenge1: '现代化状态管理架构：率先引入 React 18 + Redux Toolkit + RTK Query 方案，替代传统 Redux + 手动管理请求状态。通过 RTK Query 的自动缓存、请求去重、loading/error状态自动管理，代码量减少约 40%，开发效率提升约 30%。建立了统一的API层架构，包含20+个API模块。',
+        challenge2: '企业级身份认证：集成 Okta OAuth 2.0 + PKCE 认证流程，实现安全的企业级单点登录。配置多环境认证策略（Development/UAT/Production），支持token自动刷新和会话管理。',
+        challenge3: '复杂业务流程引擎：设计并实现了9个主要流程状态的状态机管理（FSC申请、申请审核、面试签约、尽职调查、管理层审核、RNF申报、发证、完成招聘），每个状态包含多个子步骤和条件判断，确保业务流程的严格合规性。',
+        challenge4: '高性能文件处理系统：开发智能文件上传组件，支持单文件/多文件上传、文件重命名模板、大小格式校验、断点续传等功能。实现PDF文档在线预览（基于react-pdf）、Blob流式下载、文件分类管理等核心功能。'
       },
       project3: {
         name: '同道智能云平台 & 大数据后台',
@@ -325,6 +369,40 @@ const messages = {
       visible: '可见',
       hidden: '隐藏',
       backToProjects: '返回项目'
+    },
+    dsPortalDemo: {
+      title: 'DS-portal 招聘网站 - 功能演示',
+      demoTitle: '演示',
+      codeTitle: 'React 18 + RTKQ 代码',
+      stateMachine: '招聘流程状态机',
+      currentState: '当前状态',
+      stateDescription: '状态描述',
+      nextState: '下一状态',
+      reset: '重置',
+      fileManagement: '文件管理',
+      uploadFile: '上传文件',
+      fileName: '文件名',
+      fileSize: '文件大小',
+      fileType: '文件类型',
+      actions: '操作',
+      preview: '预览',
+      download: '下载',
+      delete: '删除',
+      stateMachineCodeTitle: '状态机定义与路由守卫',
+      createAppApiTitle: 'RTK Query 基础API配置',
+      homePageApiTitle: '首页API示例',
+      uploadComponentTitle: '文件上传组件',
+      routerConfigTitle: '路由配置与Okta认证',
+      oktaConfigTitle: 'Okta OAuth配置',
+      stateCreated: '初始招聘流程已创建',
+      stateFscApplication: 'FSC申请已提交',
+      stateReviewApplication: '申请审核中',
+      stateInterviewSigning: '面试与签约阶段',
+      stateDueDiligence: '尽职调查检查进行中',
+      stateTdOpsReview: 'TD Ops管理审核',
+      stateRnfLodgement: 'RNF登记流程',
+      stateIssuedFscCode: 'FSC代码已发放',
+      stateCompletionHiring: '完成与录用流程'
     },
     contact: {
       title: '联系我',

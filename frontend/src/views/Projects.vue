@@ -30,7 +30,7 @@
           {{ languageStore.currentLang === 'en' ? project.title : project.titleZh }}
         </h3>
         
-        <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-1">
+        <p class="text-gray-600 dark:text-gray-400 mb-4 overflow-y-auto max-h-32 flex-1">
           {{ languageStore.currentLang === 'en' ? project.description : project.descriptionZh }}
         </p>
         
@@ -59,6 +59,20 @@
           >
             {{ $t('projects.viewShougangDemo') }}
           </router-link>
+          <div v-if="project.titleZh.includes('DS-portal')" class="flex gap-2">
+            <router-link
+              to="/ds-portal-demo"
+              class="flex-1 text-center btn-primary text-sm py-2 block"
+            >
+              {{ $t('projects.viewDemo') }}
+            </router-link>
+            <router-link
+              to="/ds-portal-demo#code"
+              class="flex-1 text-center btn-secondary text-sm py-2 block"
+            >
+              {{ $t('projects.viewCode') }}
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -150,8 +164,22 @@
           >
             {{ $t('projects.viewShougangDemo') }}
           </router-link>
+          <div v-if="selectedProject.titleZh.includes('DS-portal')" class="flex gap-4 flex-1">
+            <router-link
+              to="/ds-portal-demo"
+              class="flex-1 text-center btn-primary text-sm py-2"
+            >
+              {{ $t('projects.viewDemo') }}
+            </router-link>
+            <router-link
+              to="/ds-portal-demo#code"
+              class="flex-1 text-center btn-secondary text-sm py-2"
+            >
+              {{ $t('projects.viewCode') }}
+            </router-link>
+          </div>
           <a
-            v-if="selectedProject.demoUrl"
+            v-if="selectedProject.demoUrl && !selectedProject.titleZh.includes('DS-portal')"
             :href="selectedProject.demoUrl"
             target="_blank"
             rel="noopener noreferrer"
@@ -160,7 +188,7 @@
             {{ $t('projects.viewDemo') }}
           </a>
           <a
-            v-if="selectedProject.githubUrl"
+            v-if="selectedProject.githubUrl && !selectedProject.titleZh.includes('DS-portal')"
             :href="selectedProject.githubUrl"
             target="_blank"
             rel="noopener noreferrer"
