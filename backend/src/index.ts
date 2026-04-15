@@ -1,6 +1,8 @@
 import Koa from 'koa';
 import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
+import { koaBody } from 'koa-body';
+import path from 'path';
 import Router from '@koa/router';
 import cron from 'node-cron';
 import { initDatabase } from './database';
@@ -16,6 +18,13 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(bodyParser());
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    uploadDir: path.join(process.cwd(), 'uploads'),
+    keepExtensions: true,
+  }
+}));
 
 // Routes
 router.get('/', (ctx) => {

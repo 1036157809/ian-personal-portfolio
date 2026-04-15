@@ -216,6 +216,17 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr v-if="uploadedFiles.length === 0">
+                    <td colspan="4" class="py-12 text-center text-gray-500 dark:text-gray-400">
+                      <div class="flex flex-col items-center justify-center">
+                        <svg class="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <p class="text-lg font-medium mb-2">暂无文件</p>
+                        <p class="text-sm">点击上方上传区域添加文件</p>
+                      </div>
+                    </td>
+                  </tr>
                   <tr v-for="file in uploadedFiles" :key="file.id" class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <td class="py-3 px-4 text-sm text-day-text dark:text-night-text">{{ file.name }}</td>
                     <td class="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">{{ file.size }}</td>
@@ -288,7 +299,7 @@
       class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
       @click="closeImagePreview"
     >
-      <div class="relative max-w-4xl max-h-[90vh]">
+      <div class="relative max-w-7xl max-h-[95vh]">
         <button
           @click="closeImagePreview"
           class="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
@@ -300,7 +311,7 @@
         <img
           :src="previewImageUrl"
           :alt="previewFile?.name"
-          class="max-w-full max-h-[90vh] object-contain rounded-lg"
+          class="max-w-full max-h-[95vh] object-contain rounded-lg"
         />
       </div>
     </div>
@@ -308,10 +319,10 @@
     <!-- PDF Preview Modal -->
     <div
       v-if="showPDFPreview"
-      class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2"
       @click="closePDFPreview"
     >
-      <div class="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg overflow-hidden" @click.stop>
+      <div class="relative w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden" @click.stop>
         <button
           @click="closePDFPreview"
           class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
@@ -600,7 +611,7 @@ const validateFile = (file: File): { valid: boolean; error: string } => {
 
 // File type helpers
 const isImage = (type: string): boolean => {
-  return ['JPG', 'JPEG', 'PNG'].includes(type.toUpperCase())
+  return type.toUpperCase() === 'IMAGE' || ['JPG', 'JPEG', 'PNG'].includes(type.toUpperCase())
 }
 
 const isPDF = (type: string): boolean => {
@@ -744,16 +755,15 @@ const uploadFileDirect = async (file: File, fileName: string) => {
   uploadProgress.value.push(progressItem)
   
   try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('name', fileName)
+    formData.append('size', file.size.toString())
+    formData.append('type', file.type)
+    
     const response = await fetch('/api/files/upload', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: fileName,
-        size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-        type: file.type.split('/')[1].toUpperCase() || 'Unknown'
-      })
+      body: formData,
     })
     
     if (response.ok) {

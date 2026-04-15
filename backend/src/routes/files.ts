@@ -6,6 +6,24 @@ const router = new Router({
   prefix: '/api/files',
 });
 
+// Helper function to format bytes
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Helper function to get file type
+function getFileType(mimeType: string): string {
+  if (mimeType.includes('pdf')) return 'PDF';
+  if (mimeType.includes('image')) return 'Image';
+  if (mimeType.includes('word') || mimeType.includes('document')) return 'DOC';
+  if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'XLS';
+  return 'File';
+}
+
 // Uploads directory
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');
@@ -19,10 +37,7 @@ if (!fs.existsSync(CHUNKS_DIR)) {
 }
 
 // In-memory file metadata storage
-const uploadedFiles: { id: string; name: string; size: string; type: string; filePath: string }[] = [
-  { id: '1', name: 'resume.pdf', size: '2.5 MB', type: 'PDF', filePath: '/uploads/resume.pdf' },
-  { id: '2', name: 'certificate.jpg', size: '1.2 MB', type: 'Image', filePath: '/uploads/certificate.jpg' }
-];
+const uploadedFiles: { id: string; name: string; size: string; type: string; filePath: string }[] = [];
 
 // Get all files
 router.get('/', async (ctx) => {
@@ -34,24 +49,41 @@ router.get('/', async (ctx) => {
   }
 });
 
-// Upload file metadata
+// Upload file with actual file content
 router.post('/upload', async (ctx) => {
   try {
-    const body = ctx.request.body as { name?: string; size?: string; type?: string };
-    const { name, size, type } = body;
+    const files = (ctx.request as any).files;
+    const body = ctx.request.body as any;
     
-    if (!name || !size || !type) {
+    if (!files || !files.file) {
       ctx.status = 400;
-      ctx.body = { error: 'Missing required fields: name, size, type' };
+      ctx.body = { error: 'No file provided' };
       return;
     }
 
+    const file = files.file;
+    const fileName = body.name || file.originalFilename || file.name;
+    const fileSize = body.size || file.size;
+    const fileType = body.type || file.mimetype;
+
+    // Save file to disk
+    const filePath = path.join(UPLOADS_DIR, fileName);
+    const reader = fs.createReadStream(file.filepath);
+    const writer = fs.createWriteStream(filePath);
+    
+    await new Promise<void>((resolve, reject) => {
+      reader.pipe(writer);
+      writer.on('finish', () => resolve());
+      writer.on('error', reject);
+    });
+
+    // Save metadata
     const newFile = {
       id: Date.now().toString(),
-      name,
-      size,
-      type,
-      filePath: `/uploads/${name}`
+      name: fileName,
+      size: formatBytes(fileSize),
+      type: getFileType(fileType),
+      filePath: fileName
     };
 
     uploadedFiles.push(newFile);
@@ -180,7 +212,7 @@ router.delete('/:id', async (ctx) => {
     }
 
     // Delete physical file
-    const filePath = path.join(UPLOADS_DIR, file.name);
+    const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
@@ -206,8 +238,12 @@ router.get('/download/:id', async (ctx) => {
       return;
     }
 
-    const filePath = path.join(UPLOADS_DIR, file.name);
+    const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
+    console.log('Download request for file:', filePath);
+    
     if (!fs.existsSync(filePath)) {
+      console.log('File not found at path:', filePath);
+      console.log('Available files:', fs.readdirSync(UPLOADS_DIR));
       ctx.status = 404;
       ctx.body = { error: 'File not found on disk' };
       return;
@@ -218,6 +254,7 @@ router.get('/download/:id', async (ctx) => {
     ctx.set('Content-Disposition', `attachment; filename="${file.name}"`);
     ctx.body = fs.createReadStream(filePath);
   } catch (error) {
+    console.error('Download error:', error);
     ctx.status = 500;
     ctx.body = { error: 'Failed to download file' };
   }
@@ -233,15 +270,17 @@ router.get('/preview/:id', async (ctx) => {
       return;
     }
 
-    const filePath = path.join(UPLOADS_DIR, file.name);
+    const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
     if (!fs.existsSync(filePath)) {
+      console.log('File not found at path:', filePath);
+      console.log('Available files:', fs.readdirSync(UPLOADS_DIR));
       ctx.status = 404;
       ctx.body = { error: 'File not found on disk' };
       return;
     }
 
     // Stream file for preview
-    const ext = file.name.split('.').pop()?.toLowerCase();
+    const ext = (file.filePath || file.name).split('.').pop()?.toLowerCase();
     const contentTypes: Record<string, string> = {
       'pdf': 'application/pdf',
       'jpg': 'image/jpeg',
