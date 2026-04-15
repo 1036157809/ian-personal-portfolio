@@ -39,10 +39,10 @@ export async function initDatabase() {
 async function seedProjects() {
   const projects = [
     {
-      title: 'Ipos Cross-Platform Insurance System',
-      titleZh: 'Ipos 跨端保险系统',
-      description: 'A hybrid development insurance business system covering PC, mobile, and iOS platforms, implementing complete insurance workflow including user information management, ID OCR recognition, policy PDF generation/preview/download, and electronic signatures.',
-      descriptionZh: '一款基于混合开发的保险业务系统，覆盖 PC、移动端及 iOS 平台，实现完整的投保工作流，包括用户信息管理、证件 OCR 识别、保单 PDF 生成预览下载、电子签名等。',
+      title: 'AIA Ipos Cross-Platform Insurance System',
+      titleZh: 'AIA Ipos 跨端保险系统',
+      description: 'AIA Philippines requires a hybrid development insurance business system covering PC, mobile, and iOS platforms, implementing complete insurance workflow including user information management, ID OCR recognition, policy PDF generation/preview/download, and electronic signatures.',
+      descriptionZh: 'AIA菲律宾需要一款基于混合开发的保险业务系统，覆盖 PC、移动端及 iOS 平台，实现完整的投保工作流，包括用户信息管理、证件 OCR 识别、保单 PDF 生成预览下载、电子签名等。',
       technologies: ['Vue 2/3', 'Quasar', 'Node.js (Express)', 'Java', 'Canvas', 'OCR SDK'],
       imageUrl: '/images/pc/ipos-pc-1.jpg',
       mobileImageUrl: '/images/mobile/ipos-mobile-1.jpg',
@@ -56,15 +56,15 @@ async function seedProjects() {
         '/images/mobile/ipos-mobile-3.jpg',
         '/images/mobile/ipos-mobile-4.jpg'
       ],
-      demoUrl: '',
+      demoUrl: 'https://ipos.aia.com.ph/phipos/#/loginPage',
       githubUrl: '',
       order: 1
     },
     {
-      title: 'DS-portal Recruitment Due Diligence Portal System',
-      titleZh: 'DS-portal 招聘尽职调查门户系统',
-      description: 'The system covering the complete recruitment process management from FSC application to final certification. Includes 20+ due diligence check modules (Nice Actimize AML check, Questnet check, CEA check, FATCA tax compliance check, MediSave liability check, professional qualification check, employment reference check, financial soundness check, etc.), supports multi-role permission control (TD Ops Staff, Manager), file management, PDF preview, REEF regulatory exam management and other complex business scenarios.',
-      descriptionZh: '该系统，覆盖完整的招聘流程管理，从FSC申请到最终发证的全流程数字化。系统包含20+个尽职调查检查模块（Nice Actimize反洗钱检查、Questnet检查、CEA检查、FATCA税务合规检查、MediSave责任检查、专业资格检查、就业参考检查、财务稳健性检查等），支持多角色权限控制（TD Ops Staff、Manager）、文件管理、PDF预览、REEF监管考试管理等复杂业务场景。',
+      title: 'AIA DS-portal Recruitment Due Diligence Portal System',
+      titleZh: 'AIA DS-portal 招聘尽职调查门户系统',
+      description: 'AIA Singapore requires a complete digital recruitment due diligence system to manage the entire process from FSC application to final certification. The system must meet strict financial regulatory compliance requirements, including various due diligence checks to ensure candidates\' background, qualifications, and financial status meet regulatory standards.',
+      descriptionZh: 'AIA新加坡需要一个完整的数字化招聘尽职调查系统，用于管理从FSC申请到最终发证的全流程。系统需要满足金融监管的严格合规要求，包含多种尽职调查检查，确保候选人的背景、资质、财务状况等符合监管标准。',
       technologies: ['React 18', 'Redux Toolkit + RTK Query', 'React Router 6', 'Okta OAuth 2.0', 'Ant Design', 'styled-components', 'react-pdf', 'Application Insights', 'Jest', 'Docker'],
       imageUrl: '',
       demoUrl: '',

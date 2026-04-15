@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./backend/database.sqlite:/app/database.sqlite
+      - ./uploads:/app/uploads
     networks:
       - app-network
 

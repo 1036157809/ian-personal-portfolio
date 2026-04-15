@@ -123,13 +123,21 @@ const messages = {
     },
     projects: {
       title: 'My Projects',
+      workProjects: 'Work Projects',
+      personalProjects: 'Personal Projects',
       viewDemo: 'View Demo',
       viewCode: 'View Code',
       technologies: 'Technologies',
       viewTongdaoDemo: 'View Demo',
       viewShougangDemo: 'View Demo',
       pcIpad: 'PC/iPad',
-      mobile: 'Mobile'
+      mobile: 'Mobile',
+      comingSoon: 'Coming Soon',
+      onlineAddress: 'Online Address',
+      webgis: {
+        title: 'WebGIS Platform',
+        description: 'A web-based geographic information system platform for visualizing and analyzing spatial data with interactive maps.'
+      }
     },
     shuttleBox: {
       search: 'Search...',
@@ -179,6 +187,17 @@ const messages = {
       preview: 'Preview',
       download: 'Download',
       delete: 'Delete',
+      dropFiles: 'Drop files here',
+      dragOrClick: 'Drag files here or click to upload',
+      fileLimits: 'Max file size: 100MB, supported formats: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX',
+      renameTemplate: 'Rename Template',
+      renamePlaceholder: 'e.g., {date}_{candidate}',
+      renameHint: 'Use {date} for current date, {candidate} for candidate name',
+      uploadProgress: 'Upload Progress',
+      resume: 'Resume',
+      fileSizeError: 'File size exceeds 100MB limit',
+      fileTypeError: 'File format not supported',
+      pdfPreviewNote: 'PDF preview requires backend integration with react-pdf library',
       stateMachineCodeTitle: 'State Machine Definition & Route Guard',
       createAppApiTitle: 'RTK Query Base API Configuration',
       homePageApiTitle: 'Home Page API Example',
@@ -332,13 +351,21 @@ const messages = {
     },
     projects: {
       title: '我的项目',
+      workProjects: '工作项目',
+      personalProjects: '个人项目',
       viewDemo: '查看演示',
       viewCode: '查看代码',
       technologies: '技术栈',
       viewTongdaoDemo: '查看演示',
       viewShougangDemo: '查看演示',
       pcIpad: 'PC/iPad',
-      mobile: '移动端'
+      mobile: '移动端',
+      comingSoon: '即将推出',
+      onlineAddress: '线上地址',
+      webgis: {
+        title: 'WebGIS 平台',
+        description: '基于Web的地理信息系统平台，用于可视化和分析空间数据，提供交互式地图功能。'
+      }
     },
     shuttleBox: {
       search: '搜索...',
@@ -388,6 +415,17 @@ const messages = {
       preview: '预览',
       download: '下载',
       delete: '删除',
+      dropFiles: '拖放文件到此处',
+      dragOrClick: '拖放文件到此处或点击上传',
+      fileLimits: '最大文件大小：100MB，支持格式：PDF、JPG、PNG、DOC、DOCX、XLS、XLSX',
+      renameTemplate: '重命名模板',
+      renamePlaceholder: '例如：{date}_{candidate}',
+      renameHint: '使用 {date} 表示当前日期，{candidate} 表示候选人姓名',
+      uploadProgress: '上传进度',
+      resume: '恢复',
+      fileSizeError: '文件大小超过100MB限制',
+      fileTypeError: '不支持的文件格式',
+      pdfPreviewNote: 'PDF预览需要后端集成react-pdf库',
       stateMachineCodeTitle: '状态机定义与路由守卫',
       createAppApiTitle: 'RTK Query 基础API配置',
       homePageApiTitle: '首页API示例',

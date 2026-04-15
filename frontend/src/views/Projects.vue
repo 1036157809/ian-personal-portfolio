@@ -10,68 +10,114 @@
       {{ error }}
     </div>
     
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="project in projects"
-        :key="project.id"
-        class="card h-full flex flex-col"
-        :class="{ 'cursor-pointer hover:shadow-xl transition-shadow': project.titleZh.includes('Ipos') }"
-        @click="project.titleZh.includes('Ipos') ? openProjectDetail(project) : null"
-      >
-        <div v-if="project.titleZh.includes('Ipos')" class="aspect-video overflow-hidden rounded-lg mb-4">
-          <img
-            :src="project.imageUrl"
-            :alt="languageStore.currentLang === 'en' ? project.title : project.titleZh"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        
-        <h3 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
-          {{ languageStore.currentLang === 'en' ? project.title : project.titleZh }}
-        </h3>
-        
-        <p class="text-gray-600 dark:text-gray-400 mb-4 overflow-y-auto max-h-32 flex-1">
-          {{ languageStore.currentLang === 'en' ? project.description : project.descriptionZh }}
-        </p>
-        
-        <div class="flex flex-wrap gap-2 mb-4">
-          <span
-            v-for="tech in project.technologies"
-            :key="tech"
-            class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary"
+    <div v-else>
+      <!-- Work Projects -->
+      <div class="mb-12">
+        <h2 class="text-2xl font-bold mb-6 text-day-text dark:text-night-text">{{ $t('projects.workProjects') }}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="project in projects"
+            :key="project.id"
+            class="card h-full flex flex-col"
+            :class="{ 'cursor-pointer hover:shadow-xl transition-shadow': project.titleZh.includes('Ipos') }"
+            @click="project.titleZh.includes('Ipos') ? openProjectDetail(project) : null"
           >
-            {{ tech }}
-          </span>
-        </div>
+            <div v-if="project.titleZh.includes('Ipos')" class="aspect-video overflow-hidden rounded-lg mb-4">
+              <img
+                :src="project.imageUrl"
+                :alt="languageStore.currentLang === 'en' ? project.title : project.titleZh"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
+              {{ languageStore.currentLang === 'en' ? project.title : project.titleZh }}
+            </h3>
+            
+            <p v-if="project.demoUrl" class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+              {{ $t('projects.onlineAddress') }}: <a :href="project.demoUrl" target="_blank" rel="noopener noreferrer" class="text-day-primary dark:text-night-primary hover:underline">{{ project.demoUrl }}</a>
+            </p>
+            
+            <p class="text-gray-600 dark:text-gray-400 mb-4 overflow-y-auto max-h-32 flex-1">
+              {{ languageStore.currentLang === 'en' ? project.description : project.descriptionZh }}
+            </p>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span
+                v-for="tech in project.technologies"
+                :key="tech"
+                class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary"
+              >
+                {{ tech }}
+              </span>
+            </div>
 
-        <div class="mt-auto">
-          <router-link
-            v-if="project.titleZh.includes('同道')"
-            to="/tongdao-demo"
-            class="w-full text-center btn-primary text-sm py-2 block"
-          >
-            {{ $t('projects.viewTongdaoDemo') }}
-          </router-link>
-          <router-link
-            v-if="project.titleZh.includes('首钢')"
-            to="/shougang-permission-demo"
-            class="w-full text-center btn-primary text-sm py-2 block"
-          >
-            {{ $t('projects.viewShougangDemo') }}
-          </router-link>
-          <div v-if="project.titleZh.includes('DS-portal')" class="flex gap-2">
-            <router-link
-              to="/ds-portal-demo"
-              class="flex-1 text-center btn-primary text-sm py-2 block"
-            >
-              {{ $t('projects.viewDemo') }}
-            </router-link>
-            <router-link
-              to="/ds-portal-demo#code"
-              class="flex-1 text-center btn-secondary text-sm py-2 block"
-            >
-              {{ $t('projects.viewCode') }}
-            </router-link>
+            <div class="mt-auto">
+              <router-link
+                v-if="project.titleZh.includes('同道')"
+                to="/tongdao-demo"
+                class="w-full text-center btn-primary text-sm py-2 block"
+              >
+                {{ $t('projects.viewTongdaoDemo') }}
+              </router-link>
+              <router-link
+                v-if="project.titleZh.includes('首钢')"
+                to="/shougang-permission-demo"
+                class="w-full text-center btn-primary text-sm py-2 block"
+              >
+                {{ $t('projects.viewShougangDemo') }}
+              </router-link>
+              <div v-if="project.titleZh.includes('DS-portal')" class="flex gap-2">
+                <router-link
+                  to="/ds-portal-demo"
+                  class="flex-1 text-center btn-primary text-sm py-2 block"
+                >
+                  {{ $t('projects.viewDemo') }}
+                </router-link>
+                <router-link
+                  to="/ds-portal-demo#code"
+                  class="flex-1 text-center btn-secondary text-sm py-2 block"
+                >
+                  {{ $t('projects.viewCode') }}
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Projects -->
+      <div>
+        <h2 class="text-2xl font-bold mb-6 text-day-text dark:text-night-text">{{ $t('projects.personalProjects') }}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- WebGIS Card (Coming Soon) -->
+          <div class="card h-full flex flex-col opacity-50 pointer-events-none relative">
+            <div class="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+              {{ $t('projects.comingSoon') }}
+            </div>
+            <div class="aspect-video overflow-hidden rounded-lg mb-4 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <span class="text-gray-400 dark:text-gray-500 text-4xl">🗺️</span>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
+              {{ $t('projects.webgis.title') }}
+            </h3>
+            
+            <p class="text-gray-600 dark:text-gray-400 mb-4 flex-1">
+              {{ $t('projects.webgis.description') }}
+            </p>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                Vue 3
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                Mapbox
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                TypeScript
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -183,7 +229,7 @@
             </router-link>
           </div>
           <a
-            v-if="selectedProject.demoUrl && !selectedProject.titleZh.includes('DS-portal')"
+            v-if="selectedProject.demoUrl && !selectedProject.titleZh.includes('DS-portal') && !selectedProject.titleZh.includes('Ipos')"
             :href="selectedProject.demoUrl"
             target="_blank"
             rel="noopener noreferrer"

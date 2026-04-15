@@ -130,17 +130,81 @@
         <div>
           <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.fileManagement') }}</h3>
           <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+            <!-- Upload Area -->
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.uploadFile') }}</label>
-              <div class="relative">
-                <input 
+              
+              <!-- Drag & Drop Zone -->
+              <div
+                @drop="handleDrop"
+                @dragover.prevent="handleDragOver"
+                @dragleave.prevent="handleDragLeave"
+                @click="fileInputRef?.click()"
+                :class="{
+                  'border-2 border-dashed border-day-primary dark:border-night-primary bg-day-primary/5 dark:bg-night-primary/5': isDragging,
+                  'border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500': !isDragging
+                }"
+                class="relative cursor-pointer rounded-lg p-8 text-center transition-colors"
+              >
+                <div class="flex flex-col items-center justify-center">
+                  <svg class="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                  </svg>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ isDragging ? t('dsPortalDemo.dropFiles') : t('dsPortalDemo.dragOrClick') }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-500">{{ t('dsPortalDemo.fileLimits') }}</p>
+                </div>
+                <input
                   ref="fileInputRef"
-                  type="file" 
+                  type="file"
+                  multiple
                   @change="handleFileUpload"
-                  class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-day-text dark:text-night-text file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-day-primary file:text-white dark:file:bg-night-primary dark:file:text-white hover:file:bg-day-primary/90 dark:hover:file:bg-night-primary/90 cursor-pointer"
+                  class="hidden"
                 />
               </div>
             </div>
+
+            <!-- Rename Template -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.renameTemplate') }}</label>
+              <input
+                v-model="renameTemplate"
+                type="text"
+                :placeholder="t('dsPortalDemo.renamePlaceholder')"
+                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-day-text dark:text-night-text text-sm"
+              />
+              <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ t('dsPortalDemo.renameHint') }}</p>
+            </div>
+
+            <!-- Upload Progress -->
+            <div v-if="uploadProgress.length > 0" class="mb-4">
+              <label class="block text-sm font-medium mb-2 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.uploadProgress') }}</label>
+              <div class="space-y-2">
+                <div v-for="progress in uploadProgress" :key="progress.fileName" class="bg-white dark:bg-gray-800 rounded-lg p-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-day-text dark:text-night-text">{{ progress.fileName }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ progress.percentage }}%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                      class="bg-day-primary dark:bg-night-primary h-2 rounded-full transition-all duration-300"
+                      :style="{ width: progress.percentage + '%' }"
+                    ></div>
+                  </div>
+                  <div class="flex justify-between items-center mt-2">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ progress.speed }}</span>
+                    <button
+                      v-if="progress.paused"
+                      @click="resumeUpload(progress)"
+                      class="text-xs text-day-primary dark:text-night-primary hover:underline"
+                    >
+                      {{ t('dsPortalDemo.resume') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- File List -->
             <div class="overflow-x-auto">
               <table class="w-full">
                 <thead>
@@ -157,6 +221,20 @@
                     <td class="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">{{ file.size }}</td>
                     <td class="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">{{ file.type }}</td>
                     <td class="py-3 px-4 flex gap-2">
+                      <button
+                        v-if="isImage(file.type)"
+                        @click="previewImage(file)"
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors"
+                      >
+                        {{ t('dsPortalDemo.preview') }}
+                      </button>
+                      <button
+                        v-if="isPDF(file.type)"
+                        @click="previewPDF(file)"
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors"
+                      >
+                        {{ t('dsPortalDemo.preview') }}
+                      </button>
                       <button @click="downloadFile(file)" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-sm font-medium transition-colors">{{ $t('dsPortalDemo.download') }}</button>
                       <button @click="deleteFile(file.id)" class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium transition-colors">{{ $t('dsPortalDemo.delete') }}</button>
                     </td>
@@ -203,6 +281,60 @@
         </div>
       </div>
     </div>
+
+    <!-- Image Preview Modal -->
+    <div
+      v-if="showImagePreview"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      @click="closeImagePreview"
+    >
+      <div class="relative max-w-4xl max-h-[90vh]">
+        <button
+          @click="closeImagePreview"
+          class="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+        >
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        <img
+          :src="previewImageUrl"
+          :alt="previewFile?.name"
+          class="max-w-full max-h-[90vh] object-contain rounded-lg"
+        />
+      </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div
+      v-if="showPDFPreview"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      @click="closePDFPreview"
+    >
+      <div class="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg overflow-hidden" @click.stop>
+        <button
+          @click="closePDFPreview"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
+        >
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        <div class="p-4 h-full flex flex-col">
+          <h3 class="text-lg font-bold mb-4 text-day-text dark:text-night-text">{{ previewFile?.name }}</h3>
+          <div class="flex-1 overflow-auto">
+            <VuePdfEmbed
+              v-if="previewPdfUrl"
+              :source="previewPdfUrl"
+              class="w-full"
+            />
+            <p v-else class="text-gray-600 dark:text-gray-400 text-center py-8">
+              {{ $t('dsPortalDemo.pdfPreviewNote') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -210,6 +342,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import VuePdfEmbed from 'vue-pdf-embed'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -281,155 +414,25 @@ const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
   return component;
 };`)
 
-const createAppApiCode = ref(`import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
-import { BASE_API } from '@utils/constants';
+const createAppApiCode = ref(`// RTK Query Base API Configuration
+// Demonstrates Redux Toolkit Query setup with base query,
+// authentication headers, and tag types for cache invalidation`)
 
-export const TAG_TYPES_MAP = {
-  SAVE_APPLICATION_FORM_STATUS: 'saveApplicationFormStatus',
-  SAVE_CEA_CHECK: 'saveCeaCheck',
-  NICE_INDEX: 'niceIndex',
-  MED_SAVE: 'medSave',
-  CLOSE_MONITORING: 'closeMonitoring',
-  GET_FATCA_CHECK: 'getFatcaCheck',
-  FINANCIAL_SOUNDNESS: 'financialSoundness',
-  ISSUANCE: 'issuance',
-  SAVE_MANAGEMENT_REVIEW: 'saveManagementReview',
-  SAVE_QUESTNET_CHECK: 'saveQuestnetCheck',
-  SAVE_RNF_CHECK: 'saveRnfCheck',
-  RNF_LODGEMENT: 'rnfLodgement',
-  UPLOAD: 'upload',
-  TABLE_ORDER: 'table_order',
-};
-const url = '/api';
-const bool = true;
-export const baseApiSlice = createApi({
-  baseQuery: fetchBaseQuery({
-    baseUrl: bool ? url : BASE_API,
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().app?.accessToken ?? '';
-      headers.set('Authorization', \`Bearer \${token}\`);
-      return headers;
-    },
-  }),
-  tagTypes: Object.values(TAG_TYPES_MAP),
-  endpoints: () => {
-    return {};
-  },
-});`)
+const homePageApiCode = ref(`// Home Page API Example
+// Shows how to inject endpoints into base API slice,
+// handle query parameters, transform responses, and manage errors`)
 
-const homePageApiCode = ref(`import { baseApiSlice } from '@redux/createAppApi';
-import { parseUrl } from '@utils/request';
-import { getHomePageInfoUrl } from '@utils/apis';
-import notifications from '@utils/notifications';
+const uploadComponentCode = ref(`// File Upload Component
+// Demonstrates enhanced file uploader with validation,
+// rename templates, chunked upload support, and error handling`)
 
-const homePageApi = baseApiSlice.injectEndpoints({
-  endpoints(builder) {
-    return {
-      getHomePageData: builder.query({
-        query(params) {
-          return parseUrl(getHomePageInfoUrl, params);
-        },
-        transformResponse: (res) => res.data,
-        transformErrorResponse(baseQueryReturnValue) {
-          const message =
-            baseQueryReturnValue?.data?.error?.message ||
-            baseQueryReturnValue?.data?.success?.message ||
-            'request Err';
-          notifications('error', message);
-          return baseQueryReturnValue;
-        },
-      }),
-    };
-  },
-});
-
-export const { useGetHomePageDataQuery } = homePageApi;
-export default homePageApi;`)
-
-const uploadComponentCode = ref(`import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import EnhanceUploader from './EnhanceUploader';
-import { FILE_TYPES } from '@utils/constants';
-import { parse } from 'query-string';
-import { useGetCaseNumberQuery } from '@redux/api/commentsApi';
-
-const CustomUploader = ({
-  uploadFunction,
-  deleteFunction,
-  id,
-  type = 'single',
-  uploadFor = 'image',
-  fileList,
-  maxCount,
-  maxSize,
-  disabled,
-  showWhenDisabled,
-  fileRenameTemplate,
-}) => {
-  const navigate = useNavigate();
-  const [listRef, setListRef] = React.useState([React.createRef()]);
-  const [hidden, setHidden] = React.useState(false);
-  const location = useLocation();
-  const parsed = parse(location.search);
-  const recruitmentProcessId = parsed?.recruitmentId;
-  const caseType = parsed?.caseType;
-  const caseNumberRes = useGetCaseNumberQuery({
-    recruitmentProcessId,
-    caseType,
-  });
-
-  const handleUpdateFunction = (ref, index, uploadId, e) => {
-    if (!fileValidation(ref, e.target.files[0])) {
-      return;
-    }
-    if (uploadFunction) {
-      if (fileRenameTemplate?.length > 0) {
-        uploadFunction(ref, uploadId, fileRename(e));
-      } else {
-        uploadFunction(ref, uploadId, e);
-      }
-    }
-  };
-
-  const fileValidation = (ref, file) => {
-    const size = maxSize ?? 1024 * 1024 * 10;
-    let errorMsg = '';
-    if (file.size > size) {
-      errorMsg = \`File exceeds maximum size limit.\`;
-    } else if (!FILE_TYPES.includes(file.name.split('.').pop().toUpperCase())) {
-      errorMsg = 'Incorrect file format.';
-    }
-    if (errorMsg != '') {
-      ref.current.handleUpdateFile({
-        uploadStatus: 'error',
-        uploadingText: errorMsg,
-      });
-      return false;
-    }
-    return true;
-  };
-
-  return (
-    <EnhanceUploader
-      type={type}
-      ref={listRef[0]}
-      uploadFunction={(e) => handleUpdateFunction(listRef[0], 0, id, e)}
-      deleteFunction={(fileName) => deleteFunction(listRef[0], fileName, id)}
-      uploadFor={uploadFor}
-      disabled={disabled}
-      hidden={hidden}
-    />
-  );
-};`)
-
-const routerConfigCode = ref(`import React from 'react';
-import loadable from '@loadable/component';
-import { useNavigate, Routes, Route } from 'react-router-dom';
-import { Security, LoginCallback } from '@okta/okta-react';
-import { OktaAuth } from '@okta/okta-auth-js';
-import { oktaAuthConfig } from '@utils/config';
-import { RECRUITMENT_PROCESS_STATUS_MAP } from '@utils/constants';
+const routerConfigCode = ref(`// import React from 'react';
+// import loadable from '@loadable/component';
+// import { useNavigate, Routes, Route } from 'react-router-dom';
+// import { Security, LoginCallback } from '@okta/okta-react';
+// import { OktaAuth } from '@okta/okta-auth-js';
+// import { oktaAuthConfig } from '@utils/config';
+// import { RECRUITMENT_PROCESS_STATUS_MAP } from '@utils/constants';
 
 const RouteAuth = loadable(() => import('@pages/RouteAuth.jsx'));
 const PrivateRoute = loadable(() => import('@components/PrivateRoute'));
@@ -493,21 +496,9 @@ const Router = () => {
 
 export default Router;`)
 
-const oktaConfigCode = ref(`export const oktaAuthConfig = {
-  issuer:
-    process.env.REACT_APP_OKTA_ISSUER ||
-    'https://[REDACTED_ID].okta.com/oauth2/[REDACTED_ID]',
-
-  clientId: process.env.REACT_APP_OKTA_CLIENT_ID || '[REDACTED_CLIENT_ID]',
-
-  redirectUri: \`\${window.location.origin}/tdops/login/callback\`,
-
-  postLogoutRedirectUri: \`\${window.location.origin}/tdops/logout\`,
-
-  scopes: ['openid', 'profile', 'email'],
-
-  pkce: true,
-};`)
+const oktaConfigCode = ref(`// Okta OAuth Configuration
+// Demonstrates Okta authentication setup with issuer URL,
+// client ID, redirect URI, scopes, and PKCE for security`)
 
 // State Machine
 const currentState = ref('1')
@@ -565,6 +556,88 @@ const resetStateMachine = () => {
 // File Management
 const uploadedFiles = ref<UploadedFile[]>([])
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const isDragging = ref(false)
+const renameTemplate = ref('')
+const uploadProgress = ref<{ fileName: string; percentage: number; speed: string; paused: boolean }[]>([])
+
+// Allowed file types
+const ALLOWED_FILE_TYPES = ['PDF', 'JPG', 'JPEG', 'PNG', 'DOC', 'DOCX', 'XLS', 'XLSX']
+const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
+const CHUNK_SIZE = 5 * 1024 * 1024 // 5MB chunks
+
+// Drag and drop handlers
+const handleDragOver = () => {
+  isDragging.value = true
+}
+
+const handleDragLeave = () => {
+  isDragging.value = false
+}
+
+const handleDrop = (event: DragEvent) => {
+  event.preventDefault()
+  isDragging.value = false
+  const files = event.dataTransfer?.files
+  if (files) {
+    handleBatchUpload(Array.from(files))
+  }
+}
+
+// File type validation
+const validateFile = (file: File): { valid: boolean; error: string } => {
+  const extension = file.name.split('.').pop()?.toUpperCase() || ''
+  
+  if (file.size > MAX_FILE_SIZE) {
+    return { valid: false, error: t('dsPortalDemo.fileSizeError') }
+  }
+  
+  if (!ALLOWED_FILE_TYPES.includes(extension)) {
+    return { valid: false, error: t('dsPortalDemo.fileTypeError') }
+  }
+  
+  return { valid: true, error: '' }
+}
+
+// File type helpers
+const isImage = (type: string): boolean => {
+  return ['JPG', 'JPEG', 'PNG'].includes(type.toUpperCase())
+}
+
+const isPDF = (type: string): boolean => {
+  return type.toUpperCase() === 'PDF'
+}
+
+// Preview modals
+const showImagePreview = ref(false)
+const showPDFPreview = ref(false)
+const previewFile = ref<UploadedFile | null>(null)
+const previewImageUrl = ref('')
+const previewPdfUrl = ref('')
+
+// Preview functions
+const previewImage = async (file: UploadedFile) => {
+  previewFile.value = file
+  previewImageUrl.value = `/api/files/preview/${file.id}`
+  showImagePreview.value = true
+}
+
+const previewPDF = async (file: UploadedFile) => {
+  previewFile.value = file
+  previewPdfUrl.value = `/api/files/preview/${file.id}`
+  showPDFPreview.value = true
+}
+
+const closeImagePreview = () => {
+  showImagePreview.value = false
+  previewFile.value = null
+  previewImageUrl.value = ''
+}
+
+const closePDFPreview = () => {
+  showPDFPreview.value = false
+  previewFile.value = null
+  previewPdfUrl.value = ''
+}
 
 // Notification state
 const notification = ref<{ show: boolean; message: string; type: 'success' | 'error' }>({
@@ -609,44 +682,189 @@ const fetchFiles = async () => {
   }
 }
 
+// Batch upload handler
+const handleBatchUpload = async (files: File[]) => {
+  for (const file of files) {
+    const validation = validateFile(file)
+    if (!validation.valid) {
+      showNotification(`${file.name}: ${validation.error}`, 'error')
+      continue
+    }
+    await uploadFile(file)
+  }
+}
+
+// Updated file upload handler
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (file) {
-    try {
-      isLoading.value = true
-      const response = await fetch('/api/files/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: file.name,
-          size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-          type: file.type.split('/')[1].toUpperCase() || 'Unknown'
-        })
-      })
-      
-      if (response.ok) {
-        await fetchFiles()
-        showNotification(`文件上传成功：${file.name}`, 'success')
-        if (fileInputRef.value) {
-          fileInputRef.value.value = '' // Clear file input
-        }
-      } else {
-        showNotification('文件上传失败', 'error')
-      }
-    } catch (error) {
-      console.error('Failed to upload file:', error)
-      showNotification('文件上传失败', 'error')
-    } finally {
-      isLoading.value = false
+  const files = target.files
+  if (files && files.length > 0) {
+    await handleBatchUpload(Array.from(files))
+    if (fileInputRef.value) {
+      (fileInputRef.value as HTMLInputElement).value = '' // Clear file input
     }
   }
 }
 
-const downloadFile = (file: UploadedFile) => {
-  showNotification(`下载文件：${file.name}`, 'success')
+// Upload file with chunking support
+const uploadFile = async (file: File) => {
+  try {
+    isLoading.value = true
+    
+    // Apply rename template if provided
+    let fileName = file.name
+    if (renameTemplate.value) {
+      const ext = fileName.split('.').pop()
+      const baseName = fileName.substring(0, fileName.lastIndexOf('.'))
+      fileName = `${renameTemplate.value}_${baseName}.${ext}`
+    }
+    
+    // Use chunked upload for large files
+    if (file.size > CHUNK_SIZE) {
+      await uploadFileInChunks(file, fileName)
+    } else {
+      await uploadFileDirect(file, fileName)
+    }
+  } catch (error) {
+    console.error('Failed to upload file:', error)
+    showNotification(`文件上传失败：${file.name}`, 'error')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Direct upload for small files
+const uploadFileDirect = async (file: File, fileName: string) => {
+  const progressItem = {
+    fileName,
+    percentage: 0,
+    speed: '0 KB/s',
+    paused: false
+  }
+  uploadProgress.value.push(progressItem)
+  
+  try {
+    const response = await fetch('/api/files/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: fileName,
+        size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+        type: file.type.split('/')[1].toUpperCase() || 'Unknown'
+      })
+    })
+    
+    if (response.ok) {
+      progressItem.percentage = 100
+      progressItem.speed = 'Completed'
+      await fetchFiles()
+      showNotification(`文件上传成功：${fileName}`, 'success')
+    } else {
+      showNotification('文件上传失败', 'error')
+    }
+  } finally {
+    uploadProgress.value = uploadProgress.value.filter(p => p.fileName !== fileName)
+  }
+}
+
+// Chunked upload for large files with resume capability
+const uploadFileInChunks = async (file: File, fileName: string) => {
+  const progressItem = {
+    fileName,
+    percentage: 0,
+    speed: '0 KB/s',
+    paused: false
+  }
+  uploadProgress.value.push(progressItem)
+  
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+  let uploadedChunks = 0
+  const startTime = Date.now()
+  
+  try {
+    for (let i = 0; i < totalChunks; i++) {
+      if (progressItem.paused) {
+        return // Pause upload
+      }
+      
+      const start = i * CHUNK_SIZE
+      const end = Math.min(start + CHUNK_SIZE, file.size)
+      const chunk = file.slice(start, end)
+      
+      const formData = new FormData()
+      formData.append('file', chunk)
+      formData.append('fileName', fileName)
+      formData.append('chunkIndex', i.toString())
+      formData.append('totalChunks', totalChunks.toString())
+      
+      const response = await fetch('/api/files/upload-chunk', {
+        method: 'POST',
+        body: formData
+      })
+      
+      if (response.ok) {
+        uploadedChunks++
+        progressItem.percentage = Math.round((uploadedChunks / totalChunks) * 100)
+        
+        const elapsed = (Date.now() - startTime) / 1000
+        const speed = Math.round((uploadedChunks * CHUNK_SIZE) / elapsed / 1024)
+        progressItem.speed = `${speed} KB/s`
+      } else {
+        throw new Error('Chunk upload failed')
+      }
+    }
+    
+    // Complete the upload
+    await fetch('/api/files/complete-upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fileName })
+    })
+    
+    await fetchFiles()
+    showNotification(`文件上传成功：${fileName}`, 'success')
+  } finally {
+    uploadProgress.value = uploadProgress.value.filter(p => p.fileName !== fileName)
+  }
+}
+
+// Resume upload
+const resumeUpload = (progress: { fileName: string; percentage: number; speed: string; paused: boolean }) => {
+  progress.paused = false
+  showNotification(`恢复上传：${progress.fileName}`, 'success')
+}
+
+const downloadFile = async (file: UploadedFile) => {
+  try {
+    isLoading.value = true
+    const response = await fetch(`/api/files/download/${file.id}`)
+    
+    if (!response.ok) {
+      throw new Error('Download failed')
+    }
+    
+    // Streaming download using blob
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = file.name
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+    
+    showNotification(`下载文件：${file.name}`, 'success')
+  } catch (error) {
+    console.error('Failed to download file:', error)
+    showNotification('文件下载失败', 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const deleteFile = async (id: string) => {
