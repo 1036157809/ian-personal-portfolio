@@ -34,6 +34,7 @@ async function ensureDirectories() {
   try {
     await fsPromises.mkdir(UPLOADS_DIR, { recursive: true });
     await fsPromises.mkdir(CHUNKS_DIR, { recursive: true });
+    await fsPromises.mkdir(path.join(process.cwd(), 'uploads', 'temp'), { recursive: true });
     
     // Log directory info for debugging
     console.log(`=== File Upload Configuration ===`);
@@ -100,6 +101,14 @@ router.post('/upload', async (ctx) => {
       writer.on('finish', () => resolve());
       writer.on('error', reject);
     });
+    
+    // Clean up temp file created by koa-body
+    try {
+      await fsPromises.unlink(file.filepath);
+      console.log(`Cleaned up temp file: ${file.filepath}`);
+    } catch (error) {
+      console.log(`Failed to clean up temp file: ${file.filepath}`);
+    }
 
     // Save metadata with unique filename
     const newFile = {
@@ -154,6 +163,14 @@ router.post('/upload-chunk', async (ctx) => {
       writer.on('finish', () => resolve());
       writer.on('error', reject);
     });
+    
+    // Clean up temp file created by koa-body
+    try {
+      await fsPromises.unlink(chunk.filepath);
+      console.log(`Cleaned up chunk temp file: ${chunk.filepath}`);
+    } catch (error) {
+      console.log(`Failed to clean up chunk temp file: ${chunk.filepath}`);
+    }
 
     ctx.body = { success: true, chunkIndex };
     ctx.status = 200;
@@ -185,8 +202,10 @@ router.post('/complete-upload', async (ctx) => {
       return;
     }
 
-    // Merge chunks
-    const finalPath = path.join(UPLOADS_DIR, fileName);
+    // Generate unique filename for final file
+    const fileExtension = fileName.split('.').pop() || '';
+    const uniqueFileName = `${Date.now()}.${Math.random().toString(36).substring(7)}.${fileExtension}`;
+    const finalPath = path.join(UPLOADS_DIR, uniqueFileName);
     const writeStream = fs.createWriteStream(finalPath);
 
     for (const chunkFile of chunkFiles) {
@@ -210,11 +229,13 @@ router.post('/complete-upload', async (ctx) => {
     const stats = await fsPromises.stat(finalPath);
     const newFile = {
       id: Date.now().toString(),
-      name: fileName,
+      name: fileName, // Keep original name for display
       size: (stats.size / 1024 / 1024).toFixed(2) + ' MB',
-      type: fileName.split('.').pop()?.toUpperCase() || 'Unknown',
-      filePath: `/uploads/${fileName}`
+      type: fileExtension.toUpperCase() || 'Unknown',
+      filePath: uniqueFileName // Use unique filename for file operations
     };
+    
+    console.log(`Chunked upload completed: ${fileName} -> ${uniqueFileName}`);
 
     uploadedFiles.push(newFile);
 
@@ -290,15 +311,26 @@ router.get('/download/:id', async (ctx) => {
 
     const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
     
+    console.log(`=== Download Operation ===`);
+    console.log(`File metadata:`, file);
+    console.log(`Requested file path: ${filePath}`);
+    console.log(`UPLOADS_DIR: ${UPLOADS_DIR}`);
+    
     try {
       const stats = await fsPromises.stat(filePath);
+      console.log(`File found, size: ${stats.size} bytes`);
       
       // Stream file
       ctx.set('Content-Type', 'application/octet-stream');
-      ctx.set('Content-Disposition', `attachment; filename="${file.name}"`);
+      // Encode filename for HTTP header (RFC 5987)
+      const encodedFileName = encodeURIComponent(file.name);
+      ctx.set('Content-Disposition', `attachment; filename*=UTF-8''${encodedFileName}`);
       ctx.set('Content-Length', stats.size.toString());
       ctx.body = fs.createReadStream(filePath);
     } catch (error) {
+      console.log(`File not found at path: ${filePath}`);
+      console.log(`Available files in uploads:`, await fsPromises.readdir(UPLOADS_DIR).catch(() => []));
+      console.log(`Error details:`, error);
       ctx.status = 404;
       ctx.body = { error: 'File not found on disk' };
     }
@@ -336,6 +368,9 @@ router.get('/preview/:id', async (ctx) => {
       // Add caching headers
       ctx.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
       ctx.set('ETag', `"${file.id}-${Date.now()}"`);
+      // Encode filename for inline display
+      const encodedFileName = encodeURIComponent(file.name);
+      ctx.set('Content-Disposition', `inline; filename*=UTF-8''${encodedFileName}`);
       ctx.body = fs.createReadStream(filePath);
     } catch (error) {
       ctx.status = 404;

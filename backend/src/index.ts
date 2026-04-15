@@ -19,7 +19,7 @@ app.use(bodyParser());
 app.use(koaBody({
   multipart: true,
   formidable: {
-    uploadDir: path.join(process.cwd(), 'uploads'),
+    uploadDir: path.join(process.cwd(), 'uploads', 'temp'),
     keepExtensions: true,
   }
 }));
