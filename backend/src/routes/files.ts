@@ -34,8 +34,24 @@ async function ensureDirectories() {
   try {
     await fsPromises.mkdir(UPLOADS_DIR, { recursive: true });
     await fsPromises.mkdir(CHUNKS_DIR, { recursive: true });
+    
+    // Log directory info for debugging
+    console.log(`=== File Upload Configuration ===`);
+    console.log(`UPLOADS_DIR: ${UPLOADS_DIR}`);
+    console.log(`CHUNKS_DIR: ${CHUNKS_DIR}`);
+    console.log(`Working directory: ${process.cwd()}`);
+    
+    try {
+      const files = await fsPromises.readdir(UPLOADS_DIR);
+      console.log(`Existing files in uploads: ${files.length}`);
+      if (files.length > 0 && files.length <= 10) {
+        console.log(`File list:`, files);
+      }
+    } catch (readdirError) {
+      console.log(`Could not read uploads directory`);
+    }
   } catch (error) {
-    // Directory might already exist
+    console.error('Error creating directories:', error);
   }
 }
 ensureDirectories();
@@ -66,12 +82,16 @@ router.post('/upload', async (ctx) => {
     }
 
     const file = files.file;
-    const fileName = body.name || file.originalFilename || file.name;
+    const originalFileName = body.name || file.originalFilename || file.name;
     const fileSize = body.size || file.size;
     const fileType = body.type || file.mimetype;
 
-    // Save file to disk
-    const filePath = path.join(UPLOADS_DIR, fileName);
+    // Generate unique filename to avoid conflicts
+    const fileExtension = originalFileName.split('.').pop() || '';
+    const uniqueFileName = `${Date.now()}.${Math.random().toString(36).substring(7)}.${fileExtension}`;
+    
+    // Save file to disk with unique filename
+    const filePath = path.join(UPLOADS_DIR, uniqueFileName);
     const reader = fs.createReadStream(file.filepath);
     const writer = fs.createWriteStream(filePath);
     
@@ -81,14 +101,16 @@ router.post('/upload', async (ctx) => {
       writer.on('error', reject);
     });
 
-    // Save metadata
+    // Save metadata with unique filename
     const newFile = {
       id: Date.now().toString(),
-      name: fileName,
+      name: originalFileName, // Keep original name for display
       size: formatBytes(fileSize),
       type: getFileType(fileType),
-      filePath: fileName
+      filePath: uniqueFileName // Use unique filename for actual file operations
     };
+    
+    console.log(`File uploaded: ${originalFileName} -> ${uniqueFileName}`);
 
     uploadedFiles.push(newFile);
     ctx.body = newFile;
@@ -214,20 +236,43 @@ router.delete('/:id', async (ctx) => {
       return;
     }
 
-    const filePath = path.join(UPLOADS_DIR, file.filePath?.replace('/uploads/', '') || file.name);
-    console.log(`Attempting to delete file: ${filePath}`);
+    // Clean up file path
+    const fileName = file.filePath?.replace('/uploads/', '') || file.name;
+    const filePath = path.join(UPLOADS_DIR, fileName);
+    
+    console.log(`=== Delete Operation ===`);
+    console.log(`UPLOADS_DIR: ${UPLOADS_DIR}`);
     console.log(`File metadata:`, file);
+    console.log(`Cleaned filename: ${fileName}`);
+    console.log(`Full file path: ${filePath}`);
+    console.log(`Working directory: ${process.cwd()}`);
+    
+    // Check if file exists
+    try {
+      await fsPromises.access(filePath);
+      console.log(`File exists at path: ${filePath}`);
+    } catch (accessError) {
+      console.log(`File does not exist at path: ${filePath}`);
+      console.log(`Available files in uploads:`, await fsPromises.readdir(UPLOADS_DIR).catch(() => []));
+    }
+    
+    // Delete file
     try {
       await fsPromises.unlink(filePath);
-      console.log(`Deleted file: ${filePath}`);
+      console.log(`✓ Successfully deleted file: ${filePath}`);
     } catch (error) {
-      console.log(`File not found at path: ${filePath}, error:`, error);
+      console.error(`✗ Failed to delete file: ${filePath}`);
+      console.error(`Error details:`, error);
+      ctx.status = 500;
+      ctx.body = { error: 'Failed to delete file from disk', details: (error as Error).message };
+      return;
     }
 
     uploadedFiles.splice(uploadedFiles.indexOf(file), 1);
     ctx.body = { message: 'File deleted successfully' };
+    console.log(`✓ File metadata removed from memory`);
   } catch (error) {
-    console.error('Delete error:', error);
+    console.error('Delete operation error:', error);
     ctx.status = 500;
     ctx.body = { error: 'Failed to delete file' };
   }
