@@ -2,4 +2,3 @@ node_modules/
 .windsurf/
 backend/database.sqlite
 uploads/
-package-lock.json
