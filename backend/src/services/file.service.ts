@@ -29,7 +29,7 @@ export async function ensureDirectories() {
   try {
     await fsPromises.mkdir(UPLOADS_DIR, { recursive: true });
     await fsPromises.mkdir(CHUNKS_DIR, { recursive: true });
-    await fsPromises.mkdir(path.join(process.cwd(), 'uploads', 'temp'), { recursive: true });
+    await fsPromises.mkdir(path.join(process.cwd(), 'public/uploads/temp'), { recursive: true });
     
     console.log('=== File Upload Configuration ===');
     console.log(`UPLOADS_DIR: ${UPLOADS_DIR}`);

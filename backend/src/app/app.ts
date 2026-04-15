@@ -20,6 +20,7 @@ export async function createApp(): Promise<Koa> {
     formidable: {
       uploadDir: path.join(process.cwd(), 'public/uploads/temp'),
       keepExtensions: true,
+      maxFileSize: 100 * 1024 * 1024, // 100MB
     },
     json: true,
     text: true,

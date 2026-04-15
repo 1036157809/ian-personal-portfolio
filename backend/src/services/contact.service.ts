@@ -3,9 +3,9 @@ import { Contact as ContactType } from '../types';
 import { Transaction } from 'sequelize';
 
 export class ContactService {
-  async create(contactData: Omit<ContactType, 'id' | 'createdAt'>, t?: Transaction): Promise<ContactType> {
+  async create(contactData: Omit<ContactType, 'id' | 'createdAt'>, transaction?: Transaction): Promise<ContactType> {
     try {
-      const contact = await Contact.create(contactData, { transaction: t });
+      const contact = await Contact.create(contactData, { transaction });
       return contact.toJSON() as ContactType;
     } catch (error) {
       console.error('Error creating contact:', error);
@@ -13,11 +13,11 @@ export class ContactService {
     }
   }
 
-  async findAll(t?: Transaction): Promise<ContactType[]> {
+  async findAll(transaction?: Transaction): Promise<ContactType[]> {
     try {
       const contacts = await Contact.findAll({
         order: [['createdAt', 'DESC']],
-        transaction: t
+        transaction
       });
       return contacts.map(contact => contact.toJSON() as ContactType);
     } catch (error) {
@@ -26,9 +26,9 @@ export class ContactService {
     }
   }
 
-  async findById(id: string, t?: Transaction): Promise<ContactType | null> {
+  async findById(id: string, transaction?: Transaction): Promise<ContactType | null> {
     try {
-      const contact = await Contact.findByPk(id, { transaction: t });
+      const contact = await Contact.findByPk(id, { transaction });
       return contact ? contact.toJSON() as ContactType : null;
     } catch (error) {
       console.error('Error finding contact:', error);
@@ -36,9 +36,9 @@ export class ContactService {
     }
   }
 
-  async delete(id: string, t?: Transaction): Promise<boolean> {
+  async delete(id: string, transaction?: Transaction): Promise<boolean> {
     try {
-      const deleted = await Contact.destroy({ where: { id }, transaction: t });
+      const deleted = await Contact.destroy({ where: { id }, transaction });
       return deleted > 0;
     } catch (error) {
       console.error('Error deleting contact:', error);
@@ -47,25 +47,25 @@ export class ContactService {
   }
 
   async createWithTransaction(contactData: Omit<ContactType, 'id' | 'createdAt'>): Promise<ContactType> {
-    const t = await Contact.sequelize!.transaction();
+    const transaction = await Contact.sequelize!.transaction();
     try {
-      const contact = await this.create(contactData, t);
-      await t.commit();
+      const contact = await this.create(contactData, transaction);
+      await transaction.commit();
       return contact;
     } catch (error) {
-      await t.rollback();
+      await transaction.rollback();
       throw error;
     }
   }
 
   async deleteWithTransaction(id: string): Promise<boolean> {
-    const t = await Contact.sequelize!.transaction();
+    const transaction = await Contact.sequelize!.transaction();
     try {
-      const deleted = await this.delete(id, t);
-      await t.commit();
+      const deleted = await this.delete(id, transaction);
+      await transaction.commit();
       return deleted;
     } catch (error) {
-      await t.rollback();
+      await transaction.rollback();
       throw error;
     }
   }
