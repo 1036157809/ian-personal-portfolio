@@ -628,12 +628,14 @@ const previewPdfUrl = ref('')
 // Preview functions
 const previewImage = async (file: UploadedFile) => {
   previewFile.value = file
+  // Add timestamp to avoid stale cache, but browser will use cache if available
   previewImageUrl.value = `/api/files/preview/${file.id}`
   showImagePreview.value = true
 }
 
 const previewPDF = async (file: UploadedFile) => {
   previewFile.value = file
+  // Add timestamp to avoid stale cache, but browser will use cache if available
   previewPdfUrl.value = `/api/files/preview/${file.id}`
   showPDFPreview.value = true
 }

@@ -5,8 +5,6 @@ import { koaBody } from 'koa-body';
 import path from 'path';
 import Router from '@koa/router';
 import cron from 'node-cron';
-import { initDatabase } from './database';
-import projectRoutes from './routes/projects';
 import contactRoutes from './routes/contact';
 import fileRoutes from './routes/files';
 import { cleanupUploads } from './utils/fileCleanup';
@@ -35,8 +33,6 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 // API Routes
-app.use(projectRoutes.routes());
-app.use(projectRoutes.allowedMethods());
 app.use(contactRoutes.routes());
 app.use(contactRoutes.allowedMethods());
 app.use(fileRoutes.routes());
@@ -45,17 +41,14 @@ app.use(fileRoutes.allowedMethods());
 // Initialize database and start server
 async function start() {
   try {
-    await initDatabase();
+    // Run cleanup silently on startup (only if needed)
+    await cleanupUploads();
     
     // Schedule file cleanup to run every day at 2 AM
-    cron.schedule('0 2 * * *', () => {
+    cron.schedule('0 2 * * *', async () => {
       console.log('Running scheduled file cleanup...');
-      cleanupUploads();
+      await cleanupUploads();
     });
-    
-    // Run cleanup on startup as well
-    console.log('Running initial file cleanup on startup...');
-    cleanupUploads();
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

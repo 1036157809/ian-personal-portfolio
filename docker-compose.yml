@@ -28,6 +28,7 @@ services:
     container_name: ian-portfolio-backend
     restart: unless-stopped
     environment:
+      NODE_ENV: production
       DB_HOST: mysql
       DB_PORT: 3306
       DB_USER: portfolio

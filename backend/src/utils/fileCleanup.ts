@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
@@ -9,27 +9,41 @@ const MAX_TOTAL_SIZE_500MB = 500 * 1024 * 1024;
 const MAX_TOTAL_SIZE_300MB = 300 * 1024 * 1024;
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
+// Cache for directory size to avoid repeated calculations
+let cachedSize: number | null = null;
+let cacheTime: number = 0;
+const CACHE_DURATION = 60000; // 1 minute cache
+
 /**
- * Calculate the total size of a directory recursively
+ * Calculate the total size of a directory recursively (async)
  */
-function getDirectorySize(dirPath: string): number {
-  let totalSize = 0;
-  
-  if (!fs.existsSync(dirPath)) {
-    return totalSize;
+async function getDirectorySize(dirPath: string): Promise<number> {
+  // Use cache if available and fresh
+  if (cachedSize !== null && Date.now() - cacheTime < CACHE_DURATION) {
+    return cachedSize;
   }
 
-  const files = fs.readdirSync(dirPath);
+  let totalSize = 0;
   
-  for (const file of files) {
-    const filePath = path.join(dirPath, file);
-    const stats = fs.statSync(filePath);
+  try {
+    const files = await fs.readdir(dirPath);
     
-    if (stats.isDirectory()) {
-      totalSize += getDirectorySize(filePath);
-    } else {
-      totalSize += stats.size;
+    for (const file of files) {
+      const filePath = path.join(dirPath, file);
+      const stats = await fs.stat(filePath);
+      
+      if (stats.isDirectory()) {
+        totalSize += await getDirectorySize(filePath);
+      } else {
+        totalSize += stats.size;
+      }
     }
+    
+    // Update cache
+    cachedSize = totalSize;
+    cacheTime = Date.now();
+  } catch (error) {
+    console.error('Error calculating directory size:', error);
   }
   
   return totalSize;
@@ -47,114 +61,113 @@ function formatBytes(bytes: number): string {
 }
 
 /**
- * Clear all files in the uploads directory
+ * Clear all files in the uploads directory (async)
  */
-function clearUploadsDirectory(): void {
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    console.log('Uploads directory does not exist');
-    return;
-  }
-
-  const files = fs.readdirSync(UPLOADS_DIR);
-  
-  for (const file of files) {
-    const filePath = path.join(UPLOADS_DIR, file);
-    const stats = fs.statSync(filePath);
+async function clearUploadsDirectory(): Promise<void> {
+  try {
+    const files = await fs.readdir(UPLOADS_DIR);
     
-    if (stats.isDirectory()) {
-      // Remove directory recursively
-      fs.rmSync(filePath, { recursive: true, force: true });
-    } else {
-      // Remove file
-      fs.unlinkSync(filePath);
+    for (const file of files) {
+      const filePath = path.join(UPLOADS_DIR, file);
+      const stats = await fs.stat(filePath);
+      
+      if (stats.isDirectory()) {
+        // Remove directory recursively
+        await fs.rm(filePath, { recursive: true, force: true });
+      } else {
+        // Remove file
+        await fs.unlink(filePath);
+      }
     }
+    
+    console.log(`Cleared uploads directory: ${files.length} items removed`);
+  } catch (error) {
+    console.error('Error clearing uploads directory:', error);
   }
-  
-  console.log(`Cleared uploads directory: ${files.length} items removed`);
 }
 
 /**
- * Delete files older than specified days
+ * Delete files older than specified days (async)
  */
-function deleteFilesOlderThan(days: number): void {
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    console.log('Uploads directory does not exist');
-    return;
-  }
+async function deleteFilesOlderThan(days: number): Promise<void> {
+  try {
+    const maxAge = days * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    let deletedCount = 0;
 
-  const maxAge = days * 24 * 60 * 60 * 1000;
-  const now = Date.now();
-  let deletedCount = 0;
-
-  function deleteOldFiles(dirPath: string): void {
-    const files = fs.readdirSync(dirPath);
-    
-    for (const file of files) {
-      const filePath = path.join(dirPath, file);
-      const stats = fs.statSync(filePath);
+    async function deleteOldFiles(dirPath: string): Promise<void> {
+      const files = await fs.readdir(dirPath);
       
-      if (stats.isDirectory()) {
-        deleteOldFiles(filePath);
-        // Try to remove empty directory
-        try {
-          fs.rmdirSync(filePath);
-        } catch (e) {
-          // Directory not empty, skip
-        }
-      } else {
-        const fileAge = now - stats.mtimeMs;
+      for (const file of files) {
+        const filePath = path.join(dirPath, file);
+        const stats = await fs.stat(filePath);
         
-        if (fileAge > maxAge) {
-          fs.unlinkSync(filePath);
-          deletedCount++;
-          console.log(`Deleted old file: ${filePath} (${formatBytes(stats.size)}, ${Math.floor(fileAge / (24 * 60 * 60 * 1000))} days old)`);
+        if (stats.isDirectory()) {
+          await deleteOldFiles(filePath);
+          // Try to remove empty directory
+          try {
+            await fs.rmdir(filePath);
+          } catch (e) {
+            // Directory not empty, skip
+          }
+        } else {
+          const fileAge = now - stats.mtimeMs;
+          
+          if (fileAge > maxAge) {
+            await fs.unlink(filePath);
+            deletedCount++;
+          }
         }
       }
     }
-  }
 
-  deleteOldFiles(UPLOADS_DIR);
-  console.log(`Deleted ${deletedCount} files older than ${days} days`);
+    await deleteOldFiles(UPLOADS_DIR);
+    console.log(`Deleted ${deletedCount} files older than ${days} days`);
+  } catch (error) {
+    console.error('Error deleting old files:', error);
+  }
 }
 
 /**
- * Main cleanup function based on size thresholds
+ * Main cleanup function based on size thresholds (async)
  */
-export function cleanupUploads(): void {
-  console.log('=== Starting file cleanup ===');
-  
-  const totalSize = getDirectorySize(UPLOADS_DIR);
-  console.log(`Current uploads directory size: ${formatBytes(totalSize)}`);
-
-  if (totalSize > MAX_TOTAL_SIZE_500MB) {
-    console.log(`Size exceeds 500MB (${formatBytes(MAX_TOTAL_SIZE_500MB)}), clearing entire uploads directory`);
-    clearUploadsDirectory();
-  } else if (totalSize > MAX_TOTAL_SIZE_300MB) {
-    console.log(`Size exceeds 300MB (${formatBytes(MAX_TOTAL_SIZE_300MB)}), deleting files older than 3 days`);
-    deleteFilesOlderThan(3);
-  } else {
-    console.log('Size is within acceptable limits, no cleanup needed');
+export async function cleanupUploads(): Promise<void> {
+  try {
+    const totalSize = await getDirectorySize(UPLOADS_DIR);
+    
+    if (totalSize > MAX_TOTAL_SIZE_500MB) {
+      console.log(`Size exceeds 500MB, clearing uploads directory`);
+      await clearUploadsDirectory();
+    } else if (totalSize > MAX_TOTAL_SIZE_300MB) {
+      console.log(`Size exceeds 300MB, deleting files older than 3 days`);
+      await deleteFilesOlderThan(3);
+    } else {
+      // Silent success - no cleanup needed
+    }
+    
+    // Invalidate cache after cleanup
+    cachedSize = null;
+  } catch (error) {
+    console.error('Error during cleanup:', error);
   }
-
-  const newSize = getDirectorySize(UPLOADS_DIR);
-  console.log(`New uploads directory size: ${formatBytes(newSize)}`);
-  console.log('=== File cleanup completed ===');
 }
 
 /**
- * Manual cleanup function for testing
+ * Manual cleanup function for testing (async)
  */
-export function forceCleanupOldFiles(days: number): void {
+export async function forceCleanupOldFiles(days: number): Promise<void> {
   console.log(`=== Force deleting files older than ${days} days ===`);
-  deleteFilesOlderThan(days);
+  await deleteFilesOlderThan(days);
+  cachedSize = null; // Invalidate cache
   console.log('=== Force cleanup completed ===');
 }
 
 /**
- * Manual cleanup function for testing
+ * Manual cleanup function for testing (async)
  */
-export function forceClearAll(): void {
+export async function forceClearAll(): Promise<void> {
   console.log('=== Force clearing entire uploads directory ===');
-  clearUploadsDirectory();
+  await clearUploadsDirectory();
+  cachedSize = null; // Invalidate cache
   console.log('=== Force clear completed ===');
 }

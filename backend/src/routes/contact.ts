@@ -1,26 +1,37 @@
 import Router from '@koa/router'
-import { Contact } from '../database';
 
 const router = new Router({
   prefix: '/api/contact',
 });
 
+// Simple in-memory storage for contact forms
+const contacts: any[] = [];
+
 // Submit contact form
 router.post('/', async (ctx) => {
   try {
-    const { name, email, message } = ctx.request.body as { name: string; email: string; message: string };
+    const body = ctx.request.body as { name?: string; email?: string; message?: string };
+    const { name, email, message } = body;
     
     if (!name || !email || !message) {
       ctx.status = 400;
-      ctx.body = { error: 'Name, email, and message are required' };
+      ctx.body = { error: 'Missing required fields: name, email, message' };
       return;
     }
     
-    const contact = await Contact.create({ name, email, message });
-    ctx.body = { message: 'Contact form submitted successfully', contact };
+    const contact = {
+      id: Date.now().toString(),
+      name,
+      email,
+      message,
+      createdAt: new Date()
+    };
+    
+    contacts.push(contact);
     ctx.status = 201;
+    ctx.body = contact;
   } catch (error) {
-    ctx.status = 400;
+    ctx.status = 500;
     ctx.body = { error: 'Failed to submit contact form' };
   }
 });
@@ -28,9 +39,6 @@ router.post('/', async (ctx) => {
 // Get all contacts (admin only - simplified for demo)
 router.get('/', async (ctx) => {
   try {
-    const contacts = await Contact.findAll({
-      order: [['createdAt', 'DESC']],
-    });
     ctx.body = contacts;
   } catch (error) {
     ctx.status = 500;

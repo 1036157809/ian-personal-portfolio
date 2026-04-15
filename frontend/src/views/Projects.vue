@@ -162,7 +162,7 @@
               v-for="(img, idx) in selectedProject.additionalImages.filter((i: string) => i.includes('/pc/'))"
               :key="img"
               :src="img"
-              :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} - PC Screenshot ${idx + 1}`"
+              :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} - PC Screenshot ${Number(idx) + 1}`"
               class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
               @click="openImageModal(img)"
             />
@@ -182,7 +182,7 @@
               v-for="(img, idx) in selectedProject.additionalImages.filter((i: string) => i.includes('/mobile/'))"
               :key="img"
               :src="img"
-              :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} - Mobile Screenshot ${idx + 1}`"
+              :alt="`${languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh} - Mobile Screenshot ${Number(idx) + 1}`"
               class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
               @click="openImageModal(img)"
             />
@@ -288,7 +288,7 @@
       
       <!-- Image Counter -->
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
-        {{ currentImageIndex + 1 }} / {{ imageList.length }}
+        {{ Number(currentImageIndex) + 1 }} / {{ imageList.length }}
       </div>
     </div>
   </div>
@@ -296,32 +296,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useLanguageStore } from '../stores/language'
-import axios from 'axios'
+import { projects as projectsData } from '../data/projects'
 
 const languageStore = useLanguageStore()
 
-const projects = ref<any[]>([])
-const loading = ref(true)
+const projects = ref([...projectsData].sort((a, b) => a.order - b.order))
+const loading = ref(false)
 const error = ref('')
 const selectedProject = ref<any>(null)
 const showModal = ref(false)
 const currentImage = ref('')
 const currentImageIndex = ref(0)
 const imageList = ref<string[]>([])
-
-const fetchProjects = async () => {
-  try {
-    const response = await axios.get('/api/projects')
-    projects.value = response.data
-  } catch (err) {
-    error.value = 'Failed to load projects'
-    console.error(err)
-  } finally {
-    loading.value = false
-  }
-}
 
 const openProjectDetail = (project: any) => {
   selectedProject.value = project
@@ -371,7 +358,6 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  fetchProjects()
   window.addEventListener('keydown', handleKeydown)
 })
 

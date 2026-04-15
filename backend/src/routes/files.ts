@@ -1,5 +1,6 @@
 import Router from '@koa/router';
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
 
 const router = new Router({
@@ -29,12 +30,15 @@ const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');
 
 // Ensure directories exist
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+async function ensureDirectories() {
+  try {
+    await fsPromises.mkdir(UPLOADS_DIR, { recursive: true });
+    await fsPromises.mkdir(CHUNKS_DIR, { recursive: true });
+  } catch (error) {
+    // Directory might already exist
+  }
 }
-if (!fs.existsSync(CHUNKS_DIR)) {
-  fs.mkdirSync(CHUNKS_DIR, { recursive: true });
-}
+ensureDirectories();
 
 // In-memory file metadata storage
 const uploadedFiles: { id: string; name: string; size: string; type: string; filePath: string }[] = [];
@@ -150,9 +154,8 @@ router.post('/complete-upload', async (ctx) => {
     }
 
     // Find all chunks
-    const chunkFiles = fs.readdirSync(CHUNKS_DIR)
-      .filter(f => f.startsWith(fileName))
-      .sort();
+    const chunkFiles = await fsPromises.readdir(CHUNKS_DIR)
+      .then(files => files.filter(f => f.startsWith(fileName)).sort());
 
     if (chunkFiles.length === 0) {
       ctx.status = 400;
@@ -178,11 +181,11 @@ router.post('/complete-upload', async (ctx) => {
 
     // Clean up chunks
     for (const chunkFile of chunkFiles) {
-      fs.unlinkSync(path.join(CHUNKS_DIR, chunkFile));
+      await fsPromises.unlink(path.join(CHUNKS_DIR, chunkFile));
     }
 
     // Add file metadata
-    const stats = fs.statSync(finalPath);
+    const stats = await fsPromises.stat(finalPath);
     const newFile = {
       id: Date.now().toString(),
       name: fileName,
@@ -211,18 +214,20 @@ router.delete('/:id', async (ctx) => {
       return;
     }
 
-    // Delete physical file
-    const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    const filePath = path.join(UPLOADS_DIR, file.filePath?.replace('/uploads/', '') || file.name);
+    console.log(`Attempting to delete file: ${filePath}`);
+    console.log(`File metadata:`, file);
+    try {
+      await fsPromises.unlink(filePath);
+      console.log(`Deleted file: ${filePath}`);
+    } catch (error) {
+      console.log(`File not found at path: ${filePath}, error:`, error);
     }
 
-    // Remove from metadata
-    const index = uploadedFiles.findIndex(f => f.id === ctx.params.id);
-    uploadedFiles.splice(index, 1);
-
-    ctx.status = 204;
+    uploadedFiles.splice(uploadedFiles.indexOf(file), 1);
+    ctx.body = { message: 'File deleted successfully' };
   } catch (error) {
+    console.error('Delete error:', error);
     ctx.status = 500;
     ctx.body = { error: 'Failed to delete file' };
   }
@@ -239,20 +244,19 @@ router.get('/download/:id', async (ctx) => {
     }
 
     const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
-    console.log('Download request for file:', filePath);
     
-    if (!fs.existsSync(filePath)) {
-      console.log('File not found at path:', filePath);
-      console.log('Available files:', fs.readdirSync(UPLOADS_DIR));
+    try {
+      const stats = await fsPromises.stat(filePath);
+      
+      // Stream file
+      ctx.set('Content-Type', 'application/octet-stream');
+      ctx.set('Content-Disposition', `attachment; filename="${file.name}"`);
+      ctx.set('Content-Length', stats.size.toString());
+      ctx.body = fs.createReadStream(filePath);
+    } catch (error) {
       ctx.status = 404;
       ctx.body = { error: 'File not found on disk' };
-      return;
     }
-
-    // Stream file
-    ctx.set('Content-Type', 'application/octet-stream');
-    ctx.set('Content-Disposition', `attachment; filename="${file.name}"`);
-    ctx.body = fs.createReadStream(filePath);
   } catch (error) {
     console.error('Download error:', error);
     ctx.status = 500;
@@ -271,27 +275,29 @@ router.get('/preview/:id', async (ctx) => {
     }
 
     const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
-    if (!fs.existsSync(filePath)) {
-      console.log('File not found at path:', filePath);
-      console.log('Available files:', fs.readdirSync(UPLOADS_DIR));
+    
+    try {
+      // Stream file for preview
+      const ext = (file.filePath || file.name).split('.').pop()?.toLowerCase();
+      const contentTypes: Record<string, string> = {
+        'pdf': 'application/pdf',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif'
+      };
+
+      ctx.set('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
+      // Add caching headers
+      ctx.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+      ctx.set('ETag', `"${file.id}-${Date.now()}"`);
+      ctx.body = fs.createReadStream(filePath);
+    } catch (error) {
       ctx.status = 404;
       ctx.body = { error: 'File not found on disk' };
-      return;
     }
-
-    // Stream file for preview
-    const ext = (file.filePath || file.name).split('.').pop()?.toLowerCase();
-    const contentTypes: Record<string, string> = {
-      'pdf': 'application/pdf',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'gif': 'image/gif'
-    };
-
-    ctx.set('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
-    ctx.body = fs.createReadStream(filePath);
   } catch (error) {
+    console.error('Preview error:', error);
     ctx.status = 500;
     ctx.body = { error: 'Failed to preview file' };
   }
