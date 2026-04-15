@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
+const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
 const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');
 
 // Size constants in bytes

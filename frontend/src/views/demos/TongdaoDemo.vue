@@ -77,7 +77,6 @@
         <div>
           <label class="block text-sm font-medium mb-2 text-day-text dark:text-night-text">上传视频</label>
           <input
-            ref="videoInputRef"
             type="file"
             accept="video/*"
             @change="handleVideoUpload"
@@ -166,13 +165,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useLanguageStore } from '../stores/language'
-import PlayerRadarChart from '../components/PlayerRadarChart.vue'
-import PlayerHeatmap from '../components/PlayerHeatmap.vue'
-import ShuttleBox from '../components/ShuttleBox.vue'
+import { useLanguageStore } from 'src/stores/language'
+import PlayerRadarChart from 'src/components/business/PlayerRadarChart.vue'
+import PlayerHeatmap from 'src/components/business/PlayerHeatmap.vue'
+import ShuttleBox from 'src/components/business/ShuttleBox.vue'
 
-const { t } = useI18n()
 const languageStore = useLanguageStore()
 
 interface Player {
@@ -238,7 +235,6 @@ const sourcePlayers = ref<Player[]>([])
 const targetPlayers = ref<Player[]>([])
 
 // Video capture state
-const videoInputRef = ref<HTMLInputElement | null>(null)
 const videoRef = ref<HTMLVideoElement | null>(null)
 const videoUrl = ref<string>('')
 const videoDuration = ref<number>(0)

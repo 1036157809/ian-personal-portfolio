@@ -88,8 +88,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useThemeStore } from '../stores/theme'
-import { useLanguageStore } from '../stores/language'
+import { useThemeStore } from 'src/stores/theme'
+import { useLanguageStore } from 'src/stores/language'
 import { useI18n } from 'vue-i18n'
 
 const themeStore = useThemeStore()

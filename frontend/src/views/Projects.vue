@@ -55,27 +55,27 @@
             <div class="mt-auto">
               <router-link
                 v-if="project.titleZh.includes('同道')"
-                to="/tongdao-demo"
+                to="/demo/tongdao"
                 class="w-full text-center btn-primary text-sm py-2 block"
               >
                 {{ $t('projects.viewTongdaoDemo') }}
               </router-link>
               <router-link
                 v-if="project.titleZh.includes('首钢')"
-                to="/shougang-permission-demo"
+                to="/demo/shougang"
                 class="w-full text-center btn-primary text-sm py-2 block"
               >
                 {{ $t('projects.viewShougangDemo') }}
               </router-link>
               <div v-if="project.titleZh.includes('DS-portal')" class="flex gap-2">
                 <router-link
-                  to="/ds-portal-demo"
+                  to="/demo/ds-portal"
                   class="flex-1 text-center btn-primary text-sm py-2 block"
                 >
                   {{ $t('projects.viewDemo') }}
                 </router-link>
                 <router-link
-                  to="/ds-portal-demo#code"
+                  to="/demo/ds-portal#code"
                   class="flex-1 text-center btn-secondary text-sm py-2 block"
                 >
                   {{ $t('projects.viewCode') }}
@@ -202,27 +202,27 @@
         <div class="flex gap-4">
           <router-link
             v-if="selectedProject.titleZh.includes('同道')"
-            to="/tongdao-demo"
+            to="/demo/tongdao"
             class="flex-1 text-center btn-primary text-sm py-2"
           >
             {{ $t('projects.viewTongdaoDemo') }}
           </router-link>
           <router-link
             v-if="selectedProject.titleZh.includes('首钢')"
-            to="/shougang-permission-demo"
+            to="/demo/shougang"
             class="flex-1 text-center btn-primary text-sm py-2"
           >
             {{ $t('projects.viewShougangDemo') }}
           </router-link>
           <div v-if="selectedProject.titleZh.includes('DS-portal')" class="flex gap-4 flex-1">
             <router-link
-              to="/ds-portal-demo"
+              to="/demo/ds-portal"
               class="flex-1 text-center btn-primary text-sm py-2"
             >
               {{ $t('projects.viewDemo') }}
             </router-link>
             <router-link
-              to="/ds-portal-demo#code"
+              to="/demo/ds-portal#code"
               class="flex-1 text-center btn-secondary text-sm py-2"
             >
               {{ $t('projects.viewCode') }}
@@ -296,8 +296,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useLanguageStore } from '../stores/language'
-import { projects as projectsData } from '../data/projects'
+import { useLanguageStore } from 'src/stores/language'
+import { projects as projectsData } from 'src/data/projects'
 
 const languageStore = useLanguageStore()
 

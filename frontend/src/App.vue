@@ -10,9 +10,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useThemeStore } from './stores/theme'
-import Navbar from './components/Navbar.vue'
-import Footer from './components/Footer.vue'
+import { useThemeStore } from 'src/stores/theme'
+import Navbar from 'src/components/common/Navbar.vue'
+import Footer from 'src/components/common/Footer.vue'
 
 const themeStore = useThemeStore()
 
