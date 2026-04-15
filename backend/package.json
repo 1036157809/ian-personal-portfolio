@@ -20,7 +20,7 @@
     "koa-bodyparser": "^4.4.1",
     "node-cron": "^4.2.1",
     "sequelize": "^6.37.1",
-    "sqlite3": "^5.1.7"
+    "mysql2": "^3.6.5"
   },
   "devDependencies": {
     "@types/koa": "^2.15.0",

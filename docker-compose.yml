@@ -1,15 +1,43 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: ian-portfolio-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: portfolio
+      MYSQL_USER: portfolio
+      MYSQL_PASSWORD: portfolio
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: ian-portfolio-backend
     restart: unless-stopped
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: portfolio
+      DB_PASSWORD: portfolio
+      DB_NAME: portfolio
     volumes:
-      - ./backend/database.sqlite:/app/database.sqlite
       - ./uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -25,6 +53,9 @@ services:
       - backend
     networks:
       - app-network
+
+volumes:
+  mysql_data:
 
 networks:
   app-network:
