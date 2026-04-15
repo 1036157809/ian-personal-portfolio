@@ -323,11 +323,12 @@
         <div class="p-4 h-full flex flex-col">
           <h3 class="text-lg font-bold mb-4 text-day-text dark:text-night-text">{{ previewFile?.name }}</h3>
           <div class="flex-1 overflow-auto">
-            <VuePdfEmbed
+            <iframe
               v-if="previewPdfUrl"
-              :source="previewPdfUrl"
-              class="w-full"
-            />
+              :src="previewPdfUrl"
+              class="w-full h-full border-0"
+              type="application/pdf"
+            ></iframe>
             <p v-else class="text-gray-600 dark:text-gray-400 text-center py-8">
               {{ $t('dsPortalDemo.pdfPreviewNote') }}
             </p>
@@ -342,7 +343,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import VuePdfEmbed from 'vue-pdf-embed'
 
 const { t } = useI18n()
 const route = useRoute()
