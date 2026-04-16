@@ -258,37 +258,160 @@
       </div>
 
       <!-- Code Section -->
-      <div v-if="showCodeSection" id="code" class="card">
-        <h2 class="text-2xl font-bold mb-6 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.codeTitle') }}</h2>
-        
-        <div class="mb-6">
-          <h3 class="text-lg font-bold mb-3 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.stateMachineCodeTitle') }}</h3>
-          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ stateMachineCode }}</code></pre>
+      <div v-if="showCodeSection" id="code" class="space-y-6">
+        <h2 class="section-title text-center mb-8">技术难点与解决方案</h2>
+
+        <!-- Challenge 1: Complex Business State Management -->
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">难点1：复杂的业务状态管理</h3>
+          
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">问题描述</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">系统包含9个主要流程状态，每个状态有多个子步骤和条件判断，不同角色在不同状态下有不同的访问权限和操作权限，状态流转逻辑复杂。</p>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">解决方案</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+              <li>使用 Redux Toolkit + RTK Query 统一管理状态</li>
+              <li>定义清晰的状态常量和状态映射</li>
+              <li>使用 useMemo 和 useEffect 实现状态依赖的动态计算</li>
+              <li>通过路由守卫实现权限控制</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">关键代码</h4>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ challenge1Code }}</code></pre>
+          </div>
         </div>
 
-        <div class="mb-6">
-          <h3 class="text-lg font-bold mb-3 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.createAppApiTitle') }}</h3>
-          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ createAppApiCode }}</code></pre>
+        <!-- Challenge 2: File Upload/Download Performance -->
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">难点2：文件上传与下载的性能优化</h3>
+          
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">问题描述</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">系统需要处理大量文件上传和下载，包括图片、PDF等多种格式，文件大小可能达到10MB以上，需要优化上传下载性能，提升用户体验。</p>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">解决方案</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+              <li>使用 FormData 实现文件上传</li>
+              <li>实现文件大小和格式校验</li>
+              <li>使用 Blob 实现流式下载</li>
+              <li>支持文件重命名模板</li>
+              <li>实现上传进度显示</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">关键代码</h4>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ uploadComponentCode }}</code></pre>
+          </div>
         </div>
 
-        <div class="mb-6">
-          <h3 class="text-lg font-bold mb-3 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.homePageApiTitle') }}</h3>
-          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ homePageApiCode }}</code></pre>
+        <!-- Challenge 3: Multi-Environment Configuration -->
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">难点3：多环境配置与部署</h3>
+          
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">问题描述</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">系统需要支持 Development、UAT、Production 三个环境，每个环境有不同的API地址、认证配置、监控配置，需要统一管理环境配置。</p>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">解决方案</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+              <li>使用环境变量管理不同环境配置</li>
+              <li>配置 Craco 实现构建定制</li>
+              <li>使用 Docker 容器化部署</li>
+              <li>配置 Azure Pipelines 实现 CI/CD</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">关键代码</h4>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ challenge3Code }}</code></pre>
+          </div>
         </div>
 
-        <div class="mb-6">
-          <h3 class="text-lg font-bold mb-3 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.uploadComponentTitle') }}</h3>
-          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ uploadComponentCode }}</code></pre>
+        <!-- Challenge 4: Permission Control & Route Guards -->
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">难点4：权限控制与路由守卫</h3>
+          
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">问题描述</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">系统包含 TD Ops Staff 和 Manager 两个角色，不同角色有不同的页面访问权限和操作权限，需要实现细粒度的权限控制。</p>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">解决方案</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+              <li>使用 Okta 实现身份认证</li>
+              <li>实现路由守卫组件</li>
+              <li>根据角色和状态动态控制页面访问</li>
+              <li>在组件级别实现操作权限控制</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">关键代码</h4>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ challenge4Code }}</code></pre>
+          </div>
         </div>
 
-        <div class="mb-6">
-          <h3 class="text-lg font-bold mb-3 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.routerConfigTitle') }}</h3>
-          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ routerConfigCode }}</code></pre>
+        <!-- Challenge 5: Code Splitting & Performance -->
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">难点5：代码分割与性能优化</h3>
+          
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">问题描述</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">应用代码体积较大，首屏加载时间较长，需要优化加载性能。同时需要减少不必要的网络请求，提升用户体验。</p>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">解决方案</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+              <li>使用 @loadable/component 实现路由级别的代码分割</li>
+              <li>按需加载页面组件，减少初始加载体积</li>
+              <li>通过 RTK Query 的智能缓存策略减少重复请求</li>
+              <li>实现请求去重，避免网络浪费</li>
+              <li>关键资源预加载，提升用户体验</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">关键代码</h4>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ routerConfigCode }}</code></pre>
+          </div>
         </div>
 
-        <div>
-          <h3 class="text-lg font-bold mb-3 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.oktaConfigTitle') }}</h3>
-          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ oktaConfigCode }}</code></pre>
+        <!-- Challenge 6: Monitoring & Observability -->
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">难点6：监控与可观测性</h3>
+          
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">问题描述</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">需要实现用户行为追踪、性能监控、错误日志收集等功能，以便及时发现问题并优化用户体验。同时需要支持多环境监控策略。</p>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">解决方案</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+              <li>集成 Microsoft Application Insights 实现监控</li>
+              <li>记录用户操作路径，分析用户行为</li>
+              <li>监控页面加载时间、API响应时间</li>
+              <li>自动收集前端错误，便于问题排查</li>
+              <li>支持 Development/UAT/Production 不同监控配置</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-2 text-day-text dark:text-night-text">关键代码</h4>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ monitoringCode }}</code></pre>
+          </div>
         </div>
       </div>
     </div>
@@ -425,17 +548,138 @@ const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
   return component;
 };`)
 
-const createAppApiCode = ref(`// RTK Query Base API Configuration
-// Demonstrates Redux Toolkit Query setup with base query,
-// authentication headers, and tag types for cache invalidation`)
+const createAppApiCode = ref(`// RTK Query Base API Configuration (src/redux/createAppApi.js)
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
+import { BASE_API } from '@utils/constants';
 
-const homePageApiCode = ref(`// Home Page API Example
-// Shows how to inject endpoints into base API slice,
-// handle query parameters, transform responses, and manage errors`)
+export const TAG_TYPES_MAP = {
+  SAVE_APPLICATION_FORM_STATUS: 'saveApplicationFormStatus',
+  SAVE_CEA_CHECK: 'saveCeaCheck',
+  NICE_INDEX: 'niceIndex',
+  MED_SAVE: 'medSave',
+  CLOSE_MONITORING: 'closeMonitoring',
+  GET_FATCA_CHECK: 'getFatcaCheck',
+  FINANCIAL_SOUNDNESS: 'financialSoundness',
+  ISSUANCE: 'issuance',
+  SAVE_MANAGEMENT_REVIEW: 'saveManagementReview',
+  SAVE_QUESTNET_CHECK: 'saveQuestnetCheck',
+  SAVE_RNF_CHECK: 'saveRnfCheck',
+  RNF_LODGEMENT: 'rnfLodgement',
+  UPLOAD: 'upload',
+  TABLE_ORDER: 'table_order',
+};
 
-const uploadComponentCode = ref(`// File Upload Component
-// Demonstrates enhanced file uploader with validation,
-// rename templates, chunked upload support, and error handling`)
+export const baseApiSlice = createApi({
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api',
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().app?.accessToken ?? '';
+      headers.set('Authorization', \`Bearer \${token}\`);
+      return headers;
+    },
+  }),
+  tagTypes: Object.values(TAG_TYPES_MAP),
+  endpoints: () => ({}),
+});`)
+
+const homePageApiCode = ref(`// API Module Example (src/redux/api/homePageApi.js)
+import { baseApiSlice } from '@redux/createAppApi';
+import { parseUrl } from '@utils/request';
+import { getHomePageInfoUrl } from '@utils/apis';
+import notifications from '@utils/notifications';
+
+const homePageApi = baseApiSlice.injectEndpoints({
+  endpoints(builder) {
+    return {
+      getHomePageData: builder.query({
+        query(params) {
+          return parseUrl(getHomePageInfoUrl, params);
+        },
+        transformResponse: (res) => res.data,
+        transformErrorResponse(baseQueryReturnValue) {
+          const message =
+            baseQueryReturnValue?.data?.error?.message ||
+            baseQueryReturnValue?.data?.success?.message ||
+            'request Err';
+          notifications('error', message);
+          return baseQueryReturnValue;
+        },
+      }),
+    };
+  },
+});
+
+export const { useGetHomePageDataQuery } = homePageApi;`)
+
+const uploadComponentCode = ref(`// File Upload Component (src/components/Upload/index.jsx)
+const CustomUploader = ({
+  uploadFunction,
+  deleteFunction,
+  type = 'single',
+  uploadFor = 'image',
+  fileList,
+  maxCount,
+  maxSize,
+  disabled,
+  fileRenameTemplate,
+}) => {
+  const [listRef, setListRef] = React.useState([React.createRef()]);
+
+  // File validation
+  const fileValidation = (ref, file) => {
+    const size = maxSize ?? 1024 * 1024 * 10;
+    const sizeString = formatBytes(size);
+    let errorMsg = '';
+    if (file.size > size) {
+      errorMsg = \`File exceeds maximum size limit of \${sizeString}.\`;
+    } else if (file.size === 0) {
+      errorMsg = 'File size is 0';
+    } else if (!FILE_TYPES.includes(file.name.split('.').pop().toUpperCase())) {
+      errorMsg = 'Incorrect file format.';
+    }
+    if (errorMsg != '') {
+      ref.current.handleUpdateFile({
+        uploadStatus: 'error',
+        uploadingText: errorMsg,
+        listFile: [...fileList],
+      });
+      return false;
+    }
+    return true;
+  };
+
+  // File rename
+  const fileRename = (e) => {
+    const caseId = caseNumberRes?.data?.caseNumber ?? recruitmentProcessId;
+    const combinedTemplate = caseId + fileRenameTemplate;
+    let fileRenameIndex = '1';
+    if (fileList?.length > 0) {
+      const indexArray = fileList.map((item) => {
+        return Number(
+          item.name
+            .substring(0, item.name.length - 4)
+            .replace(combinedTemplate, '')
+        );
+      });
+      if (indexArray && indexArray.length > 1) {
+        fileRenameIndex = Math.max(...indexArray) + 1;
+      } else {
+        fileRenameIndex = indexArray[0] + 1;
+      }
+    }
+    const firstFile = e.target.files[0];
+    const newFile = new File(
+      [firstFile],
+      combinedTemplate +
+        fileRenameIndex +
+        firstFile.name.substring(firstFile.name.length - 4),
+      { type: firstFile.type }
+    );
+    return { target: { files: [newFile] } };
+  };
+
+  return <EnhanceUploader /* ... */ />;
+};`)
 
 const routerConfigCode = ref(`// import React from 'react';
 // import loadable from '@loadable/component';
@@ -507,9 +751,227 @@ const Router = () => {
 
 export default Router;`)
 
-const oktaConfigCode = ref(`// Okta OAuth Configuration
-// Demonstrates Okta authentication setup with issuer URL,
-// client ID, redirect URI, scopes, and PKCE for security`)
+const oktaConfigCode = ref(`// Okta OAuth Configuration (src/utils/config.js)
+export const oktaAuthConfig = {
+  issuer:
+    process.env.REACT_APP_OKTA_ISSUER ||
+    'https://[REDACTED].okta.com/oauth2/[REDACTED_ID]',
+  clientId: process.env.REACT_APP_OKTA_CLIENT_ID || '[REDACTED_CLIENT_ID]',
+  redirectUri: \`\${window.location.origin}/tdops/login/callback\`,
+  postLogoutRedirectUri: \`\${window.location.origin}/tdops/logout\`,
+  scopes: ['openid', 'profile', 'email'],
+  pkce: true,
+};
+
+// Authentication Service (src/services/auth.js)
+import axios from 'axios';
+import { BASE_API } from '@utils/constants';
+
+const generateToken = async (oktaAccessToken) => {
+  try {
+    const response = await axios.post(\`\${BASE_API}/auth/okta/generateToken\`, {
+      accessToken: oktaAccessToken,
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const refreshToken = async (refreshToken) => {
+  try {
+    const response = await axios.post(\`\${BASE_API}/auth/okta/refreshToken\`, {
+      refreshToken,
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const logout = async (accessToken) => {
+  try {
+    await axios.post(\`\${BASE_API}/auth/okta/logout\`, null, {
+      headers: {
+        Authorization: \`Bearer \${accessToken}\`,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export { generateToken, logout, refreshToken };`)
+
+const rtkQueryUsageCode = ref(`// Component using RTK Query (src/pages/HomePage/index.jsx)
+import { useGetHomePageDataQuery } from '@redux/api/homePageApi';
+
+const HomePage = () => {
+  const [homePageDataParams, setHomePageDataParams] = useState({
+    pageType: tabSelectedItem,
+    searchField: HOMEPAGE_TEXT.searchFieldVal,
+    status: HOMEPAGE_TEXT.statusVal,
+  });
+
+  // Automatically handles loading, error, caching
+  const {
+    data: applicationListData,
+    isSuccess,
+    isFetching,
+    refetch,
+  } = useGetHomePageDataQuery(homePageDataParams);
+
+  // Refetch when parameters change
+  useEffect(() => {
+    refetch();
+  }, [homePageDataParams]);
+
+  return (
+    <Spin isLoading={isFetching}>
+      {/* Rendering logic */}
+    </Spin>
+  );
+};`)
+
+const challenge1Code = ref(`// 状态定义
+export const RECRUITMENT_PROCESS_STATUS_MAP = {
+  CREATED: '1',
+  FSC_APPLICATION: '2',
+  REVIEW_APPLICATION: '3',
+  INTERVIEW_AND_SIGNING: '4',
+  DUE_DILIGENCE_CHECK: '5',
+  TD_OPS_MANAGEMENT_REVIEW: '6',
+  RNF_LODGEMENT: '7',
+  ISSUED_FSC_CODE: '8',
+  COMPLETION_HIRING: '9',
+};
+
+// 路由守卫
+const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
+  const { recruitmentProcessStatus } = useSelector((state) => state.app);
+  
+  if (!routeAuthByRecruitmentProcessStepStatus.includes(recruitmentProcessStatus)) {
+    return <Navigate to="/tdops/404" replace />;
+  }
+  
+  return component;
+};`)
+
+const challenge2Code = ref(`// 文件上传
+const uploadFile = build.mutation({
+  query(params) {
+    let formData = new FormData();
+    for (let key in params) {
+      formData.append(key, params[key]);
+    }
+    return {
+      ...uploadFileUrl,
+      body: formData,
+    };
+  },
+});
+
+// Blob 下载
+const downLoadFile = async (parm) => {
+  const res = await blobFn({ id });
+  if (res.data) {
+    const blob = new Blob([res.data]);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = file?.fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+};`)
+
+const challenge3Code = ref(`// 环境配置
+// config/.env.development
+REACT_APP_NAME='iRecruit DS Portal'
+REACT_APP_BASE_URL=https://[REDACTED].[REDACTED].com.sg
+REACT_APP_OKTA_ISSUER=https://[REDACTED].okta.com/oauth2/[REDACTED_ID]
+REACT_APP_OKTA_CLIENT_ID=[REDACTED_CLIENT_ID]
+REACT_APP_ENVIRONMENT=development
+
+// config/.env.uat
+REACT_APP_BASE_URL=https://[REDACTED].[REDACTED].com.sg
+REACT_APP_ENVIRONMENT=uat
+
+// config/.env.production
+REACT_APP_BASE_URL=https://[REDACTED].[REDACTED].com.sg
+REACT_APP_ENVIRONMENT=production`)
+
+const challenge4Code = ref(`// 路由守卫
+const PrivateRoute = ({ children }) => {
+  const { authState } = useOktaAuth();
+  
+  if (!authState || !authState.isAuthenticated) {
+    return <Navigate to="/tdops/login" replace />;
+  }
+  
+  return children;
+};
+
+// 状态权限守卫
+const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
+  const { recruitmentProcessStatus } = useSelector((state) => state.app);
+  
+  if (!routeAuthByRecruitmentProcessStepStatus.includes(recruitmentProcessStatus)) {
+    return <Navigate to="/tdops/404" replace />;
+  }
+  
+  return component;
+};`)
+
+const monitoringCode = ref(`// Application Insights 配置 (src/index.js)
+const environment = process.env.REACT_APP_ENVIRONMENT || 'development';
+
+let adobeScriptSrc;
+let digitalDataEnv;
+if (environment === 'production') {
+  adobeScriptSrc =
+    '//assets.adobedtm.com/e17df9099c11/a71a12849473/launch-1542e363e664.min.js';
+  digitalDataEnv = 'PROD';
+} else if (environment === 'uat') {
+  adobeScriptSrc =
+    '//assets.adobedtm.com/e17df9099c11/a71a12849473/launch-b309b9dee539-staging.min.js';
+  digitalDataEnv = 'UAT';
+} else {
+  adobeScriptSrc =
+    '//assets.adobedtm.com/e17df9099c11/a71a12849473/launch-4a3effb21ddd-development.min.js';
+  digitalDataEnv = 'DEV';
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  React.createElement(StrictMode, null,
+    React.createElement(HelmetProvider, null,
+      React.createElement(Provider, { store: store },
+        React.createElement(Helmet, null,
+          React.createElement('script', null,
+            \`var digitalData = digitalData || {};
+             digitalData = {
+               lang: 'en',
+               country: 'sg',
+               env: '\${digitalDataEnv}',
+               modules: 'irecruit',
+               job: 'candidate',
+             }\`
+          ),
+          React.createElement('script', { src: adobeScriptSrc, async: true })
+        ),
+        React.createElement(ThemeProvider, { theme: theme },
+          React.createElement(App, null),
+          React.createElement(GlobalStyle, null)
+        )
+      )
+    )
+  )
+);`)
 
 // State Machine
 const currentState = ref('1')
