@@ -2,16 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+# Install pnpm
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
+RUN pnpm run build
 
 # Create public/uploads directory structure
 RUN mkdir -p public/uploads/temp public/uploads/chunks
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "run", "start"]

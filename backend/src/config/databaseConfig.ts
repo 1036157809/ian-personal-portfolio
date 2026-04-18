@@ -1,7 +1,4 @@
 import { Sequelize } from 'sequelize';
-import path from 'path';
-
-export const isProduction = process.env.NODE_ENV === 'production';
 
 export const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
@@ -9,9 +6,8 @@ export const dbConfig = {
   username: process.env.DB_USER || 'portfolio',
   password: process.env.DB_PASSWORD || 'portfolio',
   database: process.env.DB_NAME || 'portfolio',
-  dialect: isProduction ? ('mysql' as const) : ('sqlite' as const),
+  dialect: 'mysql' as const,
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
-  storage: isProduction ? undefined : path.join(process.cwd(), 'database.sqlite'),
   pool: {
     max: 5,
     min: 0,
@@ -20,18 +16,12 @@ export const dbConfig = {
   }
 };
 
-export const sequelize = isProduction 
-  ? new Sequelize(
-      dbConfig.database,
-      dbConfig.username,
-      dbConfig.password,
-      dbConfig
-    )
-  : new Sequelize({
-      dialect: 'sqlite',
-      storage: dbConfig.storage,
-      logging: dbConfig.logging,
-    });
+export const sequelize = new Sequelize(
+  dbConfig.database,
+  dbConfig.username,
+  dbConfig.password,
+  dbConfig
+);
 
 export async function testConnection() {
   try {

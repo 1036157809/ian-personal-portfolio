@@ -1,5 +1,4 @@
 node_modules
 dist
 *.log
-database.sqlite
 .DS_Store
