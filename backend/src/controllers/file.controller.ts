@@ -1,8 +1,8 @@
 import { Context } from 'koa';
 import fs from 'fs';
 import path from 'path';
-import fileService from '../services/file.service';
-import { ensureDirectories } from '../services/file.service';
+import fileService from 'src/services/file.service';
+import { ensureDirectories } from 'src/services/file.service';
 
 export class FileController {
   constructor() {

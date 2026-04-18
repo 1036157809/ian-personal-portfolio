@@ -2,11 +2,11 @@ import Koa from 'koa';
 import cors from '@koa/cors';
 import { koaBody } from 'koa-body';
 import path from 'path';
-import router from '../routes';
-import errorHandler from '../middlewares/error.middleware';
-import logger from '../middlewares/logger.middleware';
-import { sequelize, testConnection } from '../config';
-import Contact from '../models/contact.model';
+import router from 'src/routes';
+import errorHandler from 'src/middlewares/error.middleware';
+import logger from 'src/middlewares/logger.middleware';
+import { sequelize, testConnection } from 'src/config/database';
+import Contact from 'src/models/contact.model';
 
 export async function createApp(): Promise<Koa> {
   const app = new Koa();

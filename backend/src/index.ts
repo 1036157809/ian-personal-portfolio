@@ -1,6 +1,7 @@
 import cron from 'node-cron';
-import { createApp } from './app/app';
-import { cleanupUploads } from './utils/fileCleanup';
+import { createApp } from 'src/app/app';
+import { ensureDirectories } from 'src/services/file.service';
+import { cleanupUploads } from 'src/utils/fileCleanup';
 
 const PORT = process.env.PORT || 3001;
 

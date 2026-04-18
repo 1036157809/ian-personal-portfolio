@@ -1,5 +1,5 @@
-import { Contact } from '../models/contact.model';
-import { Contact as ContactType } from '../types';
+import { Contact } from 'src/models/contact.model';
+import { Contact as ContactType } from 'src/types';
 import { Transaction } from 'sequelize';
 
 export class ContactService {

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { FileMetadata, UploadedFile } from '../types';
+import { FileMetadata, UploadedFile } from 'src/types';
 
 const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
 const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');

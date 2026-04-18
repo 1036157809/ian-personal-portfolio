@@ -219,7 +219,7 @@ const generateHeatmapData = (bestPositions: {x: number, y: number}[]) => {
 }
 
 const allPlayers = ref<Player[]>([
-  { id: 1, name: '梅西', flag: '🇦🇷', nameEn: 'Messi', avatar: '/images/players/Messi.png', stats: [91, 89, 92, 95, 35, 94], heatmapData: generateHeatmapData([{x: 2, y: 6}, {x: 3, y: 5}]), bestPositions: [{x: 2, y: 6}] },
+  { id: 1, name: '梅西', flag: '🇦🇷', nameEn: 'Messi', avatar: '/images/players/Messi.png', stats: [91, 89, 92, 95, 35, 94], heatmapData: generateHeatmapData([{x: 2, y: 6}, {x: 3, y: 5}]).filter(([, y]) => y !== 3), bestPositions: [{x: 2, y: 6}] },
   { id: 2, name: 'C罗', flag: '🇵🇹', nameEn: 'Cristiano Ronaldo', avatar: '/images/players/Cristiano Ronaldo.png', stats: [89, 94, 81, 87, 34, 90], heatmapData: generateHeatmapData([{x: 2, y: 5}, {x: 3, y: 7}, {x: 0, y: 6}]), bestPositions: [{x: 2, y: 5}, {x: 3, y: 7}, {x: 0, y: 6}] },
   { id: 3, name: '内马尔', flag: '🇧🇷', nameEn: 'Neymar', avatar: '/images/players/Neymar.png', stats: [91, 85, 87, 94, 38, 88], heatmapData: generateHeatmapData([{x: 2, y: 5}, {x: 3, y: 4}]), bestPositions: [{x: 2, y: 5}] },
   { id: 4, name: '姆巴佩', flag: '🇫🇷', nameEn: 'Kylian Mbappé', avatar: '/images/players/Kylian Mbappé.png', stats: [97, 90, 80, 92, 36, 85], heatmapData: generateHeatmapData([{x: 2, y: 7}, {x: 3, y: 6}]), bestPositions: [{x: 2, y: 7}] },
@@ -228,7 +228,7 @@ const allPlayers = ref<Player[]>([
   { id: 7, name: '莫德里奇', flag: '🇭🇷', nameEn: 'Luka Modrić', avatar: '/images/players/Luka Modric.png', stats: [74, 76, 91, 88, 68, 90], heatmapData: generateHeatmapData([{x: 2, y: 4}, {x: 3, y: 4}]), bestPositions: [{x: 2, y: 4}] },
   { id: 8, name: '莱万多夫斯基', flag: '🇵🇱', nameEn: 'Robert Lewandowski', avatar: '/images/players/Robert Lewandowski.png', stats: [78, 91, 83, 82, 45, 85], heatmapData: generateHeatmapData([{x: 2, y: 7}, {x: 3, y: 7}]), bestPositions: [{x: 2, y: 7}] },
   { id: 9, name: '萨拉赫', flag: '🇪🇬', nameEn: 'Mohamed Salah', avatar: '/images/players/Mohamed Salah.png', stats: [89, 87, 81, 90, 45, 86], heatmapData: generateHeatmapData([{x: 2, y: 6}, {x: 3, y: 5}]), bestPositions: [{x: 2, y: 6}] },
-  { id: 10, name: '武磊', flag: '🇨🇳', nameEn: 'Wu Lei', avatar: '/images/players/Wu Lei.png', stats: [85, 78, 74, 82, 42, 76], heatmapData: generateHeatmapData([{x: 2, y: 7}, {x: 3, y: 6}]), bestPositions: [{x: 2, y: 7}] }
+  { id: 10, name: '武磊', flag: '🇨🇳', nameEn: 'Wu Lei', avatar: '/images/players/Wu Lei.png', stats: [85, 78, 74, 82, 42, 76], heatmapData: generateHeatmapData([{x: 2, y: 7}, {x: 3, y: 6}]).filter(([, y]) => y !== 3 && y !== 2), bestPositions: [{x: 2, y: 7}] }
 ])
 
 const sourcePlayers = ref<Player[]>([])

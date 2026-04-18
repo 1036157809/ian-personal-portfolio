@@ -1,5 +1,5 @@
 import Router from '@koa/router';
-import contactController from '../controllers/contact.controller';
+import contactController from 'src/controllers/contact.controller';
 
 const router = new Router({
   prefix: '/api/contact',

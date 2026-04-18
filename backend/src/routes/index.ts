@@ -1,6 +1,6 @@
 import Router from '@koa/router';
-import contactRoutes from './contact.routes';
-import fileRoutes from './file.routes';
+import contactRoutes from 'src/routes/contact.routes';
+import fileRoutes from 'src/routes/file.routes';
 
 const router = new Router();
 

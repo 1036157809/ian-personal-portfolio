@@ -1,6 +1,6 @@
 import { Context } from 'koa';
-import contactService from '../services/contact.service';
-import { Contact as ContactType } from '../types';
+import contactService from 'src/services/contact.service';
+import { Contact as ContactType } from 'src/types';
 
 export class ContactController {
   async create(ctx: Context) {

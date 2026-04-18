@@ -1,5 +1,5 @@
 import Router from '@koa/router';
-import fileController from '../controllers/file.controller';
+import fileController from 'src/controllers/file.controller';
 
 const router = new Router({
   prefix: '/api/files',

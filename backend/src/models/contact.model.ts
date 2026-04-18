@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../config';
+import { sequelize } from 'src/config/database';
 
 export class Contact extends Model {
   public id!: string;

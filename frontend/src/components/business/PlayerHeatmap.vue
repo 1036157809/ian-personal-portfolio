@@ -64,21 +64,24 @@ let chart: echarts.ECharts | null = null
 
 const initChart = () => {
   if (!chartRef.value) return
-  
+
   chart = echarts.init(chartRef.value)
-  
-  // Generate heatmap data with field positions (68x105 meters - vertical)
-  const data = props.data.map((item, index) => {
-    const x = (index % 6) // 0 to 5 (6 categories for x)
-    const y = Math.floor(index / 6) // 0 to 8 (9 categories for y)
-    return [x, y, item[2] || Math.random() * 100]
-  })
-  
+
+  // Generate heatmap data with field positions (6x9 grid)
+  // Limit to upper half of field (y: 0-4) for forwards
+  const data = props.data
+    .map((item, index) => {
+      const x = (index % 6) // 0 to 5 (6 categories for x)
+      const y = Math.floor(index / 6) // 0 to 8 (9 categories for y)
+      return [x, y, item[2] || Math.random() * 100]
+    })
+    .filter(([, y]) => y < 4) // Only include upper half, exclude boundary
+
   const option = {
     tooltip: {
       position: 'top',
       formatter: (params: any) => {
-        return `X: ${params.data[0].toFixed(1)}m<br/>Y: ${params.data[1].toFixed(1)}m<br/>Value: ${params.data[2].toFixed(2)}`
+        return `X: ${params.data[0]}<br/>Y: ${params.data[1]}<br/>Value: ${params.data[2].toFixed(2)}`
       }
     },
     grid: {
@@ -89,12 +92,12 @@ const initChart = () => {
     },
     xAxis: {
       type: 'category',
-      data: Array.from({ length: 6 }, (_, i) => i * 11.33),
+      data: Array.from({ length: 6 }, (_, i) => i),
       show: false
     },
     yAxis: {
       type: 'category',
-      data: Array.from({ length: 9 }, (_, i) => i * 11.67),
+      data: Array.from({ length: 9 }, (_, i) => i),
       show: false
     },
     visualMap: {
@@ -124,19 +127,21 @@ const initChart = () => {
       }
     ]
   }
-  
+
   chart.setOption(option)
 }
 
 // Watch for prop changes and update chart
 watch(() => [props.playerName, props.data], () => {
   if (chart) {
-    const data = props.data.map((item, index) => {
-      const x = (index % 6)
-      const y = Math.floor(index / 6)
-      return [x, y, item[2] || Math.random() * 100]
-    })
-    
+    const data = props.data
+      .map((item, index) => {
+        const x = (index % 6)
+        const y = Math.floor(index / 6)
+        return [x, y, item[2] || Math.random() * 100]
+      })
+      .filter(([, y]) => y < 4) // Only include upper half, exclude boundary
+
     chart.setOption({
       series: [
         {
@@ -154,15 +159,19 @@ onMounted(() => {
     chart?.resize()
   }, 100)
   
-  window.addEventListener('resize', () => {
+  // Use ResizeObserver for more reliable container size detection
+  const resizeObserver = new ResizeObserver(() => {
     chart?.resize()
   })
-})
-
-onUnmounted(() => {
-  chart?.dispose()
-  window.removeEventListener('resize', () => {
-    chart?.resize()
+  
+  if (chartRef.value) {
+    resizeObserver.observe(chartRef.value)
+  }
+  
+  // Cleanup on unmount
+  onUnmounted(() => {
+    resizeObserver.disconnect()
+    chart?.dispose()
   })
 })
 </script>
