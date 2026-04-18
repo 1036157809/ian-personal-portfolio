@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-80 min-h-80 relative">
+  <div class="w-full h-80 min-h-80 relative flex items-center justify-center">
     <!-- Football Field Background (Vertical/Portrait) -->
-    <div class="absolute inset-0 flex items-center justify-center">
+    <div class="relative" style="aspect-ratio: 68/105; max-height: 100%;">
       <svg viewBox="0 0 68 105" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
         <!-- Field -->
         <rect x="0" y="0" width="68" height="105" fill="#2d5a27" stroke="#ffffff" stroke-width="1"/>
@@ -70,12 +70,21 @@ const initChart = () => {
   // Generate heatmap data with field positions (6x9 grid)
   // Limit to upper half of field (y: 0-4) for forwards
   const data = props.data
-    .map((item, index) => {
-      const x = (index % 6) // 0 to 5 (6 categories for x)
-      const y = Math.floor(index / 6) // 0 to 8 (9 categories for y)
-      return [x, y, item[2] || Math.random() * 100]
+    .map((item) => {
+      const x = item[0]
+      const y = item[1]
+      const value = item[2] || Math.random() * 100
+      return [x, y, value]
     })
-    .filter(([, y]) => y < 4) // Only include upper half, exclude boundary
+    .filter(([, y]) => {
+      if (props.playerName === '武磊') {
+        return y <= 2
+      }
+      if (props.playerName === '梅西') {
+        return y <= 3
+      }
+      return y < 4
+    })
 
   const option = {
     tooltip: {
@@ -140,7 +149,15 @@ watch(() => [props.playerName, props.data], () => {
         const y = Math.floor(index / 6)
         return [x, y, item[2] || Math.random() * 100]
       })
-      .filter(([, y]) => y < 4) // Only include upper half, exclude boundary
+      .filter(([, y]) => {
+      if (props.playerName === '武磊') {
+        return y <= 2
+      }
+      if (props.playerName === '梅西') {
+        return y <= 3
+      }
+      return y < 4
+    })
 
     chart.setOption({
       series: [
