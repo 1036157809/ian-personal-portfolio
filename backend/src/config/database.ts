@@ -1,1 +1,1 @@
-export { sequelize, testConnection, dbConfig as default, isProduction } from './databaseConfig';
+export { sequelize, testConnection, dbConfig as default } from './databaseConfig';
