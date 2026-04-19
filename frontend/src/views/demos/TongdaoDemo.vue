@@ -33,7 +33,7 @@
           <PlayerHeatmap
             v-for="player in displayedPlayers"
             :key="`heatmap-${player.id}-${languageStore.currentLang}`"
-            :playerName="player.displayName"
+            :playerName="player.name"
             :playerAvatar="player.avatar"
             :data="player.heatmapData"
             :bestPositions="player.bestPositions"
