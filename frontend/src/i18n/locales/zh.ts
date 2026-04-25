@@ -132,8 +132,8 @@ export default {
     comingSoon: '即将推出',
     onlineAddress: '线上地址',
     webgis: {
-      title: 'WebGIS 平台',
-      description: '基于Web的地理信息系统平台，用于可视化和分析空间数据，提供交互式地图功能。'
+      title: '航空地图',
+      description: '基于 OpenLayers 的航空地图应用，使用球面墨卡托投影，提供交互式地图功能，支持标记添加和视图重置。'
     }
   },
   shuttleBox: {

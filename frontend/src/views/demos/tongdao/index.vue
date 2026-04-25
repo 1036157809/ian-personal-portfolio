@@ -166,9 +166,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useLanguageStore } from 'src/stores/language'
-import PlayerRadarChart from 'src/components/business/PlayerRadarChart.vue'
-import PlayerHeatmap from 'src/components/business/PlayerHeatmap.vue'
-import ShuttleBox from 'src/components/business/ShuttleBox.vue'
+import PlayerRadarChart from 'src/components/business/player-radar-chart/index.vue'
+import PlayerHeatmap from 'src/components/business/player-heatmap/index.vue'
+import ShuttleBox from 'src/components/business/shuttle-box/index.vue'
 
 const languageStore = useLanguageStore()
 

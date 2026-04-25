@@ -132,8 +132,8 @@ export default {
     comingSoon: 'Coming Soon',
     onlineAddress: 'Online Address',
     webgis: {
-      title: 'WebGIS Platform',
-      description: 'A web-based geographic information system platform for visualizing and analyzing spatial data with interactive maps.'
+      title: 'Aviation Map',
+      description: 'An aviation map application based on OpenLayers with Web Mercator projection, providing interactive map features with marker addition and view reset capabilities.'
     }
   },
   shuttleBox: {

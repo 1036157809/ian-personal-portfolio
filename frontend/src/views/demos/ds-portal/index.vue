@@ -546,11 +546,11 @@ const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
   }
   
   return component;
-};`)
+};`.replace(/@/g, '&#64;'))
 
 const createAppApiCode = ref(`// RTK Query Base API Configuration (src/redux/createAppApi.js)
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
-import { BASE_API } from '@utils/constants';
+import { createApi, fetchBaseQuery } from '&#64;reduxjs/toolkit/dist/query/react';
+import { BASE_API } from '&#64;utils/constants';
 
 export const TAG_TYPES_MAP = {
   SAVE_APPLICATION_FORM_STATUS: 'saveApplicationFormStatus',
@@ -580,13 +580,13 @@ export const baseApiSlice = createApi({
   }),
   tagTypes: Object.values(TAG_TYPES_MAP),
   endpoints: () => ({}),
-});`)
+});`.replace(/@/g, '&#64;'))
 
 const homePageApiCode = ref(`// API Module Example (src/redux/api/homePageApi.js)
-import { baseApiSlice } from '@redux/createAppApi';
-import { parseUrl } from '@utils/request';
-import { getHomePageInfoUrl } from '@utils/apis';
-import notifications from '@utils/notifications';
+import { baseApiSlice } from '&#64;redux/createAppApi';
+import { parseUrl } from '&#64;utils/request';
+import { getHomePageInfoUrl } from '&#64;utils/apis';
+import notifications from '&#64;utils/notifications';
 
 const homePageApi = baseApiSlice.injectEndpoints({
   endpoints(builder) {
@@ -609,7 +609,7 @@ const homePageApi = baseApiSlice.injectEndpoints({
   },
 });
 
-export const { useGetHomePageDataQuery } = homePageApi;`)
+export const { useGetHomePageDataQuery } = homePageApi;`.replace(/@/g, '&#64;'))
 
 const uploadComponentCode = ref(`// File Upload Component (src/components/Upload/index.jsx)
 const CustomUploader = ({
@@ -682,21 +682,21 @@ const CustomUploader = ({
 };`)
 
 const routerConfigCode = ref(`// import React from 'react';
-// import loadable from '@loadable/component';
+// import loadable from '&#64;loadable/component';
 // import { useNavigate, Routes, Route } from 'react-router-dom';
-// import { Security, LoginCallback } from '@okta/okta-react';
-// import { OktaAuth } from '@okta/okta-auth-js';
-// import { oktaAuthConfig } from '@utils/config';
-// import { RECRUITMENT_PROCESS_STATUS_MAP } from '@utils/constants';
+// import { Security, LoginCallback } from '&#64;okta/okta-react';
+// import { OktaAuth } from '&#64;okta/okta-auth-js';
+// import { oktaAuthConfig } from '&#64;utils/config';
+// import { RECRUITMENT_PROCESS_STATUS_MAP } from '&#64;utils/constants';
 
-const RouteAuth = loadable(() => import('@pages/RouteAuth.jsx'));
-const PrivateRoute = loadable(() => import('@components/PrivateRoute'));
-const HomePage = loadable(() => import('@pages/HomePage'));
+const RouteAuth = loadable(() => import('&#64;pages/RouteAuth.jsx'));
+const PrivateRoute = loadable(() => import('&#64;components/PrivateRoute'));
+const HomePage = loadable(() => import('&#64;pages/HomePage'));
 const DueDiligenceCheck = loadable(() =>
-  import('@pages/application/DueDiligenceCheck')
+  import('&#64;pages/application/DueDiligenceCheck')
 );
 const ManagementReview = loadable(() =>
-  import('@pages/application/ManagementReview')
+  import('&#64;pages/application/ManagementReview')
 );
 
 const oktaAuth = new OktaAuth(oktaAuthConfig);
@@ -749,7 +749,7 @@ const Router = () => {
   );
 };
 
-export default Router;`)
+export default Router;`.replace(/@/g, '&#64;'))
 
 const oktaConfigCode = ref(`// Okta OAuth Configuration (src/utils/config.js)
 export const oktaAuthConfig = {
@@ -765,7 +765,7 @@ export const oktaAuthConfig = {
 
 // Authentication Service (src/services/auth.js)
 import axios from 'axios';
-import { BASE_API } from '@utils/constants';
+import { BASE_API } from '&#64;utils/constants';
 
 const generateToken = async (oktaAccessToken) => {
   try {
@@ -808,7 +808,7 @@ const logout = async (accessToken) => {
 export { generateToken, logout, refreshToken };`)
 
 const rtkQueryUsageCode = ref(`// Component using RTK Query (src/pages/HomePage/index.jsx)
-import { useGetHomePageDataQuery } from '@redux/api/homePageApi';
+import { useGetHomePageDataQuery } from '&#64;redux/api/homePageApi';
 
 const HomePage = () => {
   const [homePageDataParams, setHomePageDataParams] = useState({

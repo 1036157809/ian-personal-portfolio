@@ -90,33 +90,39 @@
       <div>
         <h2 class="text-2xl font-bold mb-6 text-day-text dark:text-night-text">{{ $t('projects.personalProjects') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- WebGIS Card (Coming Soon) -->
-          <div class="card h-full flex flex-col opacity-50 pointer-events-none relative">
-            <div class="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-              {{ $t('projects.comingSoon') }}
-            </div>
+          <!-- WebGIS Card -->
+          <div class="card h-full flex flex-col">
             <div class="aspect-video overflow-hidden rounded-lg mb-4 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span class="text-gray-400 dark:text-gray-500 text-4xl">🗺️</span>
+              <span class="text-gray-400 dark:text-gray-500 text-4xl">✈️</span>
             </div>
-            
+
             <h3 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
               {{ $t('projects.webgis.title') }}
             </h3>
-            
+
             <p class="text-gray-600 dark:text-gray-400 mb-4 flex-1">
               {{ $t('projects.webgis.description') }}
             </p>
-            
+
             <div class="flex flex-wrap gap-2 mb-4">
-              <span class="px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
                 Vue 3
               </span>
-              <span class="px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                Mapbox
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                OpenLayers
               </span>
-              <span class="px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
                 TypeScript
               </span>
+            </div>
+
+            <div class="mt-auto">
+              <router-link
+                to="/demo/aviation-map"
+                class="w-full text-center btn-primary text-sm py-2 block"
+              >
+                {{ $t('projects.viewDemo') }}
+              </router-link>
             </div>
           </div>
         </div>

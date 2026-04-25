@@ -6,6 +6,7 @@ export const ROUTES = {
   DEMO_DS_PORTAL: '/demo/ds-portal',
   DEMO_SHOUGANG: '/demo/shougang',
   DEMO_TONGDAO: '/demo/tongdao',
+  DEMO_AVIATION_MAP: '/demo/aviation-map',
 } as const;
 
 export const THEMES = {

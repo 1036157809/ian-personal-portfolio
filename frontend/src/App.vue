@@ -11,8 +11,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useThemeStore } from 'src/stores/theme'
-import Navbar from 'src/components/common/Navbar.vue'
-import Footer from 'src/components/common/Footer.vue'
+import Navbar from 'src/components/common/navbar/index.vue'
+import Footer from 'src/components/common/footer/index.vue'
 
 const themeStore = useThemeStore()
 
