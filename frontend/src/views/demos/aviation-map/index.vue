@@ -46,12 +46,11 @@ import {
   createTrajectorySource, 
   createActiveSource, 
   createActiveLayer,
-  initializeAircraft,
-  addTrajectoryFromTracks,
-  updateTrajectoryLine
+  initializeAircraft
 } from './utils/planeLayer'
 import { setupMapInteractions, resetView, setupSeamlessDragging } from './utils/event'
-
+import { update } from './utils/update'
+import { openskyApi } from '../../../api/opensky.api'
 // Configuration constants
 const TOKEN = 'f68bb17559b334a7ab0ff0e8f5642930'
 const CENTER: [number, number] = [116.4074, 39.9042]
@@ -81,37 +80,31 @@ const initMap = async () => {
 
   // Fetch aircraft data from OpenSky API
   try {
-    const response = await fetch('http://localhost:3001/opensky/states')
-    const data = await response.json()
+    const data = await openskyApi.getStates()
     
     const aircraftData = data.states
       .map((state: any) => ({
-        id: state.icao24,
+        icao24: state.icao24,
         lon: state.lon,
         lat: state.lat,
         heading: state.heading,
-        speed: (state.velocity || 0) / 3600,
-        velocity: state.velocity || 0
+        velocity: state.velocity || 0,
+        altitude: state.altitude || 0,
+        timePosition: state.timePosition
       }))
     
     simulatedAircraft = aircraftData
+    update(map)
   } catch (error) {
     console.error('Failed to fetch aircraft data from OpenSky:', error)
-    simulatedAircraft = [
-      { id: 1, lon: 116.4074, lat: 39.9042, heading: 45, speed: 0.01, velocity: 250 },
-      { id: 2, lon: 121.4737, lat: 31.2304, heading: 270, speed: 0.015, velocity: 300 },
-      { id: 3, lon: 113.2644, lat: 23.1291, heading: 0, speed: 0.012, velocity: 240 },
-      { id: 4, lon: 104.0668, lat: 30.5728, heading: 90, speed: 0.008, velocity: 200 }
-    ]
+    simulatedAircraft = []
   }
 
   // Initialize aircraft
   initializeAircraft(simulatedAircraft, aircraftSource, aircraftFeatures)
 
   // Setup map interactions
-  setupMapInteractions(map, activeSource, activeAircraftId, (aircraftId: number, path: number[][]) => {
-    addTrajectoryFromTracks(aircraftId, path, trajectorySource, trajectoryPoints, allTrajectories, () => updateTrajectoryLine(trajectorySource, trajectoryPoints))
-  })
+  setupMapInteractions(map, activeSource, activeAircraftId, trajectorySource, trajectoryPoints, allTrajectories)
   setupSeamlessDragging(map)
 }
 

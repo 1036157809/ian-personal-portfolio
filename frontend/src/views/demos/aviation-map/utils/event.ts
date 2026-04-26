@@ -1,5 +1,6 @@
 import { fromLonLat } from 'ol/proj'
-import { setActiveAircraft, clearActiveAircraft } from './planeLayer'
+import { setActiveAircraft, clearActiveAircraft, updateTrajectoryLine, addTrajectoryFromTracks } from './planeLayer'
+import { openskyApi } from '../../../../api/opensky.api'
 
 // Map control functions
 export const zoomTo = (map: any, coordinates: number[], zoom: number, duration: number = 500): void => {
@@ -43,7 +44,9 @@ export const setupMapInteractions = (
   map: any,
   activeSource: any,
   activeAircraftIdObj: { value: string | number | null },
-  addTrajectoryFromTracks: (aircraftId: number, path: number[][]) => void
+  trajectorySource: any,
+  trajectoryPoints: number[][],
+  allTrajectories: Map<string, any>
 ): void => {
   if (!map) return
 
@@ -78,10 +81,10 @@ export const setupMapInteractions = (
   map.on('click', async (e: any) => {
     const pixel = map.getEventPixel(e.originalEvent)
     const features = map.getFeaturesAtPixel(pixel, { hitTolerance: 3 })
-    const clickedAircraft = features.find((feature: any) => feature.get('id'))
+    const clickedAircraft = features.find((feature: any) => feature.get('icao24'))
 
     if (clickedAircraft) {
-      const aircraftId = clickedAircraft.get('id')
+      const aircraftId = clickedAircraft.get('icao24')
       const heading = clickedAircraft.get('heading') || 0
       const lon = clickedAircraft.get('lon')
       const lat = clickedAircraft.get('lat')
@@ -97,16 +100,15 @@ export const setupMapInteractions = (
       console.log('Starting fetch to:', `http://localhost:3001/opensky/tracks/${aircraftId}`)
 
       try {
-        const response = await fetch(`http://localhost:3001/opensky/tracks/${aircraftId}`)
-        if (!response.ok) {
-          console.log('Failed to fetch tracks, status:', response.status)
-          return
-        }
-        const tracksData = await response.json()
+        const tracksData = await openskyApi.getTracks(String(aircraftId))
         console.log('Tracks data:', tracksData)
 
         if (tracksData.path && tracksData.path.length > 0) {
-          addTrajectoryFromTracks(Number(aircraftId), tracksData.path)
+          // Get current aircraft position
+          const geometry = clickedAircraft.getGeometry()
+          const currentPoint = geometry ? geometry.getCoordinates() : undefined
+          
+          addTrajectoryFromTracks(aircraftId, tracksData.path, trajectorySource, trajectoryPoints, allTrajectories, (source, points, id) => updateTrajectoryLine(source, points, id), currentPoint)
         }
       } catch (error) {
         console.error('Failed to fetch aircraft tracks:', error)

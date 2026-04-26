@@ -1,98 +1,140 @@
-import { fromLonLat } from 'ol/proj'
-import Feature from 'ol/Feature'
-import Point from 'ol/geom/Point'
-import { Vector as VectorSource } from 'ol/source'
+import { fromLonLat } from "ol/proj";
+import { openskyApi } from "../../../../api/opensky.api";
+import { Feature } from "ol";
+import { Point } from "ol/geom";
 
-// Update intervals based on zoom level
-const updateIntervals = [, 5000, 4000, 3000, 2000, 1000, 500, 100, 50]
+let lastUpdateTime = 0;
+let lastRemoteUpdateTime = Date.now();
+const REMOTE_UPDATE_INTERVAL = 15000;
+let remoteAircraftData: any[] = [];
 
-// Get update interval based on current zoom level
-export const getUpdateInterval = (map: any): number => {
-  if (!map) return 16
-  const zoom = Math.floor(map.getView().getZoom() || 1)
-  return updateIntervals[zoom] || 16
-}
+const getInterval = (zoom: number) => {
+  zoom = Math.floor(zoom);
+  const intervals = [, 5000, 4000, 3000, 2000, 1000, 500, 100, 50][zoom] || 16;
+  return intervals;
+};
 
-// Calculate local position based on velocity and heading
-export const calculateLocalPosition = (aircraft: any, deltaTime: number): { lon: number; lat: number } => {
-  // velocity is in m/s, convert to degrees per second
-  // Earth circumference ~40075km, so 1 degree ~111km
-  const speedDegreesPerSecond = aircraft.velocity / 111000
-  
-  // Calculate distance moved
-  const distance = speedDegreesPerSecond * (deltaTime / 1000)
-  
-  // Calculate new position based on heading
-  const headingRad = aircraft.heading * Math.PI / 180
-  const newLon = aircraft.lon + distance * Math.sin(headingRad)
-  const newLat = aircraft.lat + distance * Math.cos(headingRad)
-  
-  return { lon: newLon, lat: newLat }
-}
+export const update = (map: any) => {
+  requestAnimationFrame(() => {
+    update(map);
+  });
+  const now = Date.now();
 
-// Update aircraft position based on velocity and heading
-export const updateAircraftPosition = (
-  aircraft: any,
-  deltaTime: number,
-  aircraftFeatures: Map<string, any>,
-  activeSource: VectorSource<any>,
-  activeAircraftId: string | number | null
-): void => {
-  // Calculate new position
-  const newPosition = calculateLocalPosition(aircraft, deltaTime)
-  aircraft.lon = newPosition.lon
-  aircraft.lat = newPosition.lat
-  
-  // Calculate coordinates
-  const coordinates = fromLonLat([aircraft.lon, aircraft.lat])
-  
-  // Update feature on map
-  const feature = aircraftFeatures.get(String(aircraft.id))
-  if (feature) {
-    feature.setGeometry(new Point(coordinates))
-    feature.set('lon', aircraft.lon)
-    feature.set('lat', aircraft.lat)
-  }
-  
-  // Update active aircraft position if it's the same aircraft
-  if (activeAircraftId === aircraft.id) {
-    activeSource.clear()
-    const activeFeature = new Feature({
-      geometry: new Point(coordinates),
-      id: aircraft.id,
-      heading: aircraft.heading
-    })
-    activeSource.addFeature(activeFeature)
-  }
-}
-
-// Main update function using requestAnimationFrame
-export const createUpdate = (
-  map: any,
-  simulatedAircraft: any[],
-  aircraftFeatures: Map<string, any>,
-  activeSource: VectorSource<any>,
-  activeAircraftIdRef: { value: string | number | null }
-): (() => void) => {
-  let lastUpdateTime = 0
-  
-  const update = (): void => {
-    const now = Date.now()
-    const deltaTime = now - lastUpdateTime
-    const updateInterval = getUpdateInterval(map)
-    
-    // Check if it's time to update
-    if (deltaTime >= updateInterval) {
-      lastUpdateTime = now
-      
-      // Update all aircraft positions
-      simulatedAircraft.forEach(aircraft => {
-        updateAircraftPosition(aircraft, deltaTime, aircraftFeatures, activeSource, activeAircraftIdRef.value)
+  // Check if it's time for remote update
+  if (now - lastRemoteUpdateTime >= REMOTE_UPDATE_INTERVAL) {
+    lastRemoteUpdateTime = Date.now();
+    openskyApi
+      .getStates()
+      .then((data) => {
+        remoteAircraftData = data.states;
+        console.log("Remote aircraft data updated:", remoteAircraftData.length);
       })
-    }
-    
-    requestAnimationFrame(update)
+      .catch((error) => {
+        console.error("Failed to fetch remote aircraft data:", error);
+      });
   }
-  
-  return update
-}
+
+  const zoom = map.getView().getZoom();
+  const interval = getInterval(zoom);
+
+  if (now - lastUpdateTime >= interval) {
+    console.log("update", interval);
+    updateLayers(map);
+    lastUpdateTime = now;
+    // TODO: Update animation here
+  }
+};
+const updateLayers = (map) => {
+  if (remoteAircraftData.length) {
+    applyRemoteState(map);
+  }
+  updatePlaneLayers(map);
+  updatePathLayer(map);
+};
+const updatePlaneLayers = (map) => {
+  const layers = map.getLayers().getArray();
+  const planeLayers = layers.find((layer) => layer.get("name") === "aircraft");
+  const source = planeLayers.getSource();
+  const features = source.getFeatures();
+  for (const feature of features) {
+    const lon = feature.get("lon");
+    const lat = feature.get("lat");
+    const heading = feature.get("heading");
+    const velocity = feature.get("velocity");
+    const timePosition = feature.get("timePosition");
+    if (!velocity || !heading) {
+      continue;
+    }
+    const [x, y] = fromLonLat([lon, lat]);
+    const t = (Date.now() - timePosition) / 1000;
+    const d = velocity * t;
+    // Convert heading from degrees to radians
+    const headingRad = (heading * Math.PI) / 180;
+    const newPoint = [
+      x + d * Math.sin(headingRad),
+      y + d * Math.cos(headingRad),
+    ];
+    feature.getGeometry().setCoordinates(newPoint);
+  }
+};
+const updatePathLayer = (map) => {
+  const layers = map.getLayers().getArray();
+  const pathLayer = layers.find((layer) => layer.get("name") === "trajectory");
+  const planeLayer = layers.find((layer) => layer.get("name") === "aircraft");
+  const source = pathLayer.getSource();
+  const features = source.getFeatures();
+  for (const feature of features) {
+    const pathPoints = feature.getGeometry().getCoordinates();
+    const aircraftId = feature.get("icao24");
+    const planeFeature = planeLayer
+      .getSource()
+      .getFeatures()
+      .find((f) => f.get("icao24") === aircraftId);
+    if (!planeFeature) {
+      continue;
+    }
+
+    const curPoint = planeFeature.getGeometry().getCoordinates();
+    pathPoints[pathPoints.length - 1] = curPoint;
+    feature.getGeometry().setCoordinates([...pathPoints]);
+  }
+};
+
+const applyRemoteState = (map) => {
+  const layers = map.getLayers().getArray();
+  const airplaneSource = layers
+    .find((layer) => layer.get("name") === "aircraft")
+    .getSource();
+  const planeFeatures = airplaneSource.getFeatures();
+  const remoteStateMap = remoteAircraftData.reduce((map, state) => {
+    map.set(state.icao24, state);
+    return map;
+  }, new Map());
+  for (const feature of planeFeatures) {
+    const icao24 = feature.get("icao24");
+    const remoteState = remoteStateMap.get(icao24);
+    if (remoteState) {
+      feature.set("icao24", remoteState.icao24);
+      feature.set("lon", remoteState.lon);
+      feature.set("lat", remoteState.lat);
+      feature.set("heading", remoteState.heading);
+      feature.set("velocity", remoteState.velocity);
+      feature.set("timePosition", remoteState.timePosition);
+      feature.set("altitude", remoteState.altitude);
+      remoteStateMap.delete(icao24);
+    } else {
+      airplaneSource.removeFeature(feature);
+    }
+  }
+  for (const [_, newState] of remoteStateMap) {
+    const feature = new Feature({
+      geometry: new Point(fromLonLat([newState.lon, newState.lat])),
+      ...newState,
+      timePosition: Date.now(),
+      isHovered: 0,
+      isSelect: 0,
+    });
+    airplaneSource.addFeature(feature);
+  }
+  remoteAircraftData = [];
+};
