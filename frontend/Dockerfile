@@ -10,7 +10,7 @@ COPY package*.json ./
 RUN pnpm install --no-frozen-lockfile
 
 COPY . .
-RUN pnpm run build
+RUN vite build
 
 # Production stage
 FROM nginx:alpine
