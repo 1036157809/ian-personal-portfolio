@@ -3,11 +3,14 @@ FROM node:20-alpine as builder
 
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 COPY package*.json ./
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN npx vite build
+RUN pnpm run build
 
 # Production stage
 FROM nginx:alpine
