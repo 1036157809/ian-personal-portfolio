@@ -1,6 +1,7 @@
 import Router from '@koa/router';
 import contactRoutes from './contact.routes';
 import fileRoutes from './file.routes';
+import openskyRoutes from './opensky.routes';
 
 const router = new Router();
 
@@ -14,5 +15,7 @@ router.use(contactRoutes.routes());
 router.use(contactRoutes.allowedMethods());
 router.use(fileRoutes.routes());
 router.use(fileRoutes.allowedMethods());
+router.use(openskyRoutes.routes());
+router.use(openskyRoutes.allowedMethods());
 
 export default router;
