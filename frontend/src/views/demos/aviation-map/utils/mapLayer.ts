@@ -1,6 +1,6 @@
 import Map from 'ol/Map'
 import View from 'ol/View'
-import TileLayer from 'ol/layer/webGLTile'
+import WebGLTile from 'ol/layer/WebGLTile'
 import XYZ from 'ol/source/XYZ'
 import { fromLonLat } from 'ol/proj'
 import WebGLVector from 'ol/layer/WebGLVector'
@@ -31,11 +31,11 @@ export const createMap = (
   const map = new Map({
     target: mapContainer,
     layers: [
-      new TileLayer({
+      new WebGLTile({
         source: tiandituTerrainSource as any,
         properties: { name: 'terrain' }
       }),
-      new TileLayer({
+      new WebGLTile({
         source: tiandituAnnotationSource as any,
         properties: { name: 'annotation' }
       }),
