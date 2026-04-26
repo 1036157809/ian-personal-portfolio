@@ -7,3 +7,4 @@ dist/
 public/uploads/*
 !public/uploads/.gitkeep
 .env
+.env.production

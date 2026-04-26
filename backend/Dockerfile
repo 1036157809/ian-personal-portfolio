@@ -10,6 +10,9 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+# Use .env.production for production
+RUN if [ -f .env.production ]; then cp .env.production .env; fi
+
 RUN pnpm run build
 
 # Create public/uploads directory structure

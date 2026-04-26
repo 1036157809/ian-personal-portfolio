@@ -64,14 +64,14 @@ const activeLayer = createActiveLayer(activeSource)
 
 // Aircraft data
 let simulatedAircraft: any[] = []
-const aircraftFeatures = new Map()
+const aircraftFeatures = new Map<string, any>()
 
 // Active aircraft state
 const activeAircraftId = { value: null as string | number | null }
 
 // Trajectory data
 let trajectoryPoints: number[][] = []
-const allTrajectories = new Map()
+const allTrajectories = new Map<string, any>()
 
 // Initialize map
 const initMap = async () => {

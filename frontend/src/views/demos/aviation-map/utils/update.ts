@@ -44,16 +44,17 @@ export const update = (map: any) => {
     // TODO: Update animation here
   }
 };
-const updateLayers = (map) => {
+const updateLayers = (map: any) => {
   if (remoteAircraftData.length) {
     applyRemoteState(map);
   }
   updatePlaneLayers(map);
   updatePathLayer(map);
 };
-const updatePlaneLayers = (map) => {
+const updatePlaneLayers = (map: any) => {
   const layers = map.getLayers().getArray();
-  const planeLayers = layers.find((layer) => layer.get("name") === "aircraft");
+  const planeLayers = layers.find((layer: any) => layer.get("name") === "aircraft");
+  if (!planeLayers) return;
   const source = planeLayers.getSource();
   const features = source.getFeatures();
   for (const feature of features) {
@@ -77,10 +78,11 @@ const updatePlaneLayers = (map) => {
     feature.getGeometry().setCoordinates(newPoint);
   }
 };
-const updatePathLayer = (map) => {
+const updatePathLayer = (map: any) => {
   const layers = map.getLayers().getArray();
-  const pathLayer = layers.find((layer) => layer.get("name") === "trajectory");
-  const planeLayer = layers.find((layer) => layer.get("name") === "aircraft");
+  const pathLayer = layers.find((layer: any) => layer.get("name") === "trajectory");
+  const planeLayer = layers.find((layer: any) => layer.get("name") === "aircraft");
+  if (!pathLayer || !planeLayer) return;
   const source = pathLayer.getSource();
   const features = source.getFeatures();
   for (const feature of features) {
@@ -89,7 +91,7 @@ const updatePathLayer = (map) => {
     const planeFeature = planeLayer
       .getSource()
       .getFeatures()
-      .find((f) => f.get("icao24") === aircraftId);
+      .find((f: any) => f.get("icao24") === aircraftId);
     if (!planeFeature) {
       continue;
     }
@@ -100,15 +102,14 @@ const updatePathLayer = (map) => {
   }
 };
 
-const applyRemoteState = (map) => {
+const applyRemoteState = (map: any) => {
   const layers = map.getLayers().getArray();
-  const airplaneSource = layers
-    .find((layer) => layer.get("name") === "aircraft")
-    .getSource();
+  const airplaneSource = layers.find((layer: any) => layer.get("name") === "aircraft")?.getSource();
+  if (!airplaneSource) return;
   const planeFeatures = airplaneSource.getFeatures();
-  const remoteStateMap = remoteAircraftData.reduce((map, state) => {
-    map.set(state.icao24, state);
-    return map;
+  const remoteStateMap = remoteAircraftData.reduce((acc, state) => {
+    acc.set(state.icao24, state);
+    return acc;
   }, new Map());
   for (const feature of planeFeatures) {
     const icao24 = feature.get("icao24");
