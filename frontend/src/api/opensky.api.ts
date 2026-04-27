@@ -32,7 +32,7 @@ export interface TracksResponse {
 
 export const openskyApi = {
   async getStates(): Promise<StatesResponse> {
-    const response = await fetch(`${API_BASE_URL}/opensky/states`);
+    const response = await fetch(`${API_BASE_URL}/api/opensky/states`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch aircraft states');
@@ -42,7 +42,7 @@ export const openskyApi = {
   },
 
   async getTracks(icao24: string): Promise<TracksResponse> {
-    const response = await fetch(`${API_BASE_URL}/opensky/tracks/${icao24}`);
+    const response = await fetch(`${API_BASE_URL}/api/opensky/tracks/${icao24}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch aircraft tracks');

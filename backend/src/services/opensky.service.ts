@@ -68,7 +68,22 @@ export class OpenSkyService {
       },
       params
     });
-    return response.data;
+
+    // Transform OpenSky data to frontend format
+    // OpenSky format: [icao24, callsign, origin_country, time_position, last_contact, longitude, latitude, baro_altitude, on_ground, velocity, true_track, vertical_rate, sensors, geo_altitude, squawk, spi, position_source]
+    const states = response.data.states
+      .filter((state: any) => state[5] !== null && state[6] !== null) // Filter out null coordinates
+      .map((state: any) => ({
+        icao24: state[0],
+        altitude: state[7] || state[13] || 0, // baro_altitude or geo_altitude
+        heading: (state[10] || 0) * Math.PI / 180, // true_track (convert to radians)
+        lat: state[6],
+        lon: state[5],
+        timePosition: state[3],
+        velocity: state[9] || 0
+      }));
+
+    return { states };
   }
 
   async getTracks(icao24: string, time: number = 0) {
@@ -82,6 +97,20 @@ export class OpenSkyService {
         time
       }
     });
+
+    // Process path array into explicit key-value pairs
+    // path array format: [time, latitude, longitude, baro_altitude, true_track, on_ground]
+    if (response.data.path && Array.isArray(response.data.path)) {
+      response.data.path = response.data.path.map((item: any[]) => ({
+        time: item[0],
+        lat: item[1],
+        lon: item[2],
+        baro_altitude: item[3],
+        true_track: item[4] * Math.PI / 180, // convert to radians
+        on_ground: item[5]
+      }));
+    }
+
     return response.data;
   }
 }

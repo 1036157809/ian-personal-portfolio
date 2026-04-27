@@ -1,5 +1,5 @@
 import { fromLonLat } from "ol/proj";
-import { openskyApi } from "../../../../api/opensky.api";
+import { openskyApi } from "src/api/opensky.api";
 import { Feature } from "ol";
 import { Point } from "ol/geom";
 
@@ -53,7 +53,9 @@ const updateLayers = (map: any) => {
 };
 const updatePlaneLayers = (map: any) => {
   const layers = map.getLayers().getArray();
-  const planeLayers = layers.find((layer: any) => layer.get("name") === "aircraft");
+  const planeLayers = layers.find(
+    (layer: any) => layer.get("name") === "planes",
+  );
   if (!planeLayers) return;
   const source = planeLayers.getSource();
   const features = source.getFeatures();
@@ -70,28 +72,28 @@ const updatePlaneLayers = (map: any) => {
     const t = (Date.now() - timePosition) / 1000;
     const d = velocity * t;
     // Convert heading from degrees to radians
-    const headingRad = (heading * Math.PI) / 180;
-    const newPoint = [
-      x + d * Math.sin(headingRad),
-      y + d * Math.cos(headingRad),
-    ];
+    const newPoint = [x + d * Math.sin(heading), y + d * Math.cos(heading)];
     feature.getGeometry().setCoordinates(newPoint);
   }
 };
-const updatePathLayer = (map: any) => {
+const updatePathLayer = (map: any) => { 
   const layers = map.getLayers().getArray();
-  const pathLayer = layers.find((layer: any) => layer.get("name") === "trajectory");
-  const planeLayer = layers.find((layer: any) => layer.get("name") === "aircraft");
+  const pathLayer = layers.find(
+    (layer: any) => layer.get("name") === "paths",
+  );
+  const planeLayer = layers.find(
+    (layer: any) => layer.get("name") === "planes",
+  );
   if (!pathLayer || !planeLayer) return;
   const source = pathLayer.getSource();
   const features = source.getFeatures();
   for (const feature of features) {
     const pathPoints = feature.getGeometry().getCoordinates();
-    const aircraftId = feature.get("icao24");
+    const icao24 = feature.get("icao24");
     const planeFeature = planeLayer
       .getSource()
       .getFeatures()
-      .find((f: any) => f.get("icao24") === aircraftId);
+      .find((f: any) => f.get("icao24") === icao24);
     if (!planeFeature) {
       continue;
     }
@@ -104,7 +106,9 @@ const updatePathLayer = (map: any) => {
 
 const applyRemoteState = (map: any) => {
   const layers = map.getLayers().getArray();
-  const airplaneSource = layers.find((layer: any) => layer.get("name") === "aircraft")?.getSource();
+  const airplaneSource = layers
+    .find((layer: any) => layer.get("name") === "planes")
+    ?.getSource();
   if (!airplaneSource) return;
   const planeFeatures = airplaneSource.getFeatures();
   const remoteStateMap = remoteAircraftData.reduce((acc, state) => {
@@ -113,15 +117,15 @@ const applyRemoteState = (map: any) => {
   }, new Map());
   for (const feature of planeFeatures) {
     const icao24 = feature.get("icao24");
-    const remoteState = remoteStateMap.get(icao24);
-    if (remoteState) {
-      feature.set("icao24", remoteState.icao24);
-      feature.set("lon", remoteState.lon);
-      feature.set("lat", remoteState.lat);
-      feature.set("heading", remoteState.heading);
-      feature.set("velocity", remoteState.velocity);
-      feature.set("timePosition", remoteState.timePosition);
-      feature.set("altitude", remoteState.altitude);
+    const newState = remoteStateMap.get(icao24);
+    if (newState) {
+      feature.set("icao24", newState.icao24);
+      feature.set("lon", newState.lon);
+      feature.set("lat", newState.lat);
+      feature.set("heading", newState.heading);
+      feature.set("velocity", newState.velocity);
+      feature.set("timePosition", newState.timePosition);
+      feature.set("altitude", newState.altitude);
       remoteStateMap.delete(icao24);
     } else {
       airplaneSource.removeFeature(feature);
