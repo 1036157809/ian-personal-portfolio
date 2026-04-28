@@ -8,6 +8,17 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { LAYER_NAMES } from "./constants";
 
+let isTrackLoading = false;
+let trackDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+let lastClickedFeatureRef: Feature | null = null;
+
+export const invalidateClickedFeature = (feature: Feature) => {
+  if (lastClickedFeatureRef === feature) {
+    lastClickedFeatureRef.set("isSelected", 0);
+    lastClickedFeatureRef = null;
+  }
+};
+
 const attachMoveEvents = (map: OLMap) => {
   let lastHoveredFeature: Feature | null = null;
   const container = map.getTargetElement();
@@ -35,18 +46,14 @@ const attachMoveEvents = (map: OLMap) => {
 };
 
 const attachClickEvents = (map: OLMap) => {
-  let lastClickedFeature: Feature | null = null;
   const pathLayer = map
     .getLayers()
     .getArray()
     .find((layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PATHS) as VectorLayer<VectorSource> | undefined;
   (map as any).on("click", (e: any) => {
-    if (e.dragging) {
-      return;
-    }
-    if (lastClickedFeature) {
-      lastClickedFeature.set("isSelected", 0);
-      lastClickedFeature = null;
+    if (lastClickedFeatureRef) {
+      lastClickedFeatureRef.set("isSelected", 0);
+      lastClickedFeatureRef = null;
       removePath();
     }
     const features = map.getFeaturesAtPixel(e.pixel, {
@@ -55,22 +62,9 @@ const attachClickEvents = (map: OLMap) => {
     });
     const clickedFeature = features[0] as Feature | undefined;
     if (clickedFeature) {
-      // Output plane data
-      const icao24 = clickedFeature.get("icao24");
-      const heading = clickedFeature.get("heading");
-      const velocity = clickedFeature.get("velocity");
-      const timePosition = clickedFeature.get("timePosition");
-      console.log("Clicked plane data:", {
-        icao24,
-        heading,
-        velocity,
-        timePosition,
-        allProperties: clickedFeature.getProperties(),
-      });
-
       addPath(clickedFeature);
-      lastClickedFeature = clickedFeature;
-      lastClickedFeature.set("isSelected", 1);
+      lastClickedFeatureRef = clickedFeature;
+      lastClickedFeatureRef.set("isSelected", 1);
       const geometry = clickedFeature.getGeometry() as SimpleGeometry | undefined;
       const center = geometry?.getCoordinates() as number[] | undefined;
       if (center) {
@@ -81,30 +75,42 @@ const attachClickEvents = (map: OLMap) => {
       }
     }
   });
-  const addPath = async (planeFeature: Feature) => {
-    const icao24 = planeFeature.get("icao24") as string;
-    const { path } = await openskyApi.getTracks(icao24);
-    
-    if (!path || path.length === 0) {
-      console.log('No track data available for aircraft:', icao24);
-      showToast('该飞机暂无轨迹数据（可能为地面停机、数据不足或超出覆盖范围）');
-      return;
+  const addPath = (planeFeature: Feature) => {
+    if (isTrackLoading) return;
+    if (trackDebounceTimer) {
+      clearTimeout(trackDebounceTimer);
+      trackDebounceTimer = null;
     }
-    
-    const geometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
-    if (!geometry) return;
-    const curPoint = geometry.getCoordinates() as number[];
-    const featurePath = path.map(({ lon, lat }: { lon: number; lat: number }) => fromLonLat([lon, lat]));
-    if (pathLayer) {
-      pathLayer
-        .getSource()
-        ?.addFeature(
-          new Feature({
-            geometry: new LineString([...featurePath, curPoint]),
-            icao24,
-          }),
-        );
-    }
+    trackDebounceTimer = setTimeout(async () => {
+      const icao24 = planeFeature.get("icao24") as string;
+      isTrackLoading = true;
+      try {
+        const { path } = await openskyApi.getTracks(icao24);
+        if (!path || path.length === 0) {
+          showToast('该飞机暂无轨迹数据（可能为地面停机、数据不足或超出覆盖范围）');
+          return;
+        }
+        const geometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
+        if (!geometry) return;
+        const curPoint = geometry.getCoordinates() as number[];
+        const featurePath = path.map(({ lon, lat }: { lon: number; lat: number }) => fromLonLat([lon, lat]));
+        if (pathLayer) {
+          pathLayer
+            .getSource()
+            ?.addFeature(
+              new Feature({
+                geometry: new LineString([...featurePath, curPoint]),
+                icao24,
+              }),
+            );
+        }
+      } catch (error) {
+        console.error('Failed to fetch track:', error);
+        showToast('获取轨迹数据失败，请稍后重试');
+      } finally {
+        isTrackLoading = false;
+      }
+    }, 300);
   };
   const removePath = () => {
     if (pathLayer) {

@@ -67,7 +67,7 @@ import { initMap, destroyMap, resetView, setToast } from ".";
 import Toast from "src/components/common/toast/index.vue";
 
 const mapRef = useTemplateRef<HTMLElement>("mapRef");
-const toastRef = useTemplateRef<any>("toastRef");
+const toastRef = useTemplateRef<{ show: (message: string) => void }>("toastRef");
 
 onMounted(() => {
   if (mapRef.value) {

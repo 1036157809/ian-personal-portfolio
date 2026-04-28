@@ -4,14 +4,19 @@ import View from "ol/View";
 import { fromLonLat } from "ol/proj";
 import { createMapLayers } from "./mapLayer";
 import { createPlaneLayers } from "./planeLayer";
+import { LAYER_NAMES } from "./constants";
 import { attachEvents, clearSelection } from "./event";
-import { startUpdate, stopUpdate, refreshStates } from "./update";
+import { startUpdate, stopUpdate, refreshStates, setLayerRefs } from "./update";
 
 const center = fromLonLat([116.4074, 39.9042]);
-let mapInstance: OLMap | null = null;
-let toastInstance: any = null;
+interface ToastInstance {
+  show: (message: string) => void;
+}
 
-export const setToast = (toast: any) => {
+let mapInstance: OLMap | null = null;
+let toastInstance: ToastInstance | null = null;
+
+export const setToast = (toast: ToastInstance) => {
   toastInstance = toast;
 };
 
@@ -36,12 +41,27 @@ export const initMap = async (container: HTMLElement) => {
   createMapLayers().forEach((layer) => {
     map.addLayer(layer);
   });
-  const planeLayer = await createPlaneLayers()
-  planeLayer.forEach((layer) => {
+  const planeLayers = await createPlaneLayers();
+  planeLayers.forEach((layer) => {
     map.addLayer(layer);
-  })
-  attachEvents(map)
-  startUpdate(map)
+  });
+
+  // Cache layer refs for update loop
+  const planeLayer = planeLayers.find(
+    (layer) => layer.get("name") === LAYER_NAMES.PLANES,
+  );
+  const pathLayer = planeLayers.find(
+    (layer) => layer.get("name") === LAYER_NAMES.PATHS,
+  );
+  if (planeLayer && pathLayer) {
+    setLayerRefs(
+      planeLayer as any,
+      pathLayer as any,
+    );
+  }
+
+  attachEvents(map);
+  startUpdate(map);
 };
 
 export const destroyMap = () => {

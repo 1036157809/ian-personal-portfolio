@@ -6,11 +6,20 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import BaseLayer from "ol/layer/Base";
 import { LAYER_NAMES } from "./constants";
+import type { AircraftState } from "src/api/opensky.api";
+import { invalidateClickedFeature } from "./event";
 
+let planeLayer: VectorLayer<VectorSource> | null = null;
+let pathLayer: VectorLayer<VectorSource> | null = null;
+
+export const setLayerRefs = (plane: VectorLayer<VectorSource>, path: VectorLayer<VectorSource>) => {
+  planeLayer = plane;
+  pathLayer = path;
+};
 let lastUpdateTime = 0;
 let lastRemoteUpdateTime = Date.now();
 const REMOTE_UPDATE_INTERVAL = 15000;
-const remoteAircraftData: any[] = [];
+const remoteAircraftData: AircraftState[] = [];
 let animationFrameId: number | null = null;
 let isRunning = false;
 
@@ -20,7 +29,7 @@ const getInterval = (zoom: number) => {
   return intervals;
 };
 
-export const update = (map: any) => {
+export const update = (map: OLMap) => {
   if (!isRunning) return;
   animationFrameId = requestAnimationFrame(() => {
     update(map);
@@ -33,29 +42,24 @@ export const update = (map: any) => {
     openskyApi
       .getStates()
       .then((res) => {
+        if (!isRunning) return;
         remoteAircraftData.length = 0;
         remoteAircraftData.push(...res.states);
-        console.log("Remote aircraft data updated:", remoteAircraftData);
       })
       .catch((error) => {
-        // Ignore abort errors (request was cancelled intentionally)
-        if (error.name === "AbortError") {
-          console.log("Previous request was cancelled");
-          return;
-        }
+        if (error.name === "AbortError") return;
         console.error("Failed to fetch remote aircraft data:", error);
       });
   }
-  const zoom = map.getView().getZoom();
+  const zoom = map.getView().getZoom() ?? 1;
   const interval = getInterval(zoom);
 
   if (now - lastUpdateTime >= interval) {
-    console.log("update", interval);
     updateLayers(map);
     lastUpdateTime = now;
   }
 };
-const updateLayers = (map: any) => {
+const updateLayers = (map: OLMap) => {
   if (remoteAircraftData.length) {
     applyRemoteState(map);
   }
@@ -129,7 +133,7 @@ const updatePathLayer = (map: OLMap) => {
   }
 };
 
-export const startUpdate = (map: any) => {
+export const startUpdate = (map: OLMap) => {
   isRunning = true;
   update(map);
 };
@@ -144,38 +148,27 @@ export const stopUpdate = () => {
   cancelPendingRequest();
 };
 
-export const refreshStates = async (map: any) => {
-  // Cancel any pending request
+export const refreshStates = async (map: OLMap) => {
   cancelPendingRequest();
-  
-  // Clear remote data
   remoteAircraftData.length = 0;
-  
-  // Fetch fresh states
   try {
     const res = await openskyApi.getStates();
+    if (!isRunning) return;
     remoteAircraftData.push(...res.states);
-    console.log("States refreshed:", remoteAircraftData);
-    
-    // Apply to map
     if (remoteAircraftData.length) {
       applyRemoteState(map);
     }
-  } catch (error: any) {
-    // Ignore abort errors (request was cancelled intentionally)
-    if (error.name === "AbortError") {
-      console.log("Previous request was cancelled during refresh");
-      return;
-    }
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === "AbortError") return;
     console.error("Failed to refresh states:", error);
   }
 };
 
-const applyRemoteState = (map: any) => {
+const applyRemoteState = (map: OLMap) => {
   const layers = map.getLayers().getArray();
-  const airplaneSource = layers
-    .find((layer: any) => layer.get("name") === LAYER_NAMES.PLANES)
-    ?.getSource();
+  const airplaneSource = (
+    layers.find((layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PLANES) as VectorLayer<VectorSource> | undefined
+  )?.getSource();
   if (!airplaneSource) return;
   const planeFeatures = airplaneSource.getFeatures();
 
@@ -196,6 +189,7 @@ const applyRemoteState = (map: any) => {
       feature.set("altitude", newState.altitude);
       remoteStateMap.delete(icao24);
     } else {
+      invalidateClickedFeature(feature);
       airplaneSource.removeFeature(feature);
     }
   }
@@ -204,9 +198,9 @@ const applyRemoteState = (map: any) => {
       geometry: new Point(fromLonLat([newState.lon, newState.lat])),
       ...newState,
       isHovered: 0,
-      isSelect: 0,
+      isSelected: 0,
     });
-    airplaneSource.addFeature(feature);
+    airplaneSource.addFeature(feature as any);
   }
   remoteAircraftData.length = 0;
 };
