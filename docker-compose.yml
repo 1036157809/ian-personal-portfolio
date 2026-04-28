@@ -36,6 +36,7 @@ services:
       DB_USER: portfolio
       DB_PASSWORD: portfolio
       DB_NAME: portfolio
+      TZ: Asia/Shanghai
     volumes:
       - ./backend/public/uploads:/app/public/uploads
     depends_on:
