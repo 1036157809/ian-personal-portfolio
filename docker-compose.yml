@@ -46,6 +46,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+        VITE_TIANDITU_TOKEN: f68bb17559b334a7ab0ff0e8f5642930
     container_name: ian-portfolio-frontend
     restart: unless-stopped
     ports:

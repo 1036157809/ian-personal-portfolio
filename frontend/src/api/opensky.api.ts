@@ -1,4 +1,13 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+import { request } from 'src/utils/request';
+
+let currentAbortController: AbortController | null = null;
+
+export const cancelPendingRequest = () => {
+  if (currentAbortController) {
+    currentAbortController.abort();
+    currentAbortController = null;
+  }
+};
 
 export interface AircraftState {
   icao24: string;
@@ -32,22 +41,25 @@ export interface TracksResponse {
 
 export const openskyApi = {
   async getStates(): Promise<StatesResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/opensky/states`);
+    // Cancel any pending request
+    cancelPendingRequest();
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch aircraft states');
+    // Create new AbortController for this request
+    currentAbortController = new AbortController();
+    
+    try {
+      return await request<StatesResponse>('/api/opensky/states', {
+        signal: currentAbortController.signal,
+      });
+    } finally {
+      // Clear the controller after request completes
+      if (currentAbortController?.signal.aborted === false) {
+        currentAbortController = null;
+      }
     }
-
-    return response.json();
   },
 
   async getTracks(icao24: string): Promise<TracksResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/opensky/tracks/${icao24}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch aircraft tracks');
-    }
-
-    return response.json();
+    return request<TracksResponse>(`/api/opensky/tracks/${icao24}`);
   },
 };

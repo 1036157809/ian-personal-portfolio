@@ -3,19 +3,21 @@ import { Point } from "ol/geom";
 import VectorLayer from "ol/layer/WebGLVector";
 import { fromLonLat } from "ol/proj";
 import VectorSource from "ol/source/Vector";
-import planeIcon from "../../../../public/images/plane.svg";
+import planeIcon from "/images/map/plane.svg";
 import { openskyApi } from "src/api/opensky.api";
+import { LAYER_NAMES } from "./constants";
 
 const createFeatures = async () => {
   const res = await openskyApi.getStates();
   const features = res.states.map(
-    (state) =>
-      new Feature({
+    (state) => {
+      return new Feature({
         geometry: new Point(fromLonLat([state.lon, state.lat])),
         ...state,
         isHovered: 0,
         isSelected: 0,
-      }),
+      });
+    }
   );
   return features;
 };
@@ -40,12 +42,12 @@ const createPlanes = async () => {
     "icon-color": "#f40",
   };
   const planeLayer = new VectorLayer({
-    properties: { name: "planes" },
+    properties: { name: LAYER_NAMES.PLANES },
     source,
     style: normalStyle,
   });
   const activePlaneLayer = new VectorLayer({
-    properties: { name: "activePlanes" },
+    properties: { name: LAYER_NAMES.ACTIVE_PLANES },
     source,
     style: [
       {
@@ -58,7 +60,7 @@ const createPlanes = async () => {
 };
 const createPath = () => {
   const layer = new VectorLayer({
-    properties: { name: "paths" },
+    properties: { name: LAYER_NAMES.PATHS },
     source: new VectorSource(),
     style: {
       "stroke-color": "#f40",

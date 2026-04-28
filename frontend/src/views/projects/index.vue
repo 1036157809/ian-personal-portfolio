@@ -92,8 +92,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- WebGIS Card -->
           <div class="card h-full flex flex-col">
-            <div class="aspect-video overflow-hidden rounded-lg mb-4 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span class="text-gray-400 dark:text-gray-500 text-4xl">✈️</span>
+            <div class="aspect-video overflow-hidden rounded-lg mb-4">
+              <img
+                src="/images/map/map-info.png"
+                alt="Aviation Map"
+                class="w-full h-full object-cover"
+              />
             </div>
 
             <h3 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
@@ -113,6 +117,12 @@
               </span>
               <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
                 TypeScript
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                OpenSky API
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                WebGL
               </span>
             </div>
 

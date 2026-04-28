@@ -71,16 +71,22 @@ export class OpenSkyService {
 
     // Transform OpenSky data to frontend format
     // OpenSky format: [icao24, callsign, origin_country, time_position, last_contact, longitude, latitude, baro_altitude, on_ground, velocity, true_track, vertical_rate, sensors, geo_altitude, squawk, spi, position_source]
+    
+    // Log sample of raw velocity values
+    const velocitySample = response.data.states.slice(0, 10).map((s: any) => s[9]);
+    console.log('Sample velocity values from OpenSky:', velocitySample);
+    console.log('Total states:', response.data.states.length);
+    
     const states = response.data.states
       .filter((state: any) => state[5] !== null && state[6] !== null) // Filter out null coordinates
       .map((state: any) => ({
         icao24: state[0],
-        altitude: state[7] || state[13] || 0, // baro_altitude or geo_altitude
-        heading: (state[10] || 0) * Math.PI / 180, // true_track (convert to radians)
+        altitude: state[7] ?? state[13] ?? 0, // baro_altitude or geo_altitude
+        heading: state[10] !== null && state[10] !== undefined ? state[10] * Math.PI / 180 : null, // true_track (convert to radians)
         lat: state[6],
         lon: state[5],
-        timePosition: state[3],
-        velocity: state[9] || 0
+        timePosition: state[3] * 1000, // convert to milliseconds
+        velocity: state[9] ?? 0 // Keep 0 for stationary planes
       }));
 
     return { states };

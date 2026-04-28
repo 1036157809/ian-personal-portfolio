@@ -133,7 +133,7 @@ export default {
     onlineAddress: '线上地址',
     webgis: {
       title: '航空地图',
-      description: '基于 OpenLayers 的航空地图应用，使用球面墨卡托投影，提供交互式地图功能，支持标记添加和视图重置。'
+      description: '基于 OpenLayers 的实时航空地图应用，集成 OpenSky API 获取全球实时飞行数据，使用 WebGL 加速渲染，支持飞机位置实时更新、轨迹显示、点击查看详情等功能。采用天地图 WMTS 作为底图，配置球面墨卡托投影（EPSG:3857）。'
     }
   },
   shuttleBox: {

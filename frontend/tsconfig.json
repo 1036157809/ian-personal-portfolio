@@ -17,7 +17,8 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "src/*": ["./src/*"]
+      "src/*": ["./src/*"],
+      "public/*": ["./public/*"]
     },
 
     /* Linting */
@@ -26,6 +27,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "public/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

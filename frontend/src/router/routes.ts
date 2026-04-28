@@ -43,4 +43,8 @@ export const routes = [
   },
 ];
 
+export const scrollBehavior = () => {
+  return { top: 0 };
+};
+
 export default routes;

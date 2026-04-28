@@ -133,7 +133,7 @@ export default {
     onlineAddress: 'Online Address',
     webgis: {
       title: 'Aviation Map',
-      description: 'An aviation map application based on OpenLayers with Web Mercator projection, providing interactive map features with marker addition and view reset capabilities.'
+      description: 'A real-time aviation map application based on OpenLayers, integrated with OpenSky API to fetch global real-time flight data. Features WebGL-accelerated rendering, real-time aircraft position updates, trajectory display, and click-to-view details. Uses Tianditu WMTS as base map with Web Mercator projection (EPSG:3857).'
     }
   },
   shuttleBox: {

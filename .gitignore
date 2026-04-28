@@ -3,3 +3,5 @@ node_modules/
 uploads/
 backend/public/uploads/*
 !backend/public/uploads/.gitkeep
+.env
+frontend/.env
