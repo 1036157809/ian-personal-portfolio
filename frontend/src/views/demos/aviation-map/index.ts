@@ -4,9 +4,9 @@ import View from "ol/View";
 import { fromLonLat } from "ol/proj";
 import { createMapLayers } from "./mapLayer";
 import { createPlaneLayers } from "./planeLayer";
+import { attachEvents, clearSelection, setLayerRefs } from "./event";
+import { startUpdate, stopUpdate, refreshStates } from "./update";
 import { LAYER_NAMES } from "./constants";
-import { attachEvents, clearSelection } from "./event";
-import { startUpdate, stopUpdate, refreshStates, setLayerRefs } from "./update";
 
 const center = fromLonLat([116.4074, 39.9042]);
 interface ToastInstance {
@@ -54,10 +54,7 @@ export const initMap = async (container: HTMLElement) => {
     (layer) => layer.get("name") === LAYER_NAMES.PATHS,
   );
   if (planeLayer && pathLayer) {
-    setLayerRefs(
-      planeLayer as any,
-      pathLayer as any,
-    );
+    setLayerRefs(planeLayer as any, pathLayer as any);
   }
 
   attachEvents(map);
@@ -78,7 +75,7 @@ export const resetView = () => {
     stopUpdate();
     
     // Clear selected aircraft state
-    clearSelection(mapInstance);
+    clearSelection();
     
     // Reset view
     mapInstance.getView().setCenter(center);

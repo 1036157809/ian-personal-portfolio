@@ -1,9 +1,8 @@
 import { Context } from 'koa';
 import openskyService from '../services/opensky.service';
 
-// Cache for aircraft states
-let statesCache: any = null;
-let statesCacheTime: number = 0;
+// Cache for aircraft states (supports multiple bbox keys)
+const statesCacheMap = new Map<string, { data: any; time: number }>();
 
 // Cache for aircraft tracks (15s fixed)
 const tracksCache = new Map<string, { data: any; time: number }>();
@@ -22,26 +21,32 @@ const getCacheTTL = (): number => {
 export class OpenSkyController {
   async getStatesAll(ctx: Context) {
     try {
+      // Parse bbox from query params
+      const { lamin, lamax, lomin, lomax } = ctx.query;
+      const bbox = (lamin && lamax && lomin && lomax)
+        ? [Number(lamin), Number(lamax), Number(lomin), Number(lomax)]
+        : undefined;
+
       // Check cache
       const now = Date.now();
       const cacheTTL = getCacheTTL();
-      console.log(`Current cache TTL: ${cacheTTL / 1000}s (hour: ${new Date().getHours()})`);
+      const cacheKey = bbox ? bbox.join(',') : 'all';
 
-      if (statesCache && (now - statesCacheTime) < cacheTTL) {
-        console.log('Returning cached states');
-        ctx.body = statesCache;
+      const cached = statesCacheMap.get(cacheKey);
+      if (cached && (now - cached.time) < cacheTTL) {
+        console.log('Returning cached states for:', cacheKey);
+        ctx.body = cached.data;
         return;
       }
 
       const apiStartTime = Date.now();
-      const data = await openskyService.getStatesAll();
+      const data = await openskyService.getStatesAll(bbox ? { bbox } : undefined);
       const apiEndTime = Date.now();
       console.log(`OpenSky API call took: ${apiEndTime - apiStartTime}ms`);
       console.log(`Total states count: ${data.states.length}`);
       
       // Update cache
-      statesCache = data;
-      statesCacheTime = now;
+      statesCacheMap.set(cacheKey, { data, time: now });
       
       ctx.body = data;
     } catch (error: any) {
