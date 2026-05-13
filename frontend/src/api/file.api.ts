@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+import { request } from 'src/utils/request';
 
 export interface FileMetadata {
   id: string;
@@ -17,13 +17,7 @@ export interface ChunkUploadParams {
 
 export const fileApi = {
   async getAll(): Promise<FileMetadata[]> {
-    const response = await fetch(`${API_BASE_URL}/api/files`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch files');
-    }
-
-    return response.json();
+    return request<FileMetadata[]>('/files');
   },
 
   async upload(file: File, name?: string): Promise<FileMetadata> {
@@ -31,16 +25,10 @@ export const fileApi = {
     formData.append('file', file);
     if (name) formData.append('name', name);
 
-    const response = await fetch(`${API_BASE_URL}/api/files/upload`, {
+    return request<FileMetadata>('/files/upload', {
       method: 'POST',
       body: formData,
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to upload file');
-    }
-
-    return response.json();
   },
 
   async uploadChunk(params: ChunkUploadParams): Promise<{ success: boolean; chunkIndex: number }> {
@@ -50,61 +38,36 @@ export const fileApi = {
     formData.append('chunkIndex', params.chunkIndex.toString());
     formData.append('totalChunks', params.totalChunks.toString());
 
-    const response = await fetch(`${API_BASE_URL}/api/files/upload-chunk`, {
+    return request<{ success: boolean; chunkIndex: number }>('/files/upload-chunk', {
       method: 'POST',
       body: formData,
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to upload chunk');
-    }
-
-    return response.json();
   },
 
   async completeUpload(fileName: string): Promise<{ success: boolean; file: FileMetadata }> {
-    const response = await fetch(`${API_BASE_URL}/api/files/complete-upload`, {
+    return request<{ success: boolean; file: FileMetadata }>('/files/complete-upload', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({ fileName }),
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to complete upload');
-    }
-
-    return response.json();
   },
 
   async delete(id: string): Promise<{ message: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/files/${id}`, {
+    return request<{ message: string }>(`/files/${id}`, {
       method: 'DELETE',
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete file');
-    }
-
-    return response.json();
   },
 
   async download(id: string): Promise<Blob> {
-    const response = await fetch(`${API_BASE_URL}/api/files/download/${id}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to download file');
-    }
-
-    return response.blob();
+    return request<Blob>(`/files/download/${id}`, { responseType: 'blob' });
   },
 
   getDownloadUrl(id: string): string {
-    return `${API_BASE_URL}/api/files/download/${id}`;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+    return `${API_BASE_URL}/files/download/${id}`;
   },
 
   getPreviewUrl(id: string): string {
-    return `${API_BASE_URL}/api/files/preview/${id}`;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+    return `${API_BASE_URL}/files/preview/${id}`;
   },
 };

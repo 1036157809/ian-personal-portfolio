@@ -48,7 +48,7 @@ export const openskyApi = {
     currentAbortController = new AbortController();
     
     try {
-      return await request<StatesResponse>('/api/opensky/states', {
+      return await request<StatesResponse>('/opensky/states', {
         signal: currentAbortController.signal,
       });
     } finally {
@@ -60,6 +60,6 @@ export const openskyApi = {
   },
 
   async getTracks(icao24: string): Promise<TracksResponse> {
-    return request<TracksResponse>(`/api/opensky/tracks/${icao24}`);
+    return request<TracksResponse>(`/opensky/tracks/${icao24}`);
   },
 };
