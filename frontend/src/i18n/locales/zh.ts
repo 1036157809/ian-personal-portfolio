@@ -137,7 +137,7 @@ export default {
     },
     musicViz: {
       title: '音乐可视化',
-      description: '基于 Web Audio API 的音乐可视化应用，实时分析音频频率数据，支持频谱柱、环形、波形三种可视化模式，支持播放控制、进度拖拽和音量调节。'
+      description: '基于 Web Audio API 的音乐可视化应用，实时分析音频频率数据，采用频谱柱可视化模式，支持播放控制、进度拖拽和音量调节。'
     }
   },
   shuttleBox: {
@@ -218,11 +218,6 @@ export default {
   musicViz: {
     title: '音乐可视化',
     clickToPlay: '点击播放',
-    techTitle: '技术说明',
-    tech1: '使用 Web Audio API 实时分析音频频率数据',
-    tech2: 'Canvas 2D 渲染，支持渐变特效',
-    tech3: '三种可视化模式：频谱柱、环形、波形',
-    tech4: '音频播放控制，支持进度拖拽和音量调节'
   },
   contact: {
     title: '联系我',
