@@ -134,6 +134,10 @@ export default {
     webgis: {
       title: 'Aviation Map',
       description: 'A real-time aviation map application based on OpenLayers, integrated with OpenSky API to fetch global real-time flight data. Features WebGL-accelerated rendering, real-time aircraft position updates, trajectory display, and click-to-view details. Uses Tianditu WMTS as base map with Web Mercator projection (EPSG:3857).'
+    },
+    musicViz: {
+      title: 'Music Visualizer',
+      description: 'A music visualization application based on Web Audio API, featuring real-time audio frequency analysis with multiple visualization modes including spectrum bars, circular rings, and waveforms. Supports playback control, progress seeking, and volume adjustment.'
     }
   },
   shuttleBox: {
@@ -210,6 +214,15 @@ export default {
     stateRnfLodgement: 'RNF lodgement process',
     stateIssuedFscCode: 'FSC code issued',
     stateCompletionHiring: 'Completion and hiring process'
+  },
+  musicViz: {
+    title: 'Music Visualizer',
+    clickToPlay: 'Click to Play',
+    techTitle: 'Technical Details',
+    tech1: 'Web Audio API for real-time audio frequency analysis',
+    tech2: 'Canvas 2D rendering with gradient effects',
+    tech3: 'Three visualization modes: spectrum bars, circular rings, and waveforms',
+    tech4: 'Audio playback control with progress seeking and volume adjustment'
   },
   contact: {
     title: 'Get In Touch',

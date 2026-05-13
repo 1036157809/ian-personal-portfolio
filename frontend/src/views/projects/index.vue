@@ -135,6 +135,49 @@
               </router-link>
             </div>
           </div>
+
+          <!-- Music Visualizer Card -->
+          <div class="card h-full flex flex-col">
+            <div class="aspect-video overflow-hidden rounded-lg mb-4">
+              <img
+                src="/wallpapers/car.jpg"
+                alt="Music Visualizer"
+                class="w-full h-full object-cover"
+              />
+            </div>
+
+            <h3 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
+              {{ $t('projects.musicViz.title') }}
+            </h3>
+
+            <p class="text-gray-600 dark:text-gray-400 mb-4 flex-1">
+              {{ $t('projects.musicViz.description') }}
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                Vue 3
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                Web Audio API
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                Canvas
+              </span>
+              <span class="px-3 py-1 text-sm rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+                TypeScript
+              </span>
+            </div>
+
+            <div class="mt-auto">
+              <router-link
+                to="/demo/music-viz"
+                class="w-full text-center btn-primary text-sm py-2 block"
+              >
+                {{ $t('projects.viewDemo') }}
+              </router-link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

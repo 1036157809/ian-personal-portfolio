@@ -134,6 +134,10 @@ export default {
     webgis: {
       title: '航空地图',
       description: '基于 OpenLayers 的实时航空地图应用，集成 OpenSky API 获取全球实时飞行数据，使用 WebGL 加速渲染，支持飞机位置实时更新、轨迹显示、点击查看详情等功能。采用天地图 WMTS 作为底图，配置球面墨卡托投影（EPSG:3857）。'
+    },
+    musicViz: {
+      title: '音乐可视化',
+      description: '基于 Web Audio API 的音乐可视化应用，实时分析音频频率数据，支持频谱柱、环形、波形三种可视化模式，支持播放控制、进度拖拽和音量调节。'
     }
   },
   shuttleBox: {
@@ -210,6 +214,15 @@ export default {
     stateRnfLodgement: 'RNF登记流程',
     stateIssuedFscCode: 'FSC代码已发放',
     stateCompletionHiring: '完成与录用流程'
+  },
+  musicViz: {
+    title: '音乐可视化',
+    clickToPlay: '点击播放',
+    techTitle: '技术说明',
+    tech1: '使用 Web Audio API 实时分析音频频率数据',
+    tech2: 'Canvas 2D 渲染，支持渐变特效',
+    tech3: '三种可视化模式：频谱柱、环形、波形',
+    tech4: '音频播放控制，支持进度拖拽和音量调节'
   },
   contact: {
     title: '联系我',

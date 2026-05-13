@@ -41,6 +41,11 @@ export const routes = [
     name: 'AviationMap',
     component: () => import('src/views/demos/aviation-map/index.vue'),
   },
+  {
+    path: ROUTES.DEMO_MUSIC_VIZ,
+    name: 'MusicViz',
+    component: () => import('src/views/demos/music-viz/index.vue'),
+  },
 ];
 
 export const scrollBehavior = () => {
