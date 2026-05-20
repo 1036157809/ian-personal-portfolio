@@ -5,3 +5,6 @@ backend/public/uploads/*
 !backend/public/uploads/.gitkeep
 .env
 frontend/.env
+frontend/dist
+backend/dist
+.claude
