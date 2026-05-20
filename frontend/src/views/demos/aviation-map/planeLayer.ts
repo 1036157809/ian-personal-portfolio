@@ -9,17 +9,17 @@ import { LAYER_NAMES } from "./constants";
 
 const createFeatures = async () => {
   const res = await openskyApi.getStates();
-  const features = res.states.map(
-    (state) => {
-      return new Feature({
-        geometry: new Point(fromLonLat([state.lon, state.lat])),
-        ...state,
-        isHovered: 0,
-        isSelected: 0,
-      });
-    }
-  );
-  return features;
+  return res.states.map((state) => {
+    const [projX, projY] = fromLonLat([state.lon, state.lat]);
+    return new Feature({
+      geometry: new Point([projX, projY]),
+      ...state,
+      isHovered: 0,
+      isSelected: 0,
+      projX,
+      projY,
+    });
+  });
 };
 const createPlanes = async () => {
   const features = await createFeatures();

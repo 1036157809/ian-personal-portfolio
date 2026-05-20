@@ -7,10 +7,25 @@ import BaseLayer from "ol/layer/Base";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { LAYER_NAMES } from "./constants";
+import { setLayerRefs as _setLayerRefs } from "./update";
+
+// Cached layer refs shared with update.ts
+let planeLayerRef: VectorLayer<VectorSource> | null = null;
+let pathLayerRef: VectorLayer<VectorSource> | null = null;
+
+export const setLayerRefs = (plane: VectorLayer<VectorSource>, path: VectorLayer<VectorSource>) => {
+  planeLayerRef = plane;
+  pathLayerRef = path;
+  _setLayerRefs(plane, path);
+};
 
 let isTrackLoading = false;
 let trackDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 let lastClickedFeatureRef: Feature | null = null;
+
+// Frontend track cache (5 min TTL)
+const trackCache = new Map<string, { data: any; time: number }>();
+const TRACK_CACHE_TTL = 300000; // 5 minutes
 
 export const invalidateClickedFeature = (feature: Feature) => {
   if (lastClickedFeatureRef === feature) {
@@ -22,10 +37,13 @@ export const invalidateClickedFeature = (feature: Feature) => {
 const attachMoveEvents = (map: OLMap) => {
   let lastHoveredFeature: Feature | null = null;
   const container = map.getTargetElement();
+  let lastMoveTime = 0;
+  const MOVE_THROTTLE = 50; // 50ms throttle
   (map as any).on("pointermove", (e: any) => {
-    if (e.dragging) {
-      return;
-    }
+    if (e.dragging) return;
+    const now = Date.now();
+    if (now - lastMoveTime < MOVE_THROTTLE) return;
+    lastMoveTime = now;
     if (lastHoveredFeature) {
       lastHoveredFeature.set("isHovered", 0);
       lastHoveredFeature = null;
@@ -46,10 +64,6 @@ const attachMoveEvents = (map: OLMap) => {
 };
 
 const attachClickEvents = (map: OLMap) => {
-  const pathLayer = map
-    .getLayers()
-    .getArray()
-    .find((layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PATHS) as VectorLayer<VectorSource> | undefined;
   (map as any).on("click", (e: any) => {
     if (lastClickedFeatureRef) {
       lastClickedFeatureRef.set("isSelected", 0);
@@ -85,7 +99,18 @@ const attachClickEvents = (map: OLMap) => {
       const icao24 = planeFeature.get("icao24") as string;
       isTrackLoading = true;
       try {
-        const { path } = await openskyApi.getTracks(icao24);
+        // Check frontend cache first
+        const now = Date.now();
+        const cached = trackCache.get(icao24);
+        let pathData: any;
+        if (cached && (now - cached.time) < TRACK_CACHE_TTL) {
+          pathData = cached.data;
+        } else {
+          const response = await openskyApi.getTracks(icao24);
+          pathData = response;
+          trackCache.set(icao24, { data: response, time: now });
+        }
+        const { path } = pathData;
         if (!path || path.length === 0) {
           showToast('该飞机暂无轨迹数据（可能为地面停机、数据不足或超出覆盖范围）');
           return;
@@ -94,8 +119,8 @@ const attachClickEvents = (map: OLMap) => {
         if (!geometry) return;
         const curPoint = geometry.getCoordinates() as number[];
         const featurePath = path.map(({ lon, lat }: { lon: number; lat: number }) => fromLonLat([lon, lat]));
-        if (pathLayer) {
-          pathLayer
+        if (pathLayerRef) {
+          pathLayerRef
             .getSource()
             ?.addFeature(
               new Feature({
@@ -113,24 +138,16 @@ const attachClickEvents = (map: OLMap) => {
     }, 300);
   };
   const removePath = () => {
-    if (pathLayer) {
-      pathLayer.getSource()?.clear();
+    if (pathLayerRef) {
+      pathLayerRef.getSource()?.clear();
     }
   };
 };
 
-export const clearSelection = (map: OLMap) => {
-  const layers = map.getLayers().getArray();
-  const planeLayer = layers.find(
-    (layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PLANES,
-  ) as VectorLayer<VectorSource> | undefined;
-  const pathLayer = layers.find(
-    (layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PATHS,
-  ) as VectorLayer<VectorSource> | undefined;
-  
+export const clearSelection = () => {
   // Clear all selected states
-  if (planeLayer) {
-    const source = planeLayer.getSource();
+  if (planeLayerRef) {
+    const source = planeLayerRef.getSource();
     if (source) {
       source.getFeatures().forEach((feature) => {
         feature.set("isSelected", 0);
@@ -139,8 +156,8 @@ export const clearSelection = (map: OLMap) => {
   }
   
   // Clear path layer
-  if (pathLayer) {
-    pathLayer.getSource()?.clear();
+  if (pathLayerRef) {
+    pathLayerRef.getSource()?.clear();
   }
 };
 

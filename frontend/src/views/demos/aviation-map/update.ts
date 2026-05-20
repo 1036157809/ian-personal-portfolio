@@ -1,46 +1,47 @@
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, toLonLat } from "ol/proj";
 import { openskyApi, cancelPendingRequest } from "src/api/opensky.api";
 import { Feature, Map as OLMap } from "ol";
 import { Point, SimpleGeometry } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import BaseLayer from "ol/layer/Base";
-import { LAYER_NAMES } from "./constants";
-import type { AircraftState } from "src/api/opensky.api";
+import type { AircraftState, BBox } from "src/api/opensky.api";
 import { invalidateClickedFeature } from "./event";
 
-let planeLayer: VectorLayer<VectorSource> | null = null;
-let pathLayer: VectorLayer<VectorSource> | null = null;
+// Cached layer refs to avoid repeated find() lookups
+let planeLayerRef: VectorLayer<VectorSource> | null = null;
+let pathLayerRef: VectorLayer<VectorSource> | null = null;
 
 export const setLayerRefs = (plane: VectorLayer<VectorSource>, path: VectorLayer<VectorSource>) => {
-  planeLayer = plane;
-  pathLayer = path;
+  planeLayerRef = plane;
+  pathLayerRef = path;
 };
 let lastUpdateTime = 0;
 let lastRemoteUpdateTime = Date.now();
 const REMOTE_UPDATE_INTERVAL = 15000;
 const remoteAircraftData: AircraftState[] = [];
-let animationFrameId: number | null = null;
+let updateTimerId: ReturnType<typeof setTimeout> | null = null;
 let isRunning = false;
 
 const getInterval = (zoom: number) => {
   zoom = Math.floor(zoom);
-  const intervals = [, 5000, 4000, 3000, 2000, 1000, 500, 100, 50][zoom] || 16;
-  return intervals;
+  // Intervals per zoom level (1-8+), minimum 100ms to reduce CPU usage
+  const intervals: Record<number, number> = {
+    1: 5000, 2: 4000, 3: 3000, 4: 2000,
+    5: 1000, 6: 500, 7: 200, 8: 100,
+  };
+  return intervals[zoom] || 100;
 };
 
 export const update = (map: OLMap) => {
   if (!isRunning) return;
-  animationFrameId = requestAnimationFrame(() => {
-    update(map);
-  });
   const now = Date.now();
 
   // Check if it's time for remote update
   if (now - lastRemoteUpdateTime >= REMOTE_UPDATE_INTERVAL) {
     lastRemoteUpdateTime = Date.now();
+    const bbox = getViewBBox(map);
     openskyApi
-      .getStates()
+      .getStates(bbox)
       .then((res) => {
         if (!isRunning) return;
         remoteAircraftData.length = 0;
@@ -55,43 +56,39 @@ export const update = (map: OLMap) => {
   const interval = getInterval(zoom);
 
   if (now - lastUpdateTime >= interval) {
-    updateLayers(map);
+    updateLayers();
     lastUpdateTime = now;
   }
+
+  // Schedule next update at the appropriate interval
+  updateTimerId = setTimeout(() => update(map), interval);
 };
-const updateLayers = (map: OLMap) => {
+const updateLayers = () => {
   if (remoteAircraftData.length) {
-    applyRemoteState(map);
+    applyRemoteState();
   }
-  updatePlaneLayers(map);
-  updatePathLayer(map);
+  updatePlaneLayers();
+  updatePathLayer();
 };
-const updatePlaneLayers = (map: OLMap) => {
-  const layers = map.getLayers().getArray();
-  const planeLayers = layers.find(
-    (layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PLANES,
-  ) as VectorLayer<VectorSource> | undefined;
-  if (!planeLayers) {
-    throw new Error("Missing planes layer");
-  }
-  const source = planeLayers.getSource();
-  if (!source) {
-    throw new Error("Missing planes source");
-  }
+const updatePlaneLayers = () => {
+  if (!planeLayerRef) return;
+  const source = planeLayerRef.getSource();
+  if (!source) return;
   const features = source.getFeatures();
+  const now = Date.now();
   for (const feature of features) {
-    const lon = feature.get("lon") as number;
-    const lat = feature.get("lat") as number;
     const heading = feature.get("heading") as number;
     const velocity = feature.get("velocity") as number;
     const timePosition = feature.get("timePosition") as number;
     if (!velocity || !heading) {
       continue;
     }
-    const [x, y] = fromLonLat([lon, lat]);
-    const t = (Date.now() - timePosition) / 1000;
+    // Use cached projected coordinates instead of recalculating every frame
+    const x = feature.get("projX") as number;
+    const y = feature.get("projY") as number;
+    if (x == null || y == null) continue;
+    const t = (now - timePosition) / 1000;
     const d = velocity * t;
-    // Convert heading from degrees to radians
     const newPoint = [x + d * Math.sin(heading), y + d * Math.cos(heading)];
     const geometry = feature.getGeometry() as SimpleGeometry | undefined;
     if (geometry) {
@@ -99,33 +96,22 @@ const updatePlaneLayers = (map: OLMap) => {
     }
   }
 };
-const updatePathLayer = (map: OLMap) => {
-  const layers = map.getLayers().getArray();
-  const pathLayer = layers.find(
-    (layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PATHS,
-  ) as VectorLayer<VectorSource> | undefined;
-  const planeLayer = layers.find(
-    (layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PLANES,
-  ) as VectorLayer<VectorSource> | undefined;
-  if (!pathLayer || !planeLayer) return;
-  const source = pathLayer.getSource();
-  const planeSource = planeLayer.getSource();
-  if (!source || !planeSource) return;
+// Map for O(1) icao24 -> feature lookup
+const featureMap = new Map<string, Feature>();
+
+const updatePathLayer = () => {
+  if (!pathLayerRef || !planeLayerRef) return;
+  const source = pathLayerRef.getSource();
+  if (!source) return;
   const features = source.getFeatures();
   for (const feature of features) {
     const geometry = feature.getGeometry() as SimpleGeometry | undefined;
     if (!geometry) continue;
     const pathPoints = geometry.getCoordinates() as number[][];
     const icao24 = feature.get("icao24") as string;
-    const planeFeature = planeSource
-      .getFeatures()
-      .find((f) => f.get("icao24") === icao24);
-    if (!planeFeature) {
-      continue;
-    }
-    const planeGeometry = planeFeature.getGeometry() as
-      | SimpleGeometry
-      | undefined;
+    const planeFeature = featureMap.get(icao24);
+    if (!planeFeature) continue;
+    const planeGeometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
     if (!planeGeometry) continue;
     const curPoint = planeGeometry.getCoordinates() as number[];
     pathPoints[pathPoints.length - 1] = curPoint;
@@ -140,23 +126,43 @@ export const startUpdate = (map: OLMap) => {
 
 export const stopUpdate = () => {
   isRunning = false;
-  if (animationFrameId !== null) {
-    cancelAnimationFrame(animationFrameId);
-    animationFrameId = null;
+  if (updateTimerId !== null) {
+    clearTimeout(updateTimerId);
+    updateTimerId = null;
   }
   // Cancel any pending API request
   cancelPendingRequest();
+};
+
+const getViewBBox = (map: OLMap): BBox | undefined => {
+  const view = map.getView();
+  const zoom = view.getZoom() ?? 1;
+  // Only filter by bbox when zoomed in enough (zoom > 3)
+  // At low zoom levels, the view covers most of the world, so filtering is not useful
+  if (zoom < 3) return undefined;
+  
+  const extent = view.calculateExtent(map.getSize());
+  const bottomLeft = toLonLat([extent[0], extent[1]]);
+  const topRight = toLonLat([extent[2], extent[3]]);
+  
+  return {
+    lamin: bottomLeft[1],
+    lamax: topRight[1],
+    lomin: bottomLeft[0],
+    lomax: topRight[0],
+  };
 };
 
 export const refreshStates = async (map: OLMap) => {
   cancelPendingRequest();
   remoteAircraftData.length = 0;
   try {
-    const res = await openskyApi.getStates();
+    const bbox = getViewBBox(map);
+    const res = await openskyApi.getStates(bbox);
     if (!isRunning) return;
     remoteAircraftData.push(...res.states);
     if (remoteAircraftData.length) {
-      applyRemoteState(map);
+      applyRemoteState();
     }
   } catch (error: unknown) {
     if (error instanceof Error && error.name === "AbortError") return;
@@ -164,11 +170,9 @@ export const refreshStates = async (map: OLMap) => {
   }
 };
 
-const applyRemoteState = (map: OLMap) => {
-  const layers = map.getLayers().getArray();
-  const airplaneSource = (
-    layers.find((layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PLANES) as VectorLayer<VectorSource> | undefined
-  )?.getSource();
+const applyRemoteState = () => {
+  if (!planeLayerRef) return;
+  const airplaneSource = planeLayerRef.getSource();
   if (!airplaneSource) return;
   const planeFeatures = airplaneSource.getFeatures();
 
@@ -180,26 +184,38 @@ const applyRemoteState = (map: OLMap) => {
     const icao24 = feature.get("icao24");
     const newState = remoteStateMap.get(icao24);
     if (newState) {
-      feature.set("icao24", newState.icao24);
-      feature.set("lon", newState.lon);
-      feature.set("lat", newState.lat);
-      feature.set("heading", newState.heading);
-      feature.set("velocity", newState.velocity);
-      feature.set("timePosition", newState.timePosition);
-      feature.set("altitude", newState.altitude);
+      // Batch update with setProperties to reduce change events
+      const [projX, projY] = fromLonLat([newState.lon, newState.lat]);
+      feature.setProperties({
+        icao24: newState.icao24,
+        lon: newState.lon,
+        lat: newState.lat,
+        heading: newState.heading,
+        velocity: newState.velocity,
+        timePosition: newState.timePosition,
+        altitude: newState.altitude,
+        projX,
+        projY,
+      });
+      featureMap.set(newState.icao24, feature);
       remoteStateMap.delete(icao24);
     } else {
       invalidateClickedFeature(feature);
+      featureMap.delete(icao24);
       airplaneSource.removeFeature(feature);
     }
   }
   for (const [_, newState] of remoteStateMap) {
+    const [projX, projY] = fromLonLat([newState.lon, newState.lat]);
     const feature = new Feature({
-      geometry: new Point(fromLonLat([newState.lon, newState.lat])),
+      geometry: new Point([projX, projY]),
       ...newState,
       isHovered: 0,
       isSelected: 0,
+      projX,
+      projY,
     });
+    featureMap.set(newState.icao24, feature);
     airplaneSource.addFeature(feature as any);
   }
   remoteAircraftData.length = 0;
