@@ -21,7 +21,7 @@
         {{ $t("common.backToProjects") }}
       </router-link>
 
-      <h1 class="section-title text-center mb-8">航空地图演示</h1>
+      <h1 class="section-title text-center mb-8">{{ $t('projects.aviationMap.title') }}</h1>
 
       <div class="card">
         <div
@@ -35,25 +35,86 @@
             @click="() => resetView()"
             class="btn-primary px-4 py-2 rounded-lg text-sm"
           >
-            重置视图
+            {{ $t('projects.aviationMap.resetView') }}
           </button>
         </div>
       </div>
 
       <div class="card mt-6">
         <div>
-          <h2 class="text-xl font-bold mb-2 text-day-text dark:text-night-text">
-            技术说明
+          <h2 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">
+            {{ $t('projects.aviationMap.techTitle') }}
           </h2>
-          <ul
-            class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1"
-          >
-            <li>使用 OpenLayers 库构建地图</li>
-            <li>配置球面墨卡托投影 (EPSG:3857)</li>
-            <li>使用天地图 WMTS 作为底图（地形层 + 注记层）</li>
-            <li>中心坐标：北京 (116.4074, 39.9042)</li>
-            <li>缩放级别：1-13</li>
-          </ul>
+          
+          <!-- 设计思路 -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-3 text-day-text dark:text-night-text flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center text-sm">1</span>
+              {{ $t('projects.aviationMap.designTitle') }}
+            </h3>
+            <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400 ml-8">
+              <p class="flex items-start gap-2">
+                <span class="text-blue-500 mt-1">▸</span>
+                <span><strong>{{ $t('projects.aviationMap.design1') }}</strong>：{{ $t('projects.aviationMap.design1Desc') }}</span>
+              </p>
+              <p class="flex items-start gap-2">
+                <span class="text-blue-500 mt-1">▸</span>
+                <span><strong>{{ $t('projects.aviationMap.design2') }}</strong>：{{ $t('projects.aviationMap.design2Desc') }}</span>
+              </p>
+              <p class="flex items-start gap-2">
+                <span class="text-blue-500 mt-1">▸</span>
+                <span><strong>{{ $t('projects.aviationMap.design3') }}</strong>：{{ $t('projects.aviationMap.design3Desc') }}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- 技术难点 -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-3 text-day-text dark:text-night-text flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center text-sm">2</span>
+              {{ $t('projects.aviationMap.challengesTitle') }}
+            </h3>
+            <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400 ml-8">
+              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+                <p class="font-medium text-day-text dark:text-night-text mb-1">{{ $t('projects.aviationMap.challenge1Title') }}</p>
+                <p>{{ $t('projects.aviationMap.challenge1Desc') }}</p>
+              </div>
+              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+                <p class="font-medium text-day-text dark:text-night-text mb-1">{{ $t('projects.aviationMap.challenge2Title') }}</p>
+                <p>{{ $t('projects.aviationMap.challenge2Desc') }}</p>
+              </div>
+              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+                <p class="font-medium text-day-text dark:text-night-text mb-1">{{ $t('projects.aviationMap.challenge3Title') }}</p>
+                <p>{{ $t('projects.aviationMap.challenge3Desc') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 解决方案 -->
+          <div>
+            <h3 class="text-lg font-semibold mb-3 text-day-text dark:text-night-text flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-sm">3</span>
+              {{ $t('projects.aviationMap.solutionsTitle') }}
+            </h3>
+            <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400 ml-8">
+              <p class="flex items-start gap-2">
+                <span class="text-green-500 mt-1">✓</span>
+                <span><strong>{{ $t('projects.aviationMap.solution1Title') }}</strong>：{{ $t('projects.aviationMap.solution1Desc') }}</span>
+              </p>
+              <p class="flex items-start gap-2">
+                <span class="text-green-500 mt-1">✓</span>
+                <span><strong>{{ $t('projects.aviationMap.solution2Title') }}</strong>：{{ $t('projects.aviationMap.solution2Desc') }}</span>
+              </p>
+              <p class="flex items-start gap-2">
+                <span class="text-green-500 mt-1">✓</span>
+                <span><strong>{{ $t('projects.aviationMap.solution3Title') }}</strong>：{{ $t('projects.aviationMap.solution3Desc') }}</span>
+              </p>
+              <p class="flex items-start gap-2">
+                <span class="text-green-500 mt-1">✓</span>
+                <span><strong>{{ $t('projects.aviationMap.solution4Title') }}</strong>：{{ $t('projects.aviationMap.solution4Desc') }}</span>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

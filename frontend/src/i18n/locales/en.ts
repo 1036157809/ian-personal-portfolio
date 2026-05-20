@@ -138,6 +138,34 @@ export default {
     musicViz: {
       title: 'Music Visualizer',
       description: 'A music visualization application based on Web Audio API, featuring real-time audio frequency analysis with multiple visualization modes including spectrum bars, circular rings, and waveforms. Supports playback control, progress seeking, and volume adjustment.'
+    },
+    aviationMap: {
+      title: 'Aviation Map Demo',
+      resetView: 'Reset View',
+      techTitle: 'Technical Documentation',
+      designTitle: 'Design Approach',
+      design1: 'Map Rendering',
+      design1Desc: 'Built with OpenLayers library, configured with Web Mercator projection (EPSG:3857), using Tianditu WMTS service as base map (terrain layer + annotation layer)',
+      design2: 'Aircraft Layer',
+      design2Desc: 'Fetch global real-time aircraft states (position, heading, speed) via OpenSky API /states/all endpoint, render aircraft icons on map',
+      design3: 'Interaction Design',
+      design3Desc: 'Click aircraft to highlight, auto-zoom and center, call /tracks endpoint to fetch and render flight trajectory as vector layer',
+      challengesTitle: 'Technical Challenges',
+      challenge1Title: 'Map Wrapping & Coordinate Chaos',
+      challenge1Desc: 'OpenLayers supports horizontal map wrapping, causing duplicate world coordinates and breaking aircraft click/position calculations',
+      challenge2Title: 'Real-time Updates vs Performance',
+      challenge2Desc: 'Aircraft data needs real-time updates, but frequent API calls and layer redraws cause performance issues, requiring balanced update strategy',
+      challenge3Title: 'Local Simulation & Remote Sync',
+      challenge3Desc: 'Need to use local simulation (calculate position based on speed/heading) between remote updates, while ensuring correct sync when remote data arrives',
+      solutionsTitle: 'Solutions',
+      solution1Title: 'World Coordinate Reset',
+      solution1Desc: 'Limit map display range or reset world coordinate system to ensure consistent aircraft coordinate calculations, avoiding chaos from map wrapping',
+      solution2Title: 'Layered Refresh Strategy',
+      solution2Desc: 'Use requestAnimationFrame for frame-by-frame updates, set different refresh rates based on zoom level (zoom 1-8 maps to 5000ms-16ms), balancing performance and real-time accuracy',
+      solution3Title: 'Diff Algorithm for Data Sync',
+      solution3Desc: 'Use Diff algorithm to compare remote data with local data, only update changed aircraft states, reducing unnecessary DOM operations and redraws',
+      solution4Title: 'Dual-Track Update Mechanism',
+      solution4Desc: 'Combine local updates (simulation based on speed/heading) with remote updates (API polling, 10s interval) to ensure smooth aircraft movement while maintaining data accuracy'
     }
   },
   shuttleBox: {

@@ -138,6 +138,34 @@ export default {
     musicViz: {
       title: '音乐可视化',
       description: '基于 Web Audio API 的音乐可视化应用，实时分析音频频率数据，采用频谱柱可视化模式，支持播放控制、进度拖拽和音量调节。'
+    },
+    aviationMap: {
+      title: '航空地图演示',
+      resetView: '重置视图',
+      techTitle: '技术说明与设计文档',
+      designTitle: '设计思路',
+      design1: '地图渲染',
+      design1Desc: '使用 OpenLayers 库构建地图，配置球面墨卡托投影 (EPSG:3857)，采用天地图 WMTS 服务作为底图（地形晕渲层 + 影像注记层）',
+      design2: '飞机图层',
+      design2Desc: '通过 OpenSky API 的 /states/all 接口获取全球飞机实时状态（经纬度、朝向、速度等），在地图上渲染飞机图标层',
+      design3: '交互设计',
+      design3Desc: '点击飞机时高亮显示、自动放大并居中、调用 /tracks 接口获取飞行轨迹并渲染轨迹向量层',
+      challengesTitle: '技术难点',
+      challenge1Title: '地图循环与坐标混乱',
+      challenge1Desc: 'OpenLayers 地图支持左右循环滚动，导致世界坐标系重复，点击飞机时坐标计算会出错',
+      challenge2Title: '实时更新与性能平衡',
+      challenge2Desc: '飞机数据需要实时更新，但频繁调用 API 和重绘图层会导致性能问题，需要设计合理的更新策略',
+      challenge3Title: '本地模拟与远程同步',
+      challenge3Desc: '需要在远程数据更新间隙使用本地模拟（根据速度和朝向计算位置），同时保证远程数据到来时能正确同步',
+      solutionsTitle: '解决方案',
+      solution1Title: '世界坐标重置',
+      solution1Desc: '通过限制地图显示范围或重置世界坐标系，确保飞机坐标计算的一致性，避免循环滚动导致的坐标混乱',
+      solution2Title: '分层刷新策略',
+      solution2Desc: '使用 requestAnimationFrame 实现逐帧更新，根据 zoom 层级设置不同的刷新频率（zoom 1-8 对应 5000ms-16ms），平衡性能与实时性',
+      solution3Title: 'Diff 算法数据同步',
+      solution3Desc: '使用 Diff 算法对比远程数据与本地数据，只更新变化的飞机状态，减少不必要的 DOM 操作和重绘',
+      solution4Title: '双轨更新机制',
+      solution4Desc: '本地更新（基于速度和朝向模拟）与远程更新（API 轮询，10s 间隔）相结合，确保飞机位置流畅移动的同时保持数据准确性'
     }
   },
   shuttleBox: {
