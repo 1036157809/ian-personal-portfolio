@@ -30,11 +30,31 @@
 
         <!-- Visualization Canvas with Controls -->
         <div class="relative">
-          <canvas
-            ref="canvasRef"
-            class="w-full rounded-lg"
-            :height="canvasHeight"
-          ></canvas>
+          <div class="relative inline-block w-full">
+            <canvas
+              ref="canvasRef"
+              class="w-full rounded-lg"
+              :height="canvasHeight"
+            ></canvas>
+
+            <!-- Mobile pause overlay (moved to canvas center) -->
+            <div
+              v-if="!isPlaying && isMobile"
+              class="absolute inset-0 flex items-center justify-center pointer-events-none sm:hidden"
+            >
+              <div class="flex flex-col items-center gap-2 pointer-events-auto">
+                <button
+                  @click="togglePlay"
+                  class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-white/30 transition-all duration-300 group"
+                >
+                  <svg class="w-8 h-8 text-white ml-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </button>
+                <p class="text-white/60 text-xs text-center">{{ $t('musicViz.clickToPlay') }}</p>
+              </div>
+            </div>
+          </div>
 
           <!-- Progress Bar below canvas -->
           <div ref="topProgressRef" class="mt-0.5 h-1 relative rounded overflow-visible bg-white/10">
@@ -50,11 +70,11 @@
 
         </div>
 
-        <!-- Center info overlay when paused -->
+        <!-- Center info overlay when paused (Desktop only) -->
         <div
-          v-if="!isPlaying"
+          v-if="!isPlaying && !isMobile"
           ref="pauseOverlayRef"
-          class="fixed bottom-[112px] flex flex-col items-center gap-2"
+          class="fixed bottom-[112px] flex flex-col items-center gap-2 hidden sm:flex"
           :style="{ left: pauseOverlayLeft }"
         >
           <button
@@ -168,6 +188,17 @@ const progressWidth = computed(() => `${Math.min(Math.max(progress.value, 0), 10
 const progressDotLeft = computed(() => `calc(${Math.min(Math.max(progress.value, 0), 100)}% - 6px)`)
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
+
+// Responsive screen width detection for mobile play button
+const screenWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+
+const updateScreenWidth = () => {
+  if (typeof window !== 'undefined') {
+    screenWidth.value = window.innerWidth
+  }
+}
+
+const isMobile = computed(() => screenWidth.value < 640)
 
 const updatePauseOverlayPosition = () => {
   const bar = topProgressRef.value
@@ -397,6 +428,7 @@ const handlePageClick = () => {
 
 onMounted(() => {
   nextTick(() => {
+    updateScreenWidth()
     resizeCanvas()
     updatePauseOverlayPosition()
     // Auto-play music when entering the demo
@@ -404,7 +436,10 @@ onMounted(() => {
     // Start idle timer
     showUI()
   })
-  window.addEventListener('resize', handleResize)
+  window.addEventListener('resize', () => {
+    updateScreenWidth()
+    handleResize()
+  })
   window.addEventListener('keydown', handleKeydown)
 })
 
