@@ -26,17 +26,49 @@
       </div>
       
       <!-- Scroll Indicator -->
-      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <svg class="w-6 h-6 text-day-primary dark:text-night-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-        </svg>
-      </div>
+      <Transition name="fade">
+        <div v-show="!isAtBottom" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
+          <svg class="w-6 h-6 text-day-primary dark:text-night-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { t } = useI18n()
+
+const isAtBottom = ref(false)
+
+function checkScroll() {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const docHeight = document.documentElement.scrollHeight
+  isAtBottom.value = scrollTop + windowHeight >= docHeight - 50
+}
+
+onMounted(() => {
+  checkScroll()
+  window.addEventListener('scroll', checkScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', checkScroll)
+})
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

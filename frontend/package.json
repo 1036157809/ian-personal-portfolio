@@ -13,12 +13,14 @@
     "echarts": "^6.0.0",
     "ol": "^10.9.0",
     "pinia": "^2.1.7",
+    "three": "^0.184.0",
     "vue": "^3.4.15",
     "vue-i18n": "^9.9.1",
     "vue-pdf-embed": "^2.1.4",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/three": "^0.184.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
