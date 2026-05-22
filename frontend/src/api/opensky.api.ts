@@ -50,10 +50,11 @@ export const openskyApi = {
   async getStates(bbox?: BBox): Promise<StatesResponse> {
     // Cancel any pending request
     cancelPendingRequest();
-    
+
     // Create new AbortController for this request
-    currentAbortController = new AbortController();
-    
+    const controller = new AbortController();
+    currentAbortController = controller;
+
     const params: Record<string, string> = {};
     if (bbox) {
       params.lamin = bbox.lamin.toString();
@@ -61,15 +62,15 @@ export const openskyApi = {
       params.lomin = bbox.lomin.toString();
       params.lomax = bbox.lomax.toString();
     }
-    
+
     try {
       const query = bbox ? '?' + new URLSearchParams(params).toString() : '';
       return await request<StatesResponse>(`/opensky/states${query}`, {
-        signal: currentAbortController.signal,
+        signal: controller.signal,
       });
     } finally {
-      // Clear the controller after request completes
-      if (currentAbortController?.signal.aborted === false) {
+      // Always clear the controller reference if it still points to this one
+      if (currentAbortController === controller) {
         currentAbortController = null;
       }
     }

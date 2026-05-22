@@ -42,6 +42,10 @@ export const initMap = async (container: HTMLElement) => {
     map.addLayer(layer);
   });
   const planeLayers = await createPlaneLayers();
+
+  // Don't proceed if map was destroyed during async initialization
+  if (!mapInstance) return;
+
   planeLayers.forEach((layer) => {
     map.addLayer(layer);
   });

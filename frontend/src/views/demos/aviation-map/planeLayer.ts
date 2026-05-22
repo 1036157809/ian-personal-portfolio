@@ -8,18 +8,23 @@ import { openskyApi } from "src/api/opensky.api";
 import { LAYER_NAMES } from "./constants";
 
 const createFeatures = async () => {
-  const res = await openskyApi.getStates();
-  return res.states.map((state) => {
-    const [projX, projY] = fromLonLat([state.lon, state.lat]);
-    return new Feature({
-      geometry: new Point([projX, projY]),
-      ...state,
-      isHovered: 0,
-      isSelected: 0,
-      projX,
-      projY,
+  try {
+    const res = await openskyApi.getStates();
+    return res.states.map((state) => {
+      const [projX, projY] = fromLonLat([state.lon, state.lat]);
+      return new Feature({
+        geometry: new Point([projX, projY]),
+        ...state,
+        isHovered: 0,
+        isSelected: 0,
+        projX,
+        projY,
+      });
     });
-  });
+  } catch (error: unknown) {
+    if (error instanceof DOMException && error.name === "AbortError") return [];
+    throw error;
+  }
 };
 const createPlanes = async () => {
   const features = await createFeatures();

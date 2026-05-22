@@ -47,8 +47,9 @@ export const update = (map: OLMap) => {
         remoteAircraftData.length = 0;
         remoteAircraftData.push(...res.states);
       })
-      .catch((error) => {
-        if (error.name === "AbortError") return;
+      .catch((error: unknown) => {
+        if (!isRunning) return;
+        if (error instanceof DOMException && error.name === "AbortError") return;
         console.error("Failed to fetch remote aircraft data:", error);
       });
   }
@@ -165,7 +166,7 @@ export const refreshStates = async (map: OLMap) => {
       applyRemoteState();
     }
   } catch (error: unknown) {
-    if (error instanceof Error && error.name === "AbortError") return;
+    if (error instanceof DOMException && error.name === "AbortError") return;
     console.error("Failed to refresh states:", error);
   }
 };
