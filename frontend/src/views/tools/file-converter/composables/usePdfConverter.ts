@@ -168,6 +168,9 @@ function ab2b64(buf: ArrayBuffer): string {
 // This function wraps text by accumulating character widths, guaranteeing
 // zero character loss. Works with the doc already having the correct font set.
 // Returns an array of { text: string, widthPt: number } lines.
+// Preferred line-break positions: break after these characters when possible
+const BREAK_AFTER = new Set(['、', '，', '；', '。', '）', '」', '』', '》', ' ', ',', ';', ')'])
+
 function safeWrapText(doc: any, text: string, maxWidthMm: number): { text: string; widthPt: number }[] {
   if (!text) return []
   const lines: { text: string; widthPt: number }[] = []
@@ -188,26 +191,102 @@ function safeWrapText(doc: any, text: string, maxWidthMm: number): { text: strin
   }
   if (buf) tokens.push(buf)
 
-  // Greedily pack tokens into lines
+  // Greedily pack tokens into lines, preferring to break at punctuation
+  // When overflow occurs, look backwards for the punctuation break that produces
+  // the most balanced line split (closest to half the total content width)
   let lineStart = 0
   let lineWidthMm = 0
+  const punctBreaks: number[] = []  // indices of all punctuation break points in current line
 
   for (let i = 0; i < tokens.length; i++) {
-    const tokW = doc.getTextWidth(tokens[i]) // mm
+    const tokW = doc.getTextWidth(tokens[i])
+    const tokStr = tokens[i]
+    if (tokStr && BREAK_AFTER.has(tokStr[tokStr.length - 1])) {
+      punctBreaks.push(i)
+    }
+
     if (lineWidthMm + tokW > maxWidthMm && i > lineStart) {
-      // Emit tokens [lineStart, i) as one line
-      const lineText = tokens.slice(lineStart, i).join('')
-      lines.push({ text: lineText, widthPt: lineWidthMm / PT })
-      lineStart = i
-      lineWidthMm = tokW
+      // Find the best punctuation break: among 、 and ； breaks, choose the one
+      // that fills the line to ~80% of capacity for a natural look.
+      let breakAt = i  // default: break at overflow point
+      const minBreakPos = lineStart + Math.floor((i - lineStart) * 0.25)
+      const enumBreaks = punctBreaks.filter(p => p >= minBreakPos && p < i && '、；'.includes(tokens[p]))
+      const validBreaks = enumBreaks.length > 0 ? enumBreaks : punctBreaks.filter(p => p >= minBreakPos && p < i)
+      if (validBreaks.length > 0) {
+        // Target: fill the line to ~80% of the max width
+        const targetMm = maxWidthMm * 0.80
+        let bestPunct = validBreaks[0]
+        let bestDist = Infinity
+        for (const p of validBreaks) {
+          const lineUpToPunct = tokens.slice(lineStart, p + 1).reduce((s, t) => s + doc.getTextWidth(t), 0)
+          const dist = Math.abs(lineUpToPunct - targetMm)
+          if (dist < bestDist) {
+            bestDist = dist
+            bestPunct = p
+          }
+        }
+        breakAt = bestPunct + 1
+      }
+      const lineText = tokens.slice(lineStart, breakAt).join('')
+      const lineW = doc.getTextWidth(lineText)
+      lines.push({ text: lineText, widthPt: lineW / PT })
+      lineStart = breakAt
+      lineWidthMm = 0
+      for (let j = breakAt; j <= i; j++) {
+        lineWidthMm += doc.getTextWidth(tokens[j])
+      }
+      punctBreaks.length = 0
     } else {
       lineWidthMm += tokW
     }
   }
   if (lineStart < tokens.length) {
     const lineText = tokens.slice(lineStart).join('')
-    lines.push({ text: lineText, widthPt: lineWidthMm / PT })
+    lines.push({ text: lineText, widthPt: doc.getTextWidth(lineText) / PT })
   }
+
+  // Rebalance: if the last line is very short (< 20% of max) AND the previous line
+  // didn't end at an enumeration comma (、；), try to pull content to even things out.
+  // This avoids undoing good punctuation-based breaks from the greedy pass.
+  if (lines.length >= 2) {
+    const lastLine = lines[lines.length - 1]
+    const prevLine = lines[lines.length - 2]
+    const lastChar = prevLine.text[prevLine.text.length - 1]
+    const prevEndedAtEnum = '、；'.includes(lastChar)
+    if (!prevEndedAtEnum && lastLine.widthPt < maxWidthMm / PT * 0.20) {
+      const combined = prevLine.text + lastLine.text
+      const combinedTokens: string[] = []
+      buf = ''
+      for (let i = 0; i < combined.length; i++) {
+        const ch = combined[i]
+        const isASCII = ch.charCodeAt(0) < 128
+        if (isASCII) { buf += ch }
+        else { if (buf) { combinedTokens.push(buf); buf = '' }; combinedTokens.push(ch) }
+      }
+      if (buf) combinedTokens.push(buf)
+
+      const totalWidthMm = doc.getTextWidth(combined)
+      const halfWidthMm = totalWidthMm / 2
+      let accMm = 0
+      let bestBreak = -1
+      let bestDist = Infinity
+
+      const startSearch = Math.floor(combinedTokens.length * 0.3)
+      for (let i = startSearch; i < combinedTokens.length - 1; i++) {
+        accMm += doc.getTextWidth(combinedTokens[i])
+        const dist = Math.abs(accMm - halfWidthMm)
+        if (dist < bestDist) { bestDist = dist; bestBreak = i }
+      }
+
+      if (bestBreak > 0 && bestBreak < combinedTokens.length - 1) {
+        const newPrev = combinedTokens.slice(0, bestBreak + 1).join('')
+        const newLast = combinedTokens.slice(bestBreak + 1).join('')
+        lines[lines.length - 2] = { text: newPrev, widthPt: doc.getTextWidth(newPrev) / PT }
+        lines[lines.length - 1] = { text: newLast, widthPt: doc.getTextWidth(newLast) / PT }
+      }
+    }
+  }
+
   return lines
 }
 
@@ -509,7 +588,9 @@ class Builder {
         this.need(LH_BODY)
       }
 
-      let cx = this.mm(contentX)
+      // First line: content starts after label. Wrapped lines: align with text start (hanging indent).
+      const lineX = lineIdx === 0 ? contentX : xPt
+      let cx = this.mm(lineX)
       let remaining = contentWrapLines[lineIdx].text
 
       while (remaining.length > 0 && segIdx < contentSegs.length) {
