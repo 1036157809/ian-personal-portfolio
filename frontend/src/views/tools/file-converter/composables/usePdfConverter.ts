@@ -206,26 +206,54 @@ function safeWrapText(doc: any, text: string, maxWidthMm: number): { text: strin
     }
 
     if (lineWidthMm + tokW > maxWidthMm && i > lineStart) {
-      // Find the best punctuation break: among 、 and ； breaks, choose the one
-      // that fills the line to ~80% of capacity for a natural look.
-      let breakAt = i  // default: break at overflow point
+      // Find the best break point: prefer 、 and ； but fall back to any position
+      // if punctuation breaks would leave too much whitespace (>5px).
       const minBreakPos = lineStart + Math.floor((i - lineStart) * 0.25)
       const enumBreaks = punctBreaks.filter(p => p >= minBreakPos && p < i && '、；'.includes(tokens[p]))
-      const validBreaks = enumBreaks.length > 0 ? enumBreaks : punctBreaks.filter(p => p >= minBreakPos && p < i)
-      if (validBreaks.length > 0) {
-        // Target: fill the line to ~80% of the max width
-        const targetMm = maxWidthMm * 0.80
-        let bestPunct = validBreaks[0]
-        let bestDist = Infinity
-        for (const p of validBreaks) {
-          const lineUpToPunct = tokens.slice(lineStart, p + 1).reduce((s, t) => s + doc.getTextWidth(t), 0)
-          const dist = Math.abs(lineUpToPunct - targetMm)
-          if (dist < bestDist) {
-            bestDist = dist
-            bestPunct = p
+      const allPunctBreaks = punctBreaks.filter(p => p >= minBreakPos && p < i)
+
+      // Check if any enum break leaves acceptable whitespace (≤5px / 1.7pt)
+      const maxWhitespaceMm = 1.7 * PT
+      let breakAt = i  // default: break at overflow point (character-level)
+      let foundGoodEnumBreak = false
+
+      if (enumBreaks.length > 0) {
+        // Find the enum break that fills the line most (closest to maxWidth - margin)
+        let bestEnumBreak = enumBreaks[0]
+        let bestEnumWidth = 0
+        for (const p of enumBreaks) {
+          const w = tokens.slice(lineStart, p + 1).reduce((s, t) => s + doc.getTextWidth(t), 0)
+          if (w <= maxWidthMm && w > bestEnumWidth) {
+            bestEnumWidth = w
+            bestEnumBreak = p
           }
         }
-        breakAt = bestPunct + 1
+        const enumWhitespace = maxWidthMm - bestEnumWidth
+        if (enumWhitespace <= maxWhitespaceMm) {
+          // Good enum break found — use it
+          breakAt = bestEnumBreak + 1
+          foundGoodEnumBreak = true
+        }
+      }
+
+      if (!foundGoodEnumBreak) {
+        // No good enum break — try any punctuation break
+        if (allPunctBreaks.length > 0) {
+          let bestPunct = allPunctBreaks[0]
+          let bestPunctWidth = 0
+          for (const p of allPunctBreaks) {
+            const w = tokens.slice(lineStart, p + 1).reduce((s, t) => s + doc.getTextWidth(t), 0)
+            if (w <= maxWidthMm && w > bestPunctWidth) {
+              bestPunctWidth = w
+              bestPunct = p
+            }
+          }
+          const punctWhitespace = maxWidthMm - bestPunctWidth
+          if (punctWhitespace <= maxWhitespaceMm) {
+            breakAt = bestPunct + 1
+          }
+        }
+        // If no punctuation break works either, breakAt stays at i (character-level break)
       }
       const lineText = tokens.slice(lineStart, breakAt).join('')
       const lineW = doc.getTextWidth(lineText)
