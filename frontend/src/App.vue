@@ -1,8 +1,8 @@
 <template>
-  <div id="app" class="min-h-screen">
+  <div id="app" class="min-h-screen flex flex-col">
     <ThemeBackground />
     <Navbar />
-    <main class="container mx-auto px-4 py-8 relative z-10">
+    <main class="container mx-auto px-4 py-8 relative z-10 flex-1">
       <router-view />
     </main>
     <Footer />
