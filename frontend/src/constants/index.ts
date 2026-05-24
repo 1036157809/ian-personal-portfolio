@@ -2,12 +2,14 @@ export const ROUTES = {
   HOME: '/',
   PROJECTS: '/projects',
   ABOUT: '/about',
+  TOOLS: '/tools',
   CONTACT: '/contact',
   DEMO_DS_PORTAL: '/demo/ds-portal',
   DEMO_SHOUGANG: '/demo/shougang',
   DEMO_TONGDAO: '/demo/tongdao',
   DEMO_AVIATION_MAP: '/demo/aviation-map',
   DEMO_MUSIC_VIZ: '/demo/music-viz',
+  DEMO_FILE_CONVERTER: '/demo/file-converter',
 } as const;
 
 export const THEMES = {

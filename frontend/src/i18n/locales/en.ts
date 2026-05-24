@@ -3,11 +3,13 @@ export default {
     home: 'Home',
     projects: 'Projects',
     about: 'About',
+    tools: 'Tools',
     contact: 'Contact'
   },
   common: {
     back: 'Back',
-    backToProjects: 'Back to Projects'
+    backToProjects: 'Back to Projects',
+    backToTools: 'Back to Tools'
   },
   home: {
     greeting: 'Hi, I\'m',
@@ -251,6 +253,30 @@ export default {
     tech2: 'Canvas 2D rendering with gradient effects',
     tech3: 'Three visualization modes: spectrum bars, circular rings, and waveforms',
     tech4: 'Audio playback control with progress seeking and volume adjustment'
+  },
+  fileConverter: {
+    title: 'File Format Converter',
+    subtitle: 'Client-side file conversion, no server upload required',
+    tabImage: 'Image Convert',
+    tabDocPdf: 'MD/Word → PDF',
+    dropImage: 'Drop image here or click to upload',
+    supportedImageFormats: 'Supports PNG, JPG, WebP, BMP, GIF and other formats',
+    source: 'Source',
+    targetFormat: 'Target Format',
+    convert: 'Convert',
+    converting: 'Converting...',
+    conversionComplete: 'Conversion Complete',
+    download: 'Download',
+    remove: 'Remove',
+    dropDocument: 'Drop document here or click to upload',
+    supportedDocFormats: 'Supports MD, DOCX, TXT formats',
+    preview: 'Preview',
+    convertToPdf: 'Convert to PDF',
+    pdfGenerated: 'PDF Generated Successfully',
+  },
+  tools: {
+    title: 'Tools',
+    subtitle: 'A collection of handy online tools',
   },
   contact: {
     title: 'Get In Touch',

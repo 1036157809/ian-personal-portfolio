@@ -17,6 +17,11 @@ export const routes = [
     component: () => import('src/views/about/index.vue'),
   },
   {
+    path: ROUTES.TOOLS,
+    name: 'Tools',
+    component: () => import('src/views/tools/index.vue'),
+  },
+  {
     path: ROUTES.CONTACT,
     name: 'Contact',
     component: () => import('src/views/contact/index.vue'),
@@ -45,6 +50,11 @@ export const routes = [
     path: ROUTES.DEMO_MUSIC_VIZ,
     name: 'MusicViz',
     component: () => import('src/views/demos/music-viz/index.vue'),
+  },
+  {
+    path: ROUTES.DEMO_FILE_CONVERTER,
+    name: 'FileConverter',
+    component: () => import('src/views/tools/file-converter/index.vue'),
   },
 ];
 

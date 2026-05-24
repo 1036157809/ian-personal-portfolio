@@ -3,11 +3,13 @@ export default {
     home: '首页',
     projects: '项目',
     about: '关于',
+    tools: '工具',
     contact: '联系'
   },
   common: {
     back: '返回',
-    backToProjects: '返回项目'
+    backToProjects: '返回项目',
+    backToTools: '返回工具'
   },
   home: {
     greeting: '你好，我是',
@@ -246,6 +248,30 @@ export default {
   musicViz: {
     title: '音乐可视化',
     clickToPlay: '点击播放',
+  },
+  fileConverter: {
+    title: '文件格式转换工具',
+    subtitle: '纯客户端转换，无需上传到服务器',
+    tabImage: '图片转换',
+    tabDocPdf: 'MD/Word → PDF',
+    dropImage: '拖放图片到此处或点击上传',
+    supportedImageFormats: '支持 PNG、JPG、WebP、BMP、GIF 等多种格式',
+    source: '源文件',
+    targetFormat: '目标格式',
+    convert: '转换',
+    converting: '转换中...',
+    conversionComplete: '转换完成',
+    download: '下载',
+    remove: '移除',
+    dropDocument: '拖放文档到此处或点击上传',
+    supportedDocFormats: '支持 MD、DOCX、TXT 格式',
+    preview: '预览',
+    convertToPdf: '转换为 PDF',
+    pdfGenerated: 'PDF 生成成功',
+  },
+  tools: {
+    title: '工具',
+    subtitle: '实用的在线工具集合',
   },
   contact: {
     title: '联系我',
