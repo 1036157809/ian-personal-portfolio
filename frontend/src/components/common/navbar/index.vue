@@ -1,5 +1,5 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-day-background/80 dark:bg-night-background/80 border-b border-gray-200 dark:border-gray-700">
+  <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-day-background/75 dark:bg-night-background/80 border-b border-day-border/50 dark:border-night-border/60">
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <router-link to="/" class="text-2xl font-bold bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary bg-clip-text text-transparent">

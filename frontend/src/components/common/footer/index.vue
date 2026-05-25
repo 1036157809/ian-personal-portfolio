@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-day-surface dark:bg-night-surface border-t border-gray-200 dark:border-gray-700 mt-16">
+  <footer class="bg-day-surface dark:bg-night-surface border-t border-day-border/50 dark:border-night-border/60 mt-16">
     <div class="container mx-auto px-4 py-8">
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="text-center md:text-left mb-4 md:mb-0">

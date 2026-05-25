@@ -4,19 +4,27 @@
 
 @layer base {
   :root {
-    --color-primary: #6366f1;
-    --color-secondary: #8b5cf6;
-    --color-background: #f8fafc;
-    --color-surface: #ffffff;
-    --color-text: #1e293b;
+    --color-primary: #4A6FA5;
+    --color-secondary: #E8A87C;
+    --color-background: #EEF2F7;
+    --color-surface: #FFFFFF;
+    --color-surface-elevated: #F7F9FC;
+    --color-text: #2D3748;
+    --color-text-secondary: #718096;
+    --color-border: #CBD5E0;
+    --color-accent: #68D391;
   }
 
   .dark {
-    --color-primary: #818cf8;
-    --color-secondary: #a78bfa;
-    --color-background: #0f172a;
-    --color-surface: #1e293b;
-    --color-text: #f1f5f9;
+    --color-primary: #7C9CC9;
+    --color-secondary: #C4B5FD;
+    --color-background: #070B14;
+    --color-surface: #0F1629;
+    --color-surface-elevated: #162040;
+    --color-text: #D4C8E8;
+    --color-text-secondary: #8B9BB4;
+    --color-border: #1E2D4A;
+    --color-accent: #6EE7B7;
   }
 
   body {
@@ -28,7 +36,14 @@
   .btn-primary {
     @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105;
     @apply bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary;
-    @apply text-white shadow-lg hover:shadow-xl;
+    @apply text-white shadow-lg;
+  }
+  .btn-primary:hover {
+    @apply shadow-xl;
+    filter: brightness(1.05);
+  }
+  .dark .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(124, 156, 201, 0.3), 0 10px 25px rgba(0, 0, 0, 0.3);
   }
 
   .btn-secondary {
@@ -38,9 +53,21 @@
   }
 
   .card {
-    @apply rounded-xl p-6 shadow-lg transition-all duration-300;
-    @apply bg-day-surface dark:bg-night-surface;
-    @apply hover:shadow-xl hover:-translate-y-1;
+    @apply rounded-xl p-6 transition-all duration-300;
+    @apply bg-day-surface/85 dark:bg-night-surface/70;
+    backdrop-filter: blur(8px);
+    @apply border border-day-border/40 dark:border-night-border/50;
+    box-shadow: 0 1px 3px rgba(74, 111, 165, 0.08), 0 4px 12px rgba(74, 111, 165, 0.05);
+  }
+  .dark .card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(124, 156, 201, 0.08);
+  }
+  .card:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 4px 12px rgba(74, 111, 165, 0.12), 0 8px 24px rgba(74, 111, 165, 0.08);
+  }
+  .dark .card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(124, 156, 201, 0.12);
   }
 
   .section-title {

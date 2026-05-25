@@ -57,15 +57,15 @@ function computeCurrentBrightness(time: number, factors: number[]): number[] {
   return brightness;
 }
 
-// 更新粒子颜色（闪烁）- 淡黄色到白色渐变
+// 更新粒子颜色（闪烁）- 偏蓝白的星辉色
 function updateColors(brightness: number[]) {
   const colors = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
     const b = brightness[i];
-    // 创建淡黄色到白色的渐变：R较高，G中等偏高，B较低
-    const r = 0.9 + b * 0.1;  // 0.9-1.0 (偏黄)
-    const g = 0.8 + b * 0.2;  // 0.8-1.0 (黄白)
-    const bl = 0.6 + b * 0.4; // 0.6-1.0 (从淡黄到白)
+    // 偏蓝白的星辉色：B最高，G次之，R稍低
+    const r = 0.75 + b * 0.25;  // 0.75-1.0
+    const g = 0.82 + b * 0.18;  // 0.82-1.0
+    const bl = 0.92 + b * 0.08; // 0.92-1.0 (偏蓝)
 
     colors[i*3] = r;
     colors[i*3+1] = g;
@@ -77,7 +77,7 @@ function updateColors(brightness: number[]) {
 
 function init() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x050815);
+  scene.background = new THREE.Color(0x070B14);
 
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 0, 18);
@@ -93,24 +93,24 @@ function init() {
 
   const initialColors = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
-    // 初始淡黄色
-    initialColors[i*3] = 0.95;   // R
-    initialColors[i*3+1] = 0.85; // G
-    initialColors[i*3+2] = 0.7;  // B
+    // 初始偏蓝白的星辉色
+    initialColors[i*3] = 0.88;   // R
+    initialColors[i*3+1] = 0.92; // G
+    initialColors[i*3+2] = 1.0;  // B
   }
   colorAttribute = new THREE.BufferAttribute(initialColors, 3);
   geometry.setAttribute('color', colorAttribute);
 
-  // 创建圆形纹理
+  // 创建圆形纹理 — 偏蓝白的星辉色
   const canvas = document.createElement('canvas');
   canvas.width = 32;
   canvas.height = 32;
   const ctx = canvas.getContext('2d')!;
   const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  gradient.addColorStop(0.3, 'rgba(255, 255, 200, 0.8)');
-  gradient.addColorStop(0.6, 'rgba(255, 220, 150, 0.4)');
-  gradient.addColorStop(1, 'rgba(255, 220, 150, 0)');
+  gradient.addColorStop(0, 'rgba(230, 235, 255, 1)');
+  gradient.addColorStop(0.3, 'rgba(200, 215, 250, 0.85)');
+  gradient.addColorStop(0.6, 'rgba(170, 195, 240, 0.45)');
+  gradient.addColorStop(1, 'rgba(140, 180, 230, 0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 32, 32);
   const particleTexture = new THREE.CanvasTexture(canvas);

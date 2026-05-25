@@ -163,12 +163,12 @@ function createGradientBackground(): THREE.CanvasTexture {
   const ctx = canvas.getContext('2d')!;
 
   const gradient = ctx.createLinearGradient(0, 0, 0, 512);
-  gradient.addColorStop(0, '#5b8cc9');
-  gradient.addColorStop(0.25, '#7fb3d8');
-  gradient.addColorStop(0.5, '#a8d0e6');
-  gradient.addColorStop(0.7, '#c9e2f0');
-  gradient.addColorStop(0.85, '#ddedf5');
-  gradient.addColorStop(1, '#eef6fb');
+  gradient.addColorStop(0, '#3D6B99');     // 穹顶深天蓝
+  gradient.addColorStop(0.2, '#5B8CC9');   // 天蓝
+  gradient.addColorStop(0.45, '#7FB3D8');  // 明亮天蓝
+  gradient.addColorStop(0.65, '#B8D8EE');  // 浅蓝白
+  gradient.addColorStop(0.85, '#E8D5B7');  // 暖金白（靠近地平线）
+  gradient.addColorStop(1, '#F5E6D0');     // 地平线暖金色
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 2, 512);

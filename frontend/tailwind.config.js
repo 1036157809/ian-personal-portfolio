@@ -9,18 +9,26 @@ export default {
     extend: {
       colors: {
         day: {
-          primary: '#6366f1',
-          secondary: '#8b5cf6',
-          background: '#f8fafc',
-          surface: '#ffffff',
-          text: '#1e293b',
+          primary: '#4A6FA5',
+          secondary: '#E8A87C',
+          background: '#EEF2F7',
+          surface: '#FFFFFF',
+          'surface-elevated': '#F7F9FC',
+          text: '#2D3748',
+          'text-secondary': '#718096',
+          border: '#CBD5E0',
+          accent: '#68D391',
         },
         night: {
-          primary: '#818cf8',
-          secondary: '#a78bfa',
-          background: '#0f172a',
-          surface: '#1e293b',
-          text: '#f1f5f9',
+          primary: '#7C9CC9',
+          secondary: '#C4B5FD',
+          background: '#070B14',
+          surface: '#0F1629',
+          'surface-elevated': '#162040',
+          text: '#D4C8E8',
+          'text-secondary': '#8B9BB4',
+          border: '#1E2D4A',
+          accent: '#6EE7B7',
         }
       }
     },
