@@ -41,10 +41,16 @@
     background: rgba(238, 242, 247, 0.5);
     border: 1px solid rgba(203, 213, 224, 0.3);
   }
+  /* 夜间：与 StarBackground 深空蓝紫渐变一致 */
   .dark .glass {
     backdrop-filter: blur(16px) saturate(1.3);
     -webkit-backdrop-filter: blur(16px) saturate(1.3);
-    background: rgba(15, 22, 41, 0.55);
+    background: linear-gradient(180deg,
+      rgba(15, 22, 41, 0.5) 0%,
+      rgba(22, 32, 64, 0.52) 40%,
+      rgba(30, 45, 74, 0.55) 70%,
+      rgba(40, 55, 90, 0.5) 100%
+    );
     border: 1px solid rgba(30, 45, 74, 0.35);
   }
 
@@ -58,7 +64,12 @@
   .dark .glass-solid {
     backdrop-filter: blur(16px) saturate(1.3);
     -webkit-backdrop-filter: blur(16px) saturate(1.3);
-    background: rgba(15, 22, 41, 0.75);
+    background: linear-gradient(180deg,
+      rgba(15, 22, 41, 0.72) 0%,
+      rgba(22, 32, 64, 0.75) 40%,
+      rgba(30, 45, 74, 0.78) 70%,
+      rgba(40, 55, 90, 0.72) 100%
+    );
     border: 1px solid rgba(30, 45, 74, 0.4);
   }
 
@@ -80,7 +91,7 @@
     box-shadow: 0 4px 16px rgba(74,111,165,0.12);
   }
   .dark .btn-primary {
-    background-image: linear-gradient(135deg, rgba(124,156,201,0.08) 0%, rgba(196,181,253,0.06) 100%),
+    background-image: linear-gradient(135deg, rgba(15,22,41,0.1) 0%, rgba(22,32,64,0.08) 50%, rgba(30,45,74,0.06) 100%),
                       linear-gradient(135deg, #7C9CC9 0%, #C4B5FD 100%);
     -webkit-background-clip: padding-box, text;
     background-clip: padding-box, text;
@@ -90,7 +101,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
   .dark .btn-primary:hover {
-    background-image: linear-gradient(135deg, rgba(124,156,201,0.18) 0%, rgba(196,181,253,0.12) 100%),
+    background-image: linear-gradient(135deg, rgba(15,22,41,0.22) 0%, rgba(22,32,64,0.18) 50%, rgba(30,45,74,0.15) 100%),
                       linear-gradient(135deg, #7C9CC9 0%, #C4B5FD 100%);
     box-shadow: 0 0 20px rgba(124,156,201,0.1), 0 4px 16px rgba(0,0,0,0.25);
   }
@@ -119,12 +130,22 @@
   .dark .card {
     backdrop-filter: blur(16px) saturate(1.3);
     -webkit-backdrop-filter: blur(16px) saturate(1.3);
-    background: rgba(15, 22, 41, 0.55);
+    background: linear-gradient(180deg,
+      rgba(15, 22, 41, 0.5) 0%,
+      rgba(22, 32, 64, 0.52) 40%,
+      rgba(30, 45, 74, 0.55) 70%,
+      rgba(40, 55, 90, 0.5) 100%
+    );
     border: 1px solid rgba(30, 45, 74, 0.35);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(124, 156, 201, 0.06);
   }
   .dark .card:hover {
-    background: rgba(15, 22, 41, 0.65);
+    background: linear-gradient(180deg,
+      rgba(15, 22, 41, 0.65) 0%,
+      rgba(22, 32, 64, 0.68) 40%,
+      rgba(30, 45, 74, 0.7) 70%,
+      rgba(40, 55, 90, 0.65) 100%
+    );
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(124, 156, 201, 0.1);
   }
 
