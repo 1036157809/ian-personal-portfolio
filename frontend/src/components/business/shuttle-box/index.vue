@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-4 items-start">
     <!-- Source Box -->
-    <div class="flex-1 border rounded-lg p-4 bg-white dark:bg-gray-800 h-80 flex flex-col">
+    <div class="flex-1 rounded-lg p-4 glass h-80 flex flex-col">
       <div class="mb-3 flex items-center gap-2">
         <input
           v-model="sourceSearch"
@@ -55,7 +55,7 @@
     </div>
 
     <!-- Target Box -->
-    <div class="flex-1 border rounded-lg p-4 bg-white dark:bg-gray-800 h-80 flex flex-col">
+    <div class="flex-1 rounded-lg p-4 glass h-80 flex flex-col">
       <div class="mb-3 flex items-center gap-2">
         <input
           v-model="targetSearch"

@@ -44,7 +44,7 @@
           <div
             v-for="menu in visibleMenus"
             :key="menu.id"
-            class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700 flex items-center gap-3"
+            class="p-3 rounded-lg glass flex items-center gap-3"
           >
             <span class="text-2xl">{{ menu.icon }}</span>
             <div>
@@ -65,7 +65,7 @@
           <div
             v-for="btn in buttons"
             :key="btn.id"
-            class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
+            class="p-3 rounded-lg glass"
           >
             <div class="flex items-center justify-between mb-2">
               <span class="font-medium text-day-text dark:text-night-text">{{ btn.name }}</span>
@@ -102,7 +102,7 @@
           <div
             v-for="item in dataItems"
             :key="item.id"
-            class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
+            class="p-3 rounded-lg glass"
           >
             <div class="flex items-center justify-between mb-2">
               <span class="font-medium text-day-text dark:text-night-text">{{ item.name }}</span>
@@ -130,7 +130,7 @@
         <div
           v-for="route in visibleRoutes"
           :key="route.path"
-          class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700 flex items-center gap-3"
+          class="p-3 rounded-lg glass flex items-center gap-3"
         >
           <span class="font-mono text-sm bg-day-primary/10 dark:bg-night-primary/10 px-2 py-1 rounded text-day-primary dark:text-night-primary">
             {{ route.path }}

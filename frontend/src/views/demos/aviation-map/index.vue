@@ -75,15 +75,15 @@
               {{ $t('projects.aviationMap.challengesTitle') }}
             </h3>
             <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400 ml-8">
-              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+              <div class="glass rounded-lg p-3">
                 <p class="font-medium text-day-text dark:text-night-text mb-1">{{ $t('projects.aviationMap.challenge1Title') }}</p>
                 <p>{{ $t('projects.aviationMap.challenge1Desc') }}</p>
               </div>
-              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+              <div class="glass rounded-lg p-3">
                 <p class="font-medium text-day-text dark:text-night-text mb-1">{{ $t('projects.aviationMap.challenge2Title') }}</p>
                 <p>{{ $t('projects.aviationMap.challenge2Desc') }}</p>
               </div>
-              <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+              <div class="glass rounded-lg p-3">
                 <p class="font-medium text-day-text dark:text-night-text mb-1">{{ $t('projects.aviationMap.challenge3Title') }}</p>
                 <p>{{ $t('projects.aviationMap.challenge3Desc') }}</p>
               </div>

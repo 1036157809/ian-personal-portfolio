@@ -65,7 +65,7 @@
 
       <!-- Detailed Skills -->
       <div class="space-y-4">
-        <div v-for="(skill, key) in skillsList" :key="key" class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
+        <div v-for="(skill, key) in skillsList" :key="key" class="p-4 rounded-lg glass">
           <p class="text-day-text dark:text-night-text">{{ skill }}</p>
         </div>
       </div>
@@ -165,7 +165,7 @@
         {{ $t('about.projects') }}
       </h2>
       <div class="space-y-6">
-        <div class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
+        <div class="p-4 rounded-lg glass">
           <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project1.name') }}</h3>
           <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ $t('about.project1.period') }}</p>
           <p class="text-day-text dark:text-night-text text-sm mb-3">{{ $t('about.project1.desc') }}</p>
@@ -190,7 +190,7 @@
           </ul>
         </div>
 
-        <div class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
+        <div class="p-4 rounded-lg glass">
           <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project2.name') }}</h3>
           <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ $t('about.project2.period') }}</p>
           <p class="text-day-text dark:text-night-text text-sm mb-3">{{ $t('about.project2.desc') }}</p>
@@ -218,7 +218,7 @@
         <!-- Divider between companies -->
         <div class="border-t-2 border-gray-300 dark:border-gray-600 my-6"></div>
 
-        <div class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
+        <div class="p-4 rounded-lg glass">
           <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project3.name') }}</h3>
           <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ $t('about.project3.period') }}</p>
           <p class="text-day-text dark:text-night-text text-sm mb-3">{{ $t('about.project3.desc') }}</p>
@@ -246,7 +246,7 @@
         <!-- Divider between companies -->
         <div class="border-t-2 border-gray-300 dark:border-gray-600 my-6"></div>
 
-        <div class="p-4 rounded-lg bg-day-surface/50 dark:bg-night-surface/50">
+        <div class="p-4 rounded-lg glass">
           <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project4.name') }}</h3>
           <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ $t('about.project4.period') }}</p>
           <p class="text-day-text dark:text-night-text text-sm mb-3">{{ $t('about.project4.desc') }}</p>

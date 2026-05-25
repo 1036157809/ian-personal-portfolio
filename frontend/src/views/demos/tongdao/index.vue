@@ -135,7 +135,7 @@
               <div
                 v-for="(segment, index) in capturedSegments"
                 :key="index"
-                class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
+                class="flex items-center justify-between p-3 rounded-lg glass"
               >
                 <span class="text-sm text-day-text dark:text-night-text">
                   片段 {{ index + 1 }}: {{ segment.start.toFixed(1) }}s - {{ segment.end.toFixed(1) }}s

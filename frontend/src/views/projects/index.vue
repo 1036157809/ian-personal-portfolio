@@ -189,7 +189,7 @@
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       @click.self="closeProjectDetail"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
+      <div class="glass-solid rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-2xl font-bold text-day-text dark:text-night-text">
             {{ languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh }}

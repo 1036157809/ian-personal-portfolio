@@ -31,7 +31,7 @@
             class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300"
             :class="activeTab === tab.key
               ? 'bg-day-primary dark:bg-night-primary text-white shadow-lg'
-              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'"
+              : 'glass text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-700/50'"
             @click="switchTab(tab.key)"
           >
             {{ tab.icon }} {{ $t(tab.label) }}
@@ -64,7 +64,7 @@
                 <!-- Source Preview -->
                 <div class="flex-1">
                   <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ $t('fileConverter.source') }}</p>
-                  <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+                  <div class="glass rounded-lg p-4 flex items-center justify-center min-h-[200px]">
                     <img :src="sourceImage" class="max-h-[300px] max-w-full object-contain rounded" />
                   </div>
                   <p class="text-xs text-gray-400 mt-1 text-center">{{ sourceImageName }}</p>
@@ -130,7 +130,7 @@
             </div>
 
             <div v-if="docSource" class="mt-6">
-              <div class="flex items-center gap-3 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg mb-4">
+              <div class="flex items-center gap-3 p-3 glass rounded-lg mb-4">
                 <span class="text-2xl">{{ docSource.ext === 'docx' ? '📘' : '📄' }}</span>
                 <div class="flex-1 min-w-0">
                   <p class="font-medium text-day-text dark:text-night-text truncate">{{ docSource.file.name }}</p>
@@ -142,7 +142,7 @@
               <div v-if="docHtml" class="mb-4">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ $t('fileConverter.preview') }}</p>
                 <div
-                  class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 max-h-64 overflow-y-auto prose prose-sm dark:prose-invert max-w-none"
+                  class="glass rounded-lg p-4 max-h-64 overflow-y-auto prose prose-sm dark:prose-invert max-w-none"
                   v-html="docHtml"
                 />
               </div>

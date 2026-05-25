@@ -33,39 +33,66 @@
 }
 
 @layer components {
-  /* ===== 主按钮 — 极淡透出背景 ===== */
+  /* ===== 毛玻璃背景 token ===== */
+  /* 极淡透出 — 用于卡片、面板等 */
+  .glass {
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    background: rgba(238, 242, 247, 0.5);
+    border: 1px solid rgba(203, 213, 224, 0.3);
+  }
+  .dark .glass {
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    background: rgba(15, 22, 41, 0.55);
+    border: 1px solid rgba(30, 45, 74, 0.35);
+  }
+
+  /* 弹窗衬底 — 用于 modal、toast 等需要文字清晰的地方 */
+  .glass-solid {
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    background: rgba(238, 242, 247, 0.8);
+    border: 1px solid rgba(203, 213, 224, 0.35);
+  }
+  .dark .glass-solid {
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    background: rgba(15, 22, 41, 0.75);
+    border: 1px solid rgba(30, 45, 74, 0.4);
+  }
+
+  /* ===== 主按钮 — 极淡透出 + 渐变文字 ===== */
   .btn-primary {
     @apply relative px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105;
-    /* 白天：极淡云海色 + 模糊透出 */
-    background: linear-gradient(135deg, rgba(74, 111, 165, 0.15) 0%, rgba(232, 168, 124, 0.12) 100%);
-    backdrop-filter: blur(12px) saturate(1.3);
-    -webkit-backdrop-filter: blur(12px) saturate(1.3);
-    border: 1px solid rgba(74, 111, 165, 0.25);
-    background-image: linear-gradient(135deg, rgba(74, 111, 165, 0.15) 0%, rgba(232, 168, 124, 0.12) 100%), linear-gradient(135deg, #4A6FA5 0%, #E8A87C 100%);
+    background-image: linear-gradient(135deg, rgba(74,111,165,0.1) 0%, rgba(232,168,124,0.08) 100%),
+                      linear-gradient(135deg, #4A6FA5 0%, #E8A87C 100%);
     -webkit-background-clip: padding-box, text;
     background-clip: padding-box, text;
     color: transparent;
-    box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+    backdrop-filter: blur(12px) saturate(1.3);
+    border: 1px solid rgba(74,111,165,0.18);
+    box-shadow: 0 2px 8px rgba(74,111,165,0.08);
   }
   .btn-primary:hover {
-    background: linear-gradient(135deg, rgba(74, 111, 165, 0.28) 0%, rgba(232, 168, 124, 0.22) 100%);
-    box-shadow: 0 4px 16px rgba(74, 111, 165, 0.15);
+    background-image: linear-gradient(135deg, rgba(74,111,165,0.2) 0%, rgba(232,168,124,0.14) 100%),
+                      linear-gradient(135deg, #4A6FA5 0%, #E8A87C 100%);
+    box-shadow: 0 4px 16px rgba(74,111,165,0.12);
   }
-  /* 夜间：极淡星空色 + 模糊透出 */
   .dark .btn-primary {
-    background: linear-gradient(135deg, rgba(124, 156, 201, 0.12) 0%, rgba(196, 181, 253, 0.1) 100%);
-    backdrop-filter: blur(12px) saturate(1.4);
-    -webkit-backdrop-filter: blur(12px) saturate(1.4);
-    border: 1px solid rgba(124, 156, 201, 0.2);
-    background-image: linear-gradient(135deg, rgba(124, 156, 201, 0.12) 0%, rgba(196, 181, 253, 0.1) 100%), linear-gradient(135deg, #7C9CC9 0%, #C4B5FD 100%);
+    background-image: linear-gradient(135deg, rgba(124,156,201,0.08) 0%, rgba(196,181,253,0.06) 100%),
+                      linear-gradient(135deg, #7C9CC9 0%, #C4B5FD 100%);
     -webkit-background-clip: padding-box, text;
     background-clip: padding-box, text;
     color: transparent;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(12px) saturate(1.4);
+    border: 1px solid rgba(124,156,201,0.14);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
   .dark .btn-primary:hover {
-    background: linear-gradient(135deg, rgba(124, 156, 201, 0.25) 0%, rgba(196, 181, 253, 0.2) 100%);
-    box-shadow: 0 0 20px rgba(124, 156, 201, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3);
+    background-image: linear-gradient(135deg, rgba(124,156,201,0.18) 0%, rgba(196,181,253,0.12) 100%),
+                      linear-gradient(135deg, #7C9CC9 0%, #C4B5FD 100%);
+    box-shadow: 0 0 20px rgba(124,156,201,0.1), 0 4px 16px rgba(0,0,0,0.25);
   }
 
   /* ===== 次按钮 ===== */
@@ -75,35 +102,33 @@
     @apply text-day-primary dark:text-night-primary hover:bg-day-primary/10 dark:hover:bg-night-primary/10;
   }
 
-  /* ===== 卡片 — 极淡透出背景 ===== */
+  /* ===== 卡片 — 极淡透出 ===== */
   .card {
     @apply relative rounded-xl p-6 transition-all duration-300;
-    /* 白天：半透白 + 模糊透出云海 */
-    background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    border: 1px solid rgba(203, 213, 224, 0.35);
+    background: rgba(238, 242, 247, 0.5);
+    border: 1px solid rgba(203, 213, 224, 0.3);
     box-shadow: 0 1px 3px rgba(74, 111, 165, 0.06), 0 4px 12px rgba(74, 111, 165, 0.04);
   }
   .card:hover {
     @apply -translate-y-1;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(238, 242, 247, 0.6);
     box-shadow: 0 4px 12px rgba(74, 111, 165, 0.1), 0 8px 24px rgba(74, 111, 165, 0.06);
   }
-  /* 夜间：半透深蓝 + 模糊透出星空 */
   .dark .card {
-    background: rgba(15, 22, 41, 0.5);
     backdrop-filter: blur(16px) saturate(1.3);
     -webkit-backdrop-filter: blur(16px) saturate(1.3);
-    border: 1px solid rgba(30, 45, 74, 0.4);
+    background: rgba(15, 22, 41, 0.55);
+    border: 1px solid rgba(30, 45, 74, 0.35);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(124, 156, 201, 0.06);
   }
   .dark .card:hover {
-    background: rgba(15, 22, 41, 0.6);
+    background: rgba(15, 22, 41, 0.65);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(124, 156, 201, 0.1);
   }
 
-  /* ===== 标题渐变 — 使用 primary→secondary ===== */
+  /* ===== 标题渐变 ===== */
   .section-title {
     @apply text-3xl font-bold mb-8;
     @apply bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary;

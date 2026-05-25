@@ -47,7 +47,7 @@
           v-if="confirmDialog.show"
           class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70"
         >
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
+          <div class="glass-solid rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
             <h3 class="text-lg font-bold mb-4 text-day-text dark:text-night-text">确认操作</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">{{ confirmDialog.message }}</p>
             <div class="flex justify-end gap-3">
@@ -95,7 +95,7 @@
         <!-- State Machine -->
         <div class="mb-8">
           <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.stateMachine') }}</h3>
-          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <div class="glass rounded-lg p-4">
             <div class="mb-4">
               <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ $t('dsPortalDemo.currentState') }}: <span class="font-bold text-day-primary dark:text-night-primary">{{ currentStateLabel }}</span></p>
             </div>
@@ -115,7 +115,7 @@
                 {{ index + 1 }}. {{ state.label }}
               </button>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+            <div class="glass rounded-lg p-4">
               <h4 class="font-bold mb-2 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.stateDescription') }}</h4>
               <p class="text-sm text-gray-600 dark:text-gray-400">{{ currentDescription }}</p>
             </div>
@@ -129,7 +129,7 @@
         <!-- File Management -->
         <div>
           <h3 class="text-xl font-bold mb-4 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.fileManagement') }}</h3>
-          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <div class="glass rounded-lg p-4">
             <!-- Upload Area -->
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.uploadFile') }}</label>
@@ -179,7 +179,7 @@
             <div v-if="uploadProgress.length > 0" class="mb-4">
               <label class="block text-sm font-medium mb-2 text-day-text dark:text-night-text">{{ $t('dsPortalDemo.uploadProgress') }}</label>
               <div class="space-y-2">
-                <div v-for="progress in uploadProgress" :key="progress.fileName" class="bg-white dark:bg-gray-800 rounded-lg p-3">
+                <div v-for="progress in uploadProgress" :key="progress.fileName" class="glass rounded-lg p-3">
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-day-text dark:text-night-text">{{ progress.fileName }}</span>
                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ progress.percentage }}%</span>

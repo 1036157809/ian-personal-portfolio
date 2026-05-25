@@ -9,7 +9,7 @@
   >
     <div
       v-if="visible"
-      class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-sm bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-gray-700"
+      class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-sm glass-solid rounded-lg shadow-lg p-4"
     >
       <div class="flex items-start">
         <div class="flex-shrink-0">
