@@ -1,5 +1,9 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-day-background/75 dark:bg-night-background/80 border-b border-day-border/50 dark:border-night-border/60">
+  <nav
+    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b"
+    :class="isScrolled
+      ? 'backdrop-blur-xl bg-transparent border-day-border/20 dark:border-night-border/20'
+      : 'bg-transparent border-transparent'">
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <router-link to="/" class="text-2xl font-bold bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary bg-clip-text text-transparent">
@@ -87,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useThemeStore } from 'src/stores/theme'
 import { useLanguageStore } from 'src/stores/language'
 import { useI18n } from 'vue-i18n'
@@ -97,6 +101,20 @@ const languageStore = useLanguageStore()
 const { locale } = useI18n()
 
 const mobileMenuOpen = ref(false)
+const isScrolled = ref(false)
+
+const onScroll = () => {
+  isScrolled.value = window.scrollY > 10
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll)
+})
 
 const navItems = [
   { path: '/', label: 'nav.home' },
