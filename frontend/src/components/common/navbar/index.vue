@@ -46,7 +46,7 @@
         
         <!-- Mobile Menu Button -->
         <button
-          @click="mobileMenuOpen = !mobileMenuOpen"
+          @click.stop="mobileMenuOpen = !mobileMenuOpen"
           class="md:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,8 +55,20 @@
         </button>
       </div>
       
+      <!-- Mobile Menu Backdrop -->
+      <Teleport to="body">
+        <div
+          v-if="mobileMenuOpen"
+          class="fixed inset-0 z-40 bg-transparent md:hidden"
+          @click="mobileMenuOpen = false"
+        ></div>
+      </Teleport>
+
       <!-- Mobile Menu -->
-      <div v-if="mobileMenuOpen" class="md:hidden mt-4 space-y-4 pb-4">
+      <div
+        v-if="mobileMenuOpen"
+        class="md:hidden mt-4 space-y-4 pb-4 relative z-10"
+      >
         <router-link
           v-for="item in navItems"
           :key="item.path"
@@ -66,7 +78,7 @@
         >
           {{ $t(item.label) }}
         </router-link>
-        
+
         <div class="flex space-x-4">
           <button
             @click="toggleLanguage"
@@ -74,7 +86,7 @@
           >
             {{ languageStore.currentLang === 'en' ? '中文' : 'EN' }}
           </button>
-          
+
           <button
             @click="themeStore.toggleTheme"
             class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
