@@ -1,9 +1,11 @@
 <template>
   <nav
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b"
-    :class="isScrolled
-      ? 'backdrop-blur-xl bg-transparent border-day-border/20 dark:border-night-border/20'
-      : 'bg-transparent border-transparent'">
+    :class="[
+      isDesktop && !isScrolled
+        ? 'bg-transparent border-transparent'
+        : 'backdrop-blur-xl bg-transparent border-day-border/20 dark:border-night-border/20'
+    ]">
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <router-link to="/" class="text-2xl font-bold bg-gradient-to-r from-day-primary to-day-secondary dark:from-night-primary dark:to-night-secondary bg-clip-text text-transparent">
@@ -102,18 +104,26 @@ const { locale } = useI18n()
 
 const mobileMenuOpen = ref(false)
 const isScrolled = ref(false)
+const isDesktop = ref(window.innerWidth >= 768)
 
 const onScroll = () => {
   isScrolled.value = window.scrollY > 10
 }
 
+const onResize = () => {
+  isDesktop.value = window.innerWidth >= 768
+}
+
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onResize, { passive: true })
   onScroll()
+  onResize()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', onResize)
 })
 
 const navItems = [
