@@ -18,8 +18,8 @@
             v-for="item in navItems"
             :key="item.path"
             :to="item.path"
-            class="text-day-text dark:text-night-text hover:text-day-primary dark:hover:text-night-primary transition-colors"
-            active-class="text-day-primary dark:text-night-primary font-semibold"
+            class="relative text-day-text dark:text-night-text hover:text-day-primary dark:hover:text-night-primary transition-colors py-1"
+            active-class="text-day-primary dark:text-night-primary font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-day-primary dark:after:bg-night-primary after:rounded-full"
           >
             {{ $t(item.label) }}
           </router-link>
@@ -74,6 +74,7 @@
           :key="item.path"
           :to="item.path"
           class="block text-day-text dark:text-night-text hover:text-day-primary dark:hover:text-night-primary transition-colors"
+          active-class="!text-day-primary dark:!text-night-primary font-semibold bg-day-primary/10 dark:bg-night-primary/10 rounded-lg px-3 py-1"
           @click="mobileMenuOpen = false"
         >
           {{ $t(item.label) }}
