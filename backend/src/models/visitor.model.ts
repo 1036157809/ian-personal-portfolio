@@ -1,12 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from 'src/config/database';
+import { uuidv7 } from 'src/utils/uuid';
 
 /**
  * 访问日志 — 用于 IP 去重
  * 同一天同一个 ip_hash 只记录一次
  */
 export class VisitorLog extends Model {
-  public id!: number;
+  public id!: string;
   public visit_date!: string;
   public ip_hash!: string;
   public readonly createdAt!: Date;
@@ -15,9 +16,9 @@ export class VisitorLog extends Model {
 VisitorLog.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.STRING(36),
       primaryKey: true,
+      defaultValue: () => uuidv7(),
     },
     visit_date: {
       type: DataTypes.STRING(10),
@@ -28,6 +29,11 @@ VisitorLog.init(
       type: DataTypes.STRING(64),
       allowNull: false,
       comment: 'SHA256(ip + salt)',
+    },
+    location: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      comment: 'IP 地理位置，格式：省份|城市，例如：广东省|深圳市',
     },
   },
   {
@@ -50,7 +56,7 @@ VisitorLog.init(
  * 每日访问汇总 — 用于快速查询统计
  */
 export class VisitorDailySummary extends Model {
-  public id!: number;
+  public id!: string;
   public visit_date!: string;
   public uv_count!: number;
   public pv_count!: number;
@@ -61,9 +67,9 @@ export class VisitorDailySummary extends Model {
 VisitorDailySummary.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.STRING(36),
       primaryKey: true,
+      defaultValue: () => uuidv7(),
     },
     visit_date: {
       type: DataTypes.STRING(10),

@@ -40,8 +40,29 @@ export async function createApp(): Promise<Koa> {
     await testConnection();
     await Contact.sync();
     await AiUsageStats.sync();
+    await VisitorLog.sync({ alter: true });
+    await VisitorDailySummary.sync({ alter: true });
+
+    // Migrate: drop & recreate visitor tables to change id from INT to VARCHAR(36) (UUID)
+    // Visitor logs are transient data, so dropping is acceptable
+    try {
+      const [logCols] = await sequelize.query("SHOW COLUMNS FROM visitor_log WHERE Field = 'id'");
+      if (Array.isArray(logCols) && logCols.length > 0 && (logCols[0] as any).Type.includes('int')) {
+        await sequelize.query('DROP TABLE IF EXISTS `visitor_log`');
+        console.log('[Migrate] visitor_log dropped for UUID migration');
+      }
+      const [summaryCols] = await sequelize.query("SHOW COLUMNS FROM visitor_daily_summary WHERE Field = 'id'");
+      if (Array.isArray(summaryCols) && summaryCols.length > 0 && (summaryCols[0] as any).Type.includes('int')) {
+        await sequelize.query('DROP TABLE IF EXISTS `visitor_daily_summary`');
+        console.log('[Migrate] visitor_daily_summary dropped for UUID migration');
+      }
+    } catch (migrateErr: any) {
+      console.error('[Migrate] Failed to drop visitor tables:', migrateErr.message);
+    }
+    // Recreate tables with new UUID id
     await VisitorLog.sync();
     await VisitorDailySummary.sync();
+
     await SystemConfig.sync();
     await initDefaultConfig({
       embedding_base_url: '',
