@@ -7,6 +7,9 @@ import errorHandler from 'src/middlewares/error.middleware';
 import logger from 'src/middlewares/logger.middleware';
 import { sequelize, testConnection } from 'src/config/database';
 import Contact from 'src/models/contact.model';
+import AiUsageStats from 'src/models/ai-usage.model';
+import { VisitorLog, VisitorDailySummary } from 'src/models/visitor.model';
+import { startDailyResetScheduler } from 'src/ai-assistant/services/rate-limit.service';
 
 export async function createApp(): Promise<Koa> {
   const app = new Koa();
@@ -34,6 +37,10 @@ export async function createApp(): Promise<Koa> {
   try {
     await testConnection();
     await Contact.sync();
+    await AiUsageStats.sync();
+    await VisitorLog.sync();
+    await VisitorDailySummary.sync();
+    startDailyResetScheduler();
     console.log('Database models synchronized');
   } catch (error) {
     console.error('Failed to initialize database:', error);

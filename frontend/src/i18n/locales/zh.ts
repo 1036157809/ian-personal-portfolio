@@ -21,7 +21,7 @@ export default {
   },
   about: {
     title: '关于我',
-    description: '一名资深前端工程师，专注于构建高性能、现代化的Web应用。转型为AI辅助开发领域的前端全栈工程师，深度融合bolt.new、cursor等智能编程工具。本作品集项目从0到1完整覆盖前后端全栈部署，使用Docker容器化部署，展现AI工具链在提升开发效率方面的实践成果。',
+    description: '7 年前端开发经验，专注于构建高性能、现代化的 Web 应用。从 Vue 2 到 Vue 3 的完整迁移经验，独立探索并落地 React 18 + RTK Query 方案。具备 WebGL 地图可视化、Web Audio API 音频可视化、Three.js 动态背景等多媒体实践经验。独立完成了基于 RAG 架构的 AI 智能问答系统。',
     skills: '专业技能',
     experience: '工作经历',
     projects: '项目经验',
@@ -29,31 +29,32 @@ export default {
     skillsList: {
       frontend: '前端基础：精通 HTML5/CSS3，熟练使用 rem/flex 实现响应式布局与移动端适配，能编写兼容主流浏览器的高质量页面。',
       javascript: 'JavaScript 及相关：精通原生 JavaScript、ES6+，熟悉 TypeScript，具备良好的模块化与面向对象编程能力；熟练使用 jQuery、Lodash 等库。',
-      frameworks: '前端框架：熟练使用 Vue 2/3 全家桶（Vuex、Pinia、Vue-Router），具备从 Vue 2 到 Vue 3 + Quasar 的完整迁移经验；熟悉 React 18 及其生态，在团队中主导推广 Redux Toolkit + RTK Query 方案。',
-      engineering: '工程化与构建：熟练使用 Webpack、Vite、Gulp 等构建工具，能根据项目需求进行定制化配置与性能优化；熟悉 ESLint、Prettier、Husky 等代码规范工具，具备 CI/CD 流程设计与自动化部署经验。',
+      frameworks: '前端框架：熟练使用 Vue 2/3 全家桶（Vuex、Pinia、Vue-Router），主导从 Vue 2 + Quasar V1 到 Vue 3 + Quasar V2 的平滑迁移（打包效率↑25%，运行时性能↑30%）；熟悉 React 18 及其生态，在团队中主导推广 Redux Toolkit + RTK Query 方案（代码量↓40%，效率↑30%）。',
+      engineering: '工程化与构建：熟练使用 Webpack、Vite、Gulp 等构建工具，能根据项目需求进行定制化配置与性能优化；熟悉 ESLint、Prettier、Commitlint 等代码规范工具，具备 CI/CD 流程设计与自动化部署经验（Jenkins、Docker）。',
       nodejs: 'Node.js 与后端：熟悉 Node.js，能使用 Express、Koa 搭建本地 Mock 服务与中间件开发；掌握 Sequelize ORM 框架，具备数据库设计与接口开发能力；能够与后端协作制定接口规范，提升前后端联调效率。',
       git: '版本控制与协作：熟练使用 Git 进行代码管理与团队协作，熟悉 Git Flow 工作流。',
-      visualization: '可视化与组件库：熟练使用 ECharts、AntV 实现复杂数据可视化（雷达图、热区图）；熟练使用 ElementUI、Quasar、Ant Design 等 UI 库。',
+      visualization: '可视化与组件库：熟练使用 ECharts、AntV 实现复杂数据可视化（雷达图、热区图）；熟练使用 ElementUI、Quasar、Ant Design、Vant 等 UI 库；具备 OpenLayers、WebGL、Three.js、Canvas 2D、Web Audio API 等多媒体开发经验。',
       crossPlatform: '跨端与混合开发：有基于 Quasar 的跨端（PC、移动、iOS）项目经验，熟悉混合开发模式。',
-      special: '专项技术：熟悉 Canvas 实现电子签名、图片处理；了解 OCR 技术集成；熟悉 PDF 生成与预览优化。'
+      special: '专项技术：熟悉 Canvas 实现电子签名、图片处理；了解 OCR 技术集成；熟悉 PDF 生成与预览优化；具备 Okta OAuth 2.0 企业级认证集成经验。',
+      ai: 'AI 应用：RAG（检索增强生成）、Embedding 向量化、向量数据库、SSE 流式对话、LLM 集成；熟练使用 Cursor、Claude Code、Codex、Windsurf 等 AI 编程工具。'
     },
     workExp1: {
-      company: '中电金信-纬创',
+      company: '中电金信 → 纬创',
       role: '前端开发工程师',
       period: '2020.10 – 2026.01',
-      desc1: '主导保险业务系统 Ipos 的前端架构设计与迭代，负责技术选型、项目构建及从 Vue 2 + Quasar V1 到 Vue 3 + Quasar V2 的平滑迁移，迁移版本于 2025 年 4 月上线，打包效率提升 25%，运行时性能提升 30%。',
-      desc2: '负责核心功能开发，包括基于 Canvas 的电子签名组件、文件上传与 OCR 智能识别集成，优化用户投保流程，减少手动输入错误，提升投保效率。',
-      desc3: '深度参与跨端（PC、移动、iOS）一致性体验设计，解决混合开发中的兼容性问题。',
-      desc4: '使用 Node.js（Express）搭建本地 Mock 服务，协助后端定义接口规范，提高前后端联调效率。',
-      desc5: '负责生产环境问题定位与修复，分析用户上报的深层原因，追溯代码问题并安排版本修复，确保系统高可用。',
-      desc6: '技术影响力：在该系统中，率先引入 React 18 + Redux Toolkit + RTK Query 方案，并在公司内部组织技术分享，推动该技术栈在多个团队落地，统一了前端状态管理标准，平均开发效率提升约 30%，并建立了可复用的项目模板。系统包含20+个尽职调查检查模块，具备复杂业务流程状态机管理。'
+      desc1: '主导保险业务系统 Ipos 的前端架构设计与迭代，负责技术选型、项目构建及从 Vue 2 + Quasar V1 到 Vue 3 + Quasar V2 的平滑迁移（2024.08-2025.04），打包效率↑25%，运行时性能↑30%。',
+      desc2: '负责核心功能开发，包括基于 Canvas 的电子签名组件（重构逻辑减少冗余 API 调用，签名保存时间缩短 50%）、文件上传与 OCR 智能识别集成（识别准确率 95%+）。',
+      desc3: '深度参与跨端（PC、移动、iOS）一致性体验设计，解决混合开发中的兼容性问题。使用 Node.js（Express）+ Sequelize 搭建 BFF 层，聚合后端 Java 接口。',
+      desc4: '利用 Microsoft Application Insights 主动发现并定位用户线上问题，通过日志回溯、接口异常分析、数据复现等方式解决偶现 bug，平均问题定位时间缩短约 60%。通过 Jenkins 完成生产环境部署。',
+      desc5: '在 DS-portal 招聘系统项目中（兄弟团队紧急借调），独立负责前端技术选型与架构设计。设计 9 主状态+11 子状态的状态机。采用 React 18 + RTKQ，文件传输采用分片上传+MD5 校验。结果：代码量↓40%，开发效率↑30%，系统成功上线。',
+      desc6: '技术影响力：率先引入 React 18 + Redux Toolkit + RTK Query 方案，在公司内部组织技术分享，推动该技术栈在多个团队落地，沉淀可复用项目模板。'
     },
     workExp2: {
       company: '同道伟业',
       role: '前端开发工程师',
       period: '2020.06 – 2020.10',
       desc1: '负责"同道智能云平台"、"同道大数据录入"及"云南足球协会"三个项目的前端开发与维护。',
-      desc2: '在智能云平台中，基于原生 JavaScript + jQuery 维护老代码，同时引入模块化思想重构部分功能；使用 ECharts 实现球员/裁判能力雷达图、对比热区图及视频截取回放，提升数据可视化效果。',
+      desc2: '在智能云平台中，基于原生 JavaScript + jQuery 维护老代码，同时引入模块化思想重构部分功能；使用 ECharts 实现球员/裁判能力雷达图、对比热区图及视频截取回放。',
       desc3: '为大数据后台封装类似穿梭框的复杂交互组件，支持选项分页加载与搜索，提升大数据量下的交互流畅度。',
       desc4: '集成二维码支付功能，通过轮询实现支付状态实时反馈，提升用户体验。',
       desc5: '在云南足球协会官网（Vue 项目）中，负责页面搭建及青训系统模块，使用 Vant 实现上拉加载下拉刷新，优化移动端体验。'
@@ -63,28 +64,29 @@ export default {
       role: '前端开发工程师',
       period: '2019.10 – 2020.05',
       desc1: '参与"首钢园物业管理平台"的前端开发，负责设备管理、用户管理等模块的页面布局与交互实现。',
-      desc2: '基于 Vue + Vuex + Vue Router，结合 ElementUI 和 moment.js 完成上传附件图片、远程搜索及日期处理功能；封装 axios 拦截器，统一处理错误与 loading 状态，与后端联调实现数据动态渲染。',
-      desc3: '参与项目迭代与代码审查，优化组件性能，提升页面加载速度。'
+      desc2: '基于 Vue + Vuex + Vue Router，结合 ElementUI 和 moment.js 完成上传附件图片、远程搜索及日期处理功能；封装 axios 拦截器，统一处理错误与 loading 状态。',
+      desc3: '参与项目迭代与代码审查，优化组件性能，通过虚拟滚动减少 DOM 节点，提升页面响应速度。'
     },
     project1: {
       name: 'Ipos 跨端保险系统',
       period: '2020.11 – 2025.04',
-      desc: '一款基于混合开发的保险业务系统，覆盖 PC、移动端及 iOS 平台，实现完整的投保工作流，包括用户信息管理、证件 OCR 识别、保单 PDF 生成预览下载、电子签名等。',
-      tech: 'Vue 2/3、Quasar、Node.js（Express）、Java、Canvas、OCR SDK',
-      challenge1: '技术升级：主导从 Vue 2 + Quasar V1 到 Vue 3 + Quasar V2 的平滑迁移，解决依赖冲突与 API 变更，确保业务连续性。',
-      challenge2: '性能优化：优化 PDF 生成逻辑，将数据从 Base64 编码改为 Blob 流式处理，减少内存占用，生成速度提升约 30%。',
-      challenge3: '用户体验：优化电子签名组件，通过 Canvas 绘图优化和防抖处理，提升签名绘制流畅度与保存效率。',
-      challenge4: '智能化集成：集成 OCR 技术自动识别证件信息，减少用户输入，识别准确率达 95% 以上。'
+      desc: '混合开发保险业务系统，覆盖 PC、移动端及 iOS 平台，实现完整的投保工作流，包括用户信息管理、证件 OCR 识别、保单 PDF 生成预览下载、电子签名等。',
+      tech: 'Vue 2/3、Quasar、Node.js（Express）、Java、Canvas、OCR SDK、Microsoft Application Insights',
+      challenge1: '技术升级：主导从 Vue 2 + Quasar V1 到 Vue 3 + Quasar V2 的平滑迁移，逐一升级核心依赖，构建工具从 Webpack 迁移到 Vite，测试框架从 Jest 迁移到 Vitest。结果：打包效率↑25%，运行时性能↑30%。',
+      challenge2: '电子签名优化：重构签名逻辑，将绘制与保存分离，增加防抖与局部重绘，合并重复请求。结果：签名保存时间缩短约 50%，API 调用量减少 40%。',
+      challenge3: '缓存策略优化：对静态数据使用 localStorage + 过期时间，对动态数据使用 Vuex/pinia 缓存并配合请求去重。结果：页面二次加载速度提升约 35%。',
+      challenge4: '线上问题排查：通过 Microsoft Application Insights 查询用户操作日志和接口调用链，定位异常接口及请求参数。平均问题定位时间缩短约 60%。'
     },
     project2: {
       name: 'DS-portal 招聘尽职调查门户系统',
       period: '2023.06 – 2023.11',
-      desc: '该系统，覆盖完整的招聘流程管理，从FSC申请到最终发证的全流程数字化。系统包含20+个尽职调查检查模块（Nice Actimize反洗钱检查、Questnet检查、CEA检查、FATCA税务合规检查、MediSave责任检查、专业资格检查、就业参考检查、财务稳健性检查等），支持多角色权限控制（TD Ops Staff、Manager）、文件管理、PDF预览、REEF监管考试管理等复杂业务场景。',
+      desc: '企业级招聘全流程数字化系统，包含 20+ 尽职调查检查模块（反洗钱、税务合规、专业资格等），支持多角色权限控制（TD Ops Staff、Manager）、文件管理、PDF 预览、REEF 监管考试管理等复杂业务场景。',
       tech: 'React 18、Redux Toolkit + RTK Query、React Router 6、Okta OAuth 2.0、Ant Design、styled-components、react-pdf、Application Insights、Jest、Docker',
-      challenge1: '现代化状态管理架构：率先引入 React 18 + Redux Toolkit + RTK Query 方案，替代传统 Redux + 手动管理请求状态。通过 RTK Query 的自动缓存、请求去重、loading/error状态自动管理，代码量减少约 40%，开发效率提升约 30%。建立了统一的API层架构，包含20+个API模块。',
-      challenge2: '企业级身份认证：集成 Okta OAuth 2.0 + PKCE 认证流程，实现安全的企业级单点登录。配置多环境认证策略（Development/UAT/Production），支持token自动刷新和会话管理。',
-      challenge3: '复杂业务流程引擎：设计并实现了9个主要流程状态的状态机管理（FSC申请、申请审核、面试签约、尽职调查、管理层审核、RNF申报、发证、完成招聘），每个状态包含多个子步骤和条件判断，确保业务流程的严格合规性。',
-      challenge4: '高性能文件处理系统：开发智能文件上传组件，支持单文件/多文件上传、文件重命名模板、大小格式校验、断点续传等功能。实现PDF文档在线预览（基于react-pdf）、Blob流式下载、文件分类管理等核心功能。'
+      challenge1: '现代化状态管理架构：率先引入 React 18 + Redux Toolkit + RTK Query 方案，替代传统 Redux + 手动管理请求状态。通过 RTK Query 的自动缓存、请求去重、loading/error 状态自动管理，代码量减少约 40%，开发效率提升约 30%。建立了统一的 API 层架构，包含 20+ 个 API 模块。',
+      challenge2: '企业级身份认证：集成 Okta OAuth 2.0 + PKCE 认证流程，实现安全的企业级单点登录。配置多环境认证策略（Development/UAT/Production），支持 token 自动刷新和会话管理。',
+      challenge3: '复杂业务流程引擎：设计并实现了 9 个主要流程状态的状态机管理（FSC 申请、申请审核、面试签约、尽职调查、管理层审核、RNF 申报、发证、完成招聘），每个状态包含多个子步骤和条件判断，确保业务流程的严格合规性。',
+      challenge4: '高性能文件处理系统：开发智能文件上传组件，支持单文件/多文件上传、文件重命名模板、大小格式校验、断点续传等功能。文件传输采用分片上传+MD5 校验。实现 PDF 文档在线预览（基于 react-pdf）、Blob 流式下载。',
+      challenge5: '代码分割与性能优化：使用 @loadable/component 实现路由级别代码分割，首屏加载时间减少约 30%。通过 RTK Query 的智能缓存策略，减少不必要的网络请求约 40%。'
     },
     project3: {
       name: '同道智能云平台 & 大数据后台',
@@ -106,9 +108,19 @@ export default {
       achievement3: '封装 axios 请求层，统一处理异常与 loading，与后端协同完成接口联调，确保数据准确渲染。',
       achievement4: '优化表格渲染性能，通过虚拟滚动减少 DOM 节点，提升页面响应速度。'
     },
+    project5: {
+      name: 'AI 智能助手（个人全栈项目）',
+      period: '2026.05 – 至今',
+      desc: '集成在个人网站中的智能问答系统，基于 RAG（检索增强生成）架构，支持流式对话。用户可咨询简历相关技术问题，系统从知识库中检索相关内容并生成回答。',
+      tech: 'Vue 3、Pinia、SSE（Server-Sent Events）、Koa、向量数据库、Embedding、LLM',
+      achievement1: '前端：设计聊天组件（ChatWidget/ChatPanel/ChatMessage/ChatInput），支持流式渲染（SSE），使用 Pinia 管理消息状态，响应式布局适配移动端和桌面端。',
+      achievement2: '后端：使用 Koa 搭建 REST API，提供 /api/chat（非流式）和 /api/chat/stream（SSE 流式）接口。',
+      achievement3: 'RAG 架构：将简历知识切片后通过 Embedding 向量化，存入向量数据库。对话时检索 topK 相关片段，构造 prompt 调用 LLM。',
+      achievement4: '构建了包含 160+ 知识片段的简历知识库，涵盖个人简介、专业技能、工作经历、项目经验、教育背景等。'
+    },
     education1: {
       school: '中国石油大学',
-      degree: '本科',
+      degree: '本科（在职）',
       major: '计算机科学与技术',
       period: '2021.09 – 2024.01'
     },
@@ -282,6 +294,15 @@ export default {
     send: '发送消息',
     success: '消息发送成功！',
     error: '发送失败，请重试。'
+  },
+  chat: {
+    title: 'AI 助手',
+    welcomeTitle: '你好！我是 Ian 的 AI 助手',
+    welcomeDesc: '欢迎询问关于 Ian 的技能、项目和经历。',
+    inputPlaceholder: '输入你的问题...',
+    errorMessage: '发送失败，请稍后重试。',
+    streamErrorMessage: '连接失败，请稍后重试。',
+    dailyLimitMessage: '因个人使用限制，今日调用次数已达上限，明天再来吧！',
   },
   footer: {
     copyright: '© 2026 Ian Zhang. 保留所有权利。',

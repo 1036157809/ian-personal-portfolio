@@ -61,6 +61,18 @@
         <span class="px-4 py-2 rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
           Sequelize
         </span>
+        <span class="px-4 py-2 rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+          Three.js
+        </span>
+        <span class="px-4 py-2 rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+          WebGL
+        </span>
+        <span class="px-4 py-2 rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+          RAG
+        </span>
+        <span class="px-4 py-2 rounded-full bg-day-primary/10 dark:bg-night-primary/10 text-day-primary dark:text-night-primary">
+          Docker
+        </span>
       </div>
 
       <!-- Detailed Skills -->
@@ -270,6 +282,34 @@
             </li>
           </ul>
         </div>
+
+        <!-- Divider between companies -->
+        <div class="border-t-2 border-gray-300 dark:border-gray-600 my-6"></div>
+
+        <div class="p-4 rounded-lg glass">
+          <h3 class="text-lg font-semibold text-day-text dark:text-night-text">{{ $t('about.project5.name') }}</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ $t('about.project5.period') }}</p>
+          <p class="text-day-text dark:text-night-text text-sm mb-3">{{ $t('about.project5.desc') }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3"><strong>Tech:</strong> {{ $t('about.project5.tech') }}</p>
+          <ul class="space-y-1 text-day-text dark:text-night-text text-sm">
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>{{ $t('about.project5.achievement1') }}</span>
+            </li>
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>{{ $t('about.project5.achievement2') }}</span>
+            </li>
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>{{ $t('about.project5.achievement3') }}</span>
+            </li>
+            <li class="flex items-start">
+              <span class="mr-2">•</span>
+              <span>{{ $t('about.project5.achievement4') }}</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -309,6 +349,7 @@ const skillsList = computed(() => ({
   git: t('about.skillsList.git'),
   visualization: t('about.skillsList.visualization'),
   crossPlatform: t('about.skillsList.crossPlatform'),
-  special: t('about.skillsList.special')
+  special: t('about.skillsList.special'),
+  ai: t('about.skillsList.ai')
 }))
 </script>

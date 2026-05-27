@@ -1,4 +1,6 @@
 node_modules/
+package-lock.json
+.pnpm-store/
 .windsurf/
 uploads/
 backend/public/uploads/*
@@ -7,4 +9,6 @@ backend/public/uploads/*
 frontend/.env
 frontend/dist
 backend/dist
+backend/knowledge
 .claude
+docs

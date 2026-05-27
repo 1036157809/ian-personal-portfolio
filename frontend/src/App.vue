@@ -6,6 +6,8 @@
       <router-view />
     </main>
     <Footer />
+    <ChatWidget />
+    <ChatPanel />
   </div>
 </template>
 
@@ -16,12 +18,30 @@ import { useThemeDetector } from 'src/composables/useThemeDetector'
 import Navbar from 'src/components/common/navbar/index.vue'
 import Footer from 'src/components/common/footer/index.vue'
 import ThemeBackground from 'src/components/BackgroundEffects/ThemeBackground.vue'
+import { ChatWidget, ChatPanel } from 'src/ai-assistant'
+import { visitorApi } from 'src/api/visitor.api'
 
 const themeStore = useThemeStore()
+
+function getTodayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 onMounted(() => {
   themeStore.initTheme()
   const cleanup = useThemeDetector()
+
+  // 记录访问（同一天只记录一次）
+  const todayKey = getTodayKey();
+  const recorded = sessionStorage.getItem(`visitor_recorded_${todayKey}`);
+  if (!recorded) {
+    visitorApi.recordVisit().then(() => {
+      sessionStorage.setItem(`visitor_recorded_${todayKey}`, '1');
+    }).catch(() => {
+      // 静默失败，不影响用户体验
+    });
+  }
+
   onUnmounted(cleanup)
 })
 </script>

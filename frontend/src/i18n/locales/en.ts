@@ -21,7 +21,7 @@ export default {
   },
   about: {
     title: 'About Me',
-    description: 'As a senior frontend engineer, I specialize in building high-performance, modern web applications. I have transitioned to an AI-assisted frontend full-stack developer, deeply integrating tools like bolt.new and cursor. This portfolio project demonstrates full-stack development from scratch with Docker deployment, showcasing the practical impact of AI toolchains on development efficiency.',
+    description: '7 years of frontend development experience, specializing in building high-performance, modern web applications. Full migration experience from Vue 2 to Vue 3, independently explored and implemented React 18 + RTK Query solution. Experienced in WebGL map visualization, Web Audio API audio visualization, and Three.js dynamic backgrounds. Independently built an AI Q&A system based on RAG architecture.',
     skills: 'Professional Skills',
     experience: 'Work Experience',
     projects: 'Project Experience',
@@ -29,24 +29,25 @@ export default {
     skillsList: {
       frontend: 'Frontend Fundamentals: Proficient in HTML5/CSS3, responsive layout with rem/flex, mobile adaptation, and cross-browser compatibility.',
       javascript: 'JavaScript: Master of native JavaScript and ES6+, familiar with TypeScript, skilled in jQuery and Lodash.',
-      frameworks: 'Frontend Frameworks: Skilled in Vue 2/3 ecosystem (Vuex, Pinia, Vue-Router), experienced in Vue 2 to Vue 3 + Quasar migration. Familiar with React 18 ecosystem, pioneered Redux Toolkit + RTK Query adoption.',
-      engineering: 'Engineering & Build: Proficient in Webpack, Vite, Gulp with custom configuration and performance optimization. Familiar with ESLint, Prettier, Husky, and CI/CD automation.',
+      frameworks: 'Frontend Frameworks: Skilled in Vue 2/3 ecosystem (Vuex, Pinia, Vue-Router), led smooth migration from Vue 2 + Quasar V1 to Vue 3 + Quasar V2 (build efficiency ↑25%, runtime performance ↑30%). Familiar with React 18 ecosystem, pioneered Redux Toolkit + RTK Query adoption (code volume ↓40%, efficiency ↑30%).',
+      engineering: 'Engineering & Build: Proficient in Webpack, Vite, Gulp with custom configuration and performance optimization. Familiar with ESLint, Prettier, Commitlint, and CI/CD automation (Jenkins, Docker).',
       nodejs: 'Node.js & Backend: Familiar with Node.js, Express, and Koa for mock services and middleware. Master of Sequelize ORM with database design and API development capabilities.',
       git: 'Version Control: Proficient in Git and Git Flow workflow for team collaboration.',
-      visualization: 'Visualization & UI: Skilled in ECharts and AntV for complex data visualization (radar charts, heatmaps). Proficient in ElementUI, Quasar, and Ant Design.',
+      visualization: 'Visualization & UI: Skilled in ECharts and AntV for complex data visualization (radar charts, heatmaps). Proficient in ElementUI, Quasar, Ant Design, Vant. Experienced in OpenLayers, WebGL, Three.js, Canvas 2D, and Web Audio API.',
       crossPlatform: 'Cross-Platform: Experienced in Quasar-based cross-platform development (PC, mobile, iOS).',
-      special: 'Special Skills: Canvas for electronic signatures and image processing, OCR integration, PDF generation and preview optimization.'
+      special: 'Special Skills: Canvas for electronic signatures and image processing, OCR integration, PDF generation and preview optimization, Okta OAuth 2.0 enterprise authentication.',
+      ai: 'AI Applications: RAG (Retrieval-Augmented Generation), Embedding vectorization, vector databases, SSE streaming dialogue, LLM integration. Proficient in AI coding tools (Cursor, Claude Code, Codex, Windsurf).'
     },
     workExp1: {
-      company: 'GFT - Wistron',
+      company: 'GFT → Wistron',
       role: 'Frontend Engineer',
       period: '2020.10 – 2026.01',
-      desc1: 'Led frontend architecture design and iteration for insurance business system Ipos, responsible for technology selection and smooth migration from Vue 2 + Quasar V1 to Vue 3 + Quasar V2. Launched in April 2025, build efficiency improved by 25%, runtime performance improved by 30%.',
-      desc2: 'Developed core features including Canvas-based electronic signature component, file upload, and OCR intelligent recognition integration, optimizing user insurance process and reducing manual input errors.',
-      desc3: 'Deeply involved in cross-platform (PC, mobile, iOS) consistent experience design, solving compatibility issues in hybrid development.',
-      desc4: 'Built local mock services with Node.js (Express), assisted backend in defining API specifications, improving frontend-backend collaboration efficiency.',
-      desc5: 'Responsible for production environment issue localization and fixes, ensuring high system availability.',
-      desc6: 'Technical Impact: Pioneered React 18 + Redux Toolkit + RTK Query in the system. Organized technical sharing internally, promoted the tech stack across multiple teams, unified frontend state management standards, improved development efficiency by ~30%, and established reusable project templates. System includes 20+ due diligence check modules with complex business process state machine management.'
+      desc1: 'Led frontend architecture design and iteration for insurance business system Ipos. Responsible for technology selection and smooth migration from Vue 2 + Quasar V1 to Vue 3 + Quasar V2 (Aug 2024 - Apr 2025), build efficiency ↑25%, runtime performance ↑30%.',
+      desc2: 'Developed core features including Canvas-based electronic signature component (refactored logic, reduced redundant API calls, signature save time ↓50%), file upload, and OCR intelligent recognition integration (accuracy 95%+).',
+      desc3: 'Deeply involved in cross-platform (PC, mobile, iOS) consistent experience design. Built BFF layer with Node.js (Express) + Sequelize to aggregate backend Java APIs.',
+      desc4: 'Used Microsoft Application Insights for proactive issue discovery and localization. Average issue localization time reduced by ~60%. Production deployment via Jenkins.',
+      desc5: 'In the DS-portal recruitment system project (emergency cross-team assignment): independently responsible for frontend technology selection and architecture design. Designed state machine with 9 main states + 11 sub-states. Adopted React 18 + RTK Query with chunked file upload + MD5 verification. Results: code volume ↓40%, development efficiency ↑30%, system successfully launched.',
+      desc6: 'Technical Impact: Pioneered React 18 + Redux Toolkit + RTK Query adoption. Organized internal technical sharing, promoted the tech stack across multiple teams, and established reusable project templates.'
     },
     workExp2: {
       company: 'Tongdao Weiye',
@@ -54,9 +55,9 @@ export default {
       period: '2020.06 – 2020.10',
       desc1: 'Responsible for frontend development and maintenance of "Tongdao Intelligent Cloud Platform", "Tongdao Big Data Entry", and "Yunnan Football Association" projects.',
       desc2: 'In the intelligent cloud platform, maintained legacy code with native JavaScript + jQuery while introducing modular thinking for refactoring. Used ECharts for player/referee capability radar charts, comparison heatmaps, and video capture playback.',
-      desc3: 'Developed complex interactive components similar to transfer boxes for big data backend, supporting paginated loading and search, improving interaction smoothness under large data volumes.',
+      desc3: 'Developed complex interactive components similar to transfer boxes for big data backend, supporting paginated loading and search.',
       desc4: 'Integrated QR code payment with polling for real-time payment status feedback.',
-      desc5: 'In Yunnan Football Association official website (Vue project), responsible for page construction and youth training system module, using Vant for pull-to-refresh and load-more, optimizing mobile experience.'
+      desc5: 'In Yunnan Football Association official website (Vue project), responsible for page construction and youth training system module, using Vant for pull-to-refresh and load-more.'
     },
     workExp3: {
       company: 'Tengxin Ruanchuang',
@@ -64,27 +65,28 @@ export default {
       period: '2019.10 – 2020.05',
       desc1: 'Participated in frontend development of "Shougang Park Property Management Platform", responsible for equipment management and user management modules.',
       desc2: 'Based on Vue + Vuex + Vue Router, combined with ElementUI and moment.js for attachment upload, remote search, and date processing. Encapsulated axios interceptors for unified error and loading state handling.',
-      desc3: 'Participated in project iteration and code review, optimized component performance, and improved page loading speed.'
+      desc3: 'Participated in project iteration and code review. Optimized table rendering performance through virtual scrolling.'
     },
     project1: {
       name: 'Ipos Cross-Platform Insurance System',
       period: '2020.11 – 2025.04',
       desc: 'A hybrid development insurance business system covering PC, mobile, and iOS platforms, implementing complete insurance workflow including user information management, ID OCR recognition, policy PDF generation/preview/download, and electronic signatures.',
-      tech: 'Vue 2/3, Quasar, Node.js (Express), Java, Canvas, OCR SDK',
-      challenge1: 'Technology Upgrade: Led smooth migration from Vue 2 + Quasar V1 to Vue 3 + Quasar V2, resolving dependency conflicts and API changes while ensuring business continuity.',
-      challenge2: 'Performance Optimization: Optimized PDF generation logic, changing from Base64 encoding to Blob streaming, reducing memory usage and improving generation speed by ~30%.',
-      challenge3: 'User Experience: Optimized electronic signature component through Canvas drawing optimization and debouncing, improving signature drawing smoothness and save efficiency.',
-      challenge4: 'Intelligent Integration: Integrated OCR technology for automatic ID recognition, reducing user input with 95%+ accuracy.'
+      tech: 'Vue 2/3, Quasar, Node.js (Express), Java, Canvas, OCR SDK, Microsoft Application Insights',
+      challenge1: 'Technology Upgrade: Led smooth migration from Vue 2 + Quasar V1 to Vue 3 + Quasar V2. Migrated build tool from Webpack to Vite, test framework from Jest to Vitest. Results: build efficiency ↑25%, runtime performance ↑30%.',
+      challenge2: 'Electronic Signature Optimization: Refactored signature logic by separating drawing and saving, added debouncing and partial redraw. Results: signature save time ↓50%, API calls ↓40%.',
+      challenge3: 'Cache Strategy Optimization: Used localStorage + expiry for static data, Vuex/pinia caching with request deduplication for dynamic data. Results: page reload speed ↑35%.',
+      challenge4: 'Production Issue Investigation: Used Microsoft Application Insights to trace user operation logs and API call chains. Average issue localization time ↓60%.'
     },
     project2: {
       name: 'DS-portal Recruitment Due Diligence Portal System',
       period: '2023.06 – 2023.11',
-      desc: 'The system covering the complete recruitment process management from FSC application to final certification. Includes 20+ due diligence check modules (Nice Actimize AML check, Questnet check, CEA check, FATCA tax compliance check, MediSave liability check, professional qualification check, employment reference check, financial soundness check, etc.), supports multi-role permission control (TD Ops Staff, Manager), file management, PDF preview, REEF regulatory exam management and other complex business scenarios.',
+      desc: 'Enterprise-grade recruitment digital system with 20+ due diligence check modules (AML, tax compliance, professional qualifications, etc.), supporting multi-role permission control (TD Ops Staff, Manager), file management, PDF preview, and regulatory exam management.',
       tech: 'React 18, Redux Toolkit + RTK Query, React Router 6, Okta OAuth 2.0, Ant Design, styled-components, react-pdf, Application Insights, Jest, Docker',
-      challenge1: 'Modern state management architecture: Pioneered React 18 + Redux Toolkit + RTK Query to replace traditional Redux + manual request state management. Through RTK Query\'s automatic caching, request deduplication, and automatic loading/error state management, reduced code volume by ~40% and improved development efficiency by ~30%. Established unified API layer architecture with 20+ API modules.',
-      challenge2: 'Enterprise-grade authentication: Integrated Okta OAuth 2.0 + PKCE authentication flow for secure enterprise single sign-on. Configured multi-environment authentication strategies (Development/UAT/Production) supporting automatic token refresh and session management.',
-      challenge3: 'Complex business process engine: Designed and implemented state machine management for 9 main process states (FSC application, application review, interview and signing, due diligence, management review, RNF lodgement, issuance, completion of hiring), each containing multiple sub-steps and conditional judgments to ensure strict compliance of business processes.',
-      challenge4: 'High-performance file processing system: Developed intelligent file upload component supporting single/multiple file upload, file renaming templates, size/format validation, and resumable upload. Implemented PDF online preview (based on react-pdf), Blob streaming download, file classification management and other core functions.'
+      challenge1: 'Modern State Management: Pioneered React 18 + Redux Toolkit + RTK Query, replacing traditional Redux + manual request state management. Through RTK Query\'s automatic caching, request deduplication, and auto loading/error state management, code volume ↓40%, development efficiency ↑30%. Established unified API layer with 20+ API modules.',
+      challenge2: 'Enterprise Authentication: Integrated Okta OAuth 2.0 + PKCE for secure enterprise SSO. Configured multi-environment auth strategies (Development/UAT/Production) with automatic token refresh and session management.',
+      challenge3: 'Complex Business Process Engine: Designed and implemented state machine with 9 main process states (FSC application, review, interview, due diligence, management review, RNF lodgement, issuance, completion), each containing multiple sub-steps and conditional judgments.',
+      challenge4: 'High-Performance File Processing: Developed intelligent file upload component with chunked upload, MD5 verification, and resumable upload. Implemented PDF online preview (react-pdf) and Blob streaming download.',
+      challenge5: 'Code Splitting & Performance: Used @loadable/component for route-level code splitting, first-screen load time ↓30%. RTK Query smart caching reduced unnecessary network requests by ~40%.'
     },
     project3: {
       name: 'Tongdao Intelligent Cloud Platform & Big Data Backend',
@@ -92,23 +94,33 @@ export default {
       desc: 'Intelligent cloud platform provides team/player data visualization analysis; big data backend manages partners, product packages, and personnel information; Yunnan Football Association official website introduces clubs and youth training.',
       tech: 'Native JavaScript, jQuery, ECharts, Vue, Vant',
       achievement1: 'In intelligent cloud platform, maintained and optimized existing features with native JS + jQuery, encapsulated reusable chart components, implemented dynamic rendering of player capability radar charts and heatmaps.',
-      achievement2: 'Developed complex components similar to transfer boxes for big data backend, supporting paginated loading and search to improve interaction smoothness under large data volumes.',
+      achievement2: 'Developed complex components similar to transfer boxes for big data backend, supporting paginated loading and search.',
       achievement3: 'Integrated QR code payment with polling for real-time payment status feedback.',
-      achievement4: 'In Yunnan Football Association official website, built responsive pages with Vue + Vant, implemented youth training news display and data fetching, optimized mobile loading speed.'
+      achievement4: 'In Yunnan Football Association official website, built responsive pages with Vue + Vant, optimized mobile loading speed.'
     },
     project4: {
       name: 'Shougang Park Property Management Platform',
       period: '2020.01 – 2020.05',
       desc: 'Equipment management backend for Shougang Park, implementing dynamic equipment information management and user permission control.',
       tech: 'Vue, Vuex, Vue Router, ElementUI, axios',
-      achievement1: 'Responsible for frontend page layout, managed equipment state with Vuex, implemented module routing with Vue Router.',
+      achievement1: 'Managed equipment state with Vuex, implemented module routing with Vue Router.',
       achievement2: 'Used ElementUI components to quickly build pages, implemented equipment CRUD, attachment upload, remote search, and date range selection.',
-      achievement3: 'Encapsulated axios request layer for unified exception and loading handling, collaborated with backend for API integration ensuring accurate data rendering.',
-      achievement4: 'Optimized table rendering performance through virtual scrolling to reduce DOM nodes and improve page response speed.'
+      achievement3: 'Encapsulated axios request layer for unified exception and loading handling.',
+      achievement4: 'Optimized table rendering performance through virtual scrolling to reduce DOM nodes.'
+    },
+    project5: {
+      name: 'AI Assistant (Personal Full-Stack Project)',
+      period: '2026.05 – Present',
+      desc: 'An intelligent Q&A system integrated into the personal portfolio website, based on RAG (Retrieval-Augmented Generation) architecture with streaming dialogue support.',
+      tech: 'Vue 3, Pinia, SSE (Server-Sent Events), Koa, Vector Database, Embedding, LLM',
+      achievement1: 'Frontend: Designed chat components (ChatWidget/ChatPanel/ChatMessage/ChatInput) with SSE streaming rendering, Pinia state management, responsive layout for mobile and desktop.',
+      achievement2: 'Backend: Built REST API with Koa, providing /api/chat (non-streaming) and /api/chat/stream (SSE streaming) endpoints.',
+      achievement3: 'RAG Architecture: Chunked and embedded resume knowledge into a vector database. At query time, retrieves topK relevant fragments to construct context-aware prompts.',
+      achievement4: 'Built a knowledge base with 160+ chunks covering personal profile, skills, work experience, projects, and education.'
     },
     education1: {
       school: 'China University of Petroleum',
-      degree: 'Bachelor',
+      degree: 'Bachelor (Part-time)',
       major: 'Computer Science and Technology',
       period: '2021.09 – 2024.01'
     },
@@ -118,7 +130,7 @@ export default {
       major: 'IoT Application Technology',
       period: '2016.09 – 2019.09'
     },
-    selfEvaluation: '7 years of frontend development experience with solid foundation and rich cross-platform project experience. Skilled in architecture design, technology selection, and performance optimization, capable of independently leading frontend development for medium to large projects. Possess technical influence, skilled in summarizing and promoting team technology evolution through technical sharing. Good team collaboration and communication skills, able to quickly locate and solve complex problems. Continuously关注前沿技术，乐于分享与创新。'
+    selfEvaluation: '7 years of frontend development experience with solid foundation and rich cross-platform project experience. Skilled in architecture design, technology selection, and performance optimization, capable of independently leading frontend development for medium to large projects. Possess technical influence, skilled in summarizing and promoting team technology evolution through technical sharing. Good team collaboration and communication skills, able to quickly locate and solve complex problems. Continuously following cutting-edge technologies, passionate about sharing and innovation.'
   },
   projects: {
     title: 'My Projects',
@@ -287,6 +299,15 @@ export default {
     send: 'Send Message',
     success: 'Message sent successfully!',
     error: 'Failed to send message. Please try again.'
+  },
+  chat: {
+    title: 'AI Assistant',
+    welcomeTitle: 'Hi! I\'m Ian\'s AI assistant',
+    welcomeDesc: 'Feel free to ask me about Ian\'s skills, projects, and experience.',
+    inputPlaceholder: 'Type your message...',
+    errorMessage: 'Something went wrong, please try again later.',
+    streamErrorMessage: 'Connection failed, please try again later.',
+    dailyLimitMessage: 'Due to personal usage limits, the daily quota has been reached. Please come back tomorrow!',
   },
   footer: {
     copyright: '© 2026 Ian Zhang. All rights reserved.',

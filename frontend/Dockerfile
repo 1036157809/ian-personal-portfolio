@@ -1,7 +1,7 @@
 # Build stage
 FROM node:20-alpine as builder
 
-WORKDIR /app
+WORKDIR /app/frontend
 
 # Accept build arguments
 ARG VITE_TIANDITU_TOKEN
@@ -14,20 +14,22 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 # Install pnpm
 RUN npm install -g pnpm
 
-COPY package*.json ./
+# Copy frontend dependency files
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --no-frozen-lockfile
 
-COPY . .
+# Copy frontend source
+COPY frontend/ ./
 RUN pnpm run build:prod
 
 # Production stage
 FROM nginx:alpine
 
 # Copy built assets from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

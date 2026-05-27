@@ -1,9 +1,9 @@
 node_modules
 dist
 .git
-# .gitignore not needed in Docker build
 .vscode
 .idea
 *.log
 .DS_Store
+package-lock.json
 .env

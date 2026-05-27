@@ -1,13 +1,25 @@
 <template>
-  <footer class="bg-transparent border-t border-day-border/20 dark:border-night-border/20 mt-16">
+  <footer class="bg-transparent border-t border-day-border/20 dark:border-night-border/20 mt-16 pb-20 md:pb-8 relative z-10">
     <div class="container mx-auto px-4 py-8">
+      <!-- 访问量统计 -->
+      <div class="text-center mb-4">
+        <p class="text-sm md:text-xs text-day-text-secondary dark:text-night-text-secondary">
+          <span v-if="stats">
+            👀 今日 {{ stats.today.uv }} 人来访 · 累计 {{ stats.total.uv }} 位访客
+          </span>
+          <span v-else>
+            &nbsp;
+          </span>
+        </p>
+      </div>
+
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="text-center md:text-left mb-4 md:mb-0">
           <p class="text-day-text dark:text-night-text">
             {{ $t('footer.copyright') }}
           </p>
         </div>
-        
+
         <div class="flex space-x-6">
           <a
             href="https://github.com/1036157809/ian-personal-portfolio"
@@ -34,4 +46,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { visitorApi, type VisitorStats } from 'src/api/visitor.api';
+
+const stats = ref<VisitorStats | null>(null);
+
+onMounted(async () => {
+  try {
+    stats.value = await visitorApi.getStats();
+  } catch {
+    // 静默失败
+  }
+});
 </script>
