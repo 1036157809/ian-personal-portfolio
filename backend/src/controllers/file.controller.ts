@@ -61,7 +61,7 @@ export class FileController {
 
   async completeUpload(ctx: Context) {
     try {
-      const body = ctx.request.body as { fileName?: string };
+      const body = (ctx.request as any).body as { fileName?: string };
       const { fileName } = body;
 
       if (!fileName) {
