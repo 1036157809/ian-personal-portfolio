@@ -6,9 +6,9 @@ export class ContactController {
   async create(ctx: Context) {
     try {
       console.log('=== Contact Form Submission ===');
-      console.log('Request body:', ctx.request.body);
+      console.log('Request body:', (ctx.request as any).body);
 
-      const { name, email, message } = ctx.request.body as {
+      const { name, email, message } = (ctx.request as any).body as {
         name?: string;
         email?: string;
         message?: string;

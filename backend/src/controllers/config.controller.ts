@@ -30,7 +30,7 @@ export class ConfigController {
   async update(ctx: Context) {
     if (!checkAuth(ctx)) return;
     const { key } = ctx.params;
-    const { value } = ctx.request.body as { value?: string };
+    const { value } = (ctx.request as any).body as { value?: string };
 
     if (!value || typeof value !== 'string') {
       ctx.status = 400;

@@ -22,7 +22,7 @@ export class FileController {
   async uploadFile(ctx: Context) {
     try {
       const files = (ctx.request as any).files;
-      const body = ctx.request.body as any;
+      const body = (ctx.request as any).body as any;
       
       if (!files || !files.file) {
         ctx.status = 400;
@@ -41,7 +41,7 @@ export class FileController {
 
   async uploadChunk(ctx: Context) {
     try {
-      const body = ctx.request.body as any;
+      const body = (ctx.request as any).body as any;
       const files = (ctx.request as any).files;
       
       if (!files || !files.file) {

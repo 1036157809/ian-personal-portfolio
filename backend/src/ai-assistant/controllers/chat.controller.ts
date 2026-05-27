@@ -7,7 +7,7 @@ export class ChatController {
    * POST /api/chat — 非流式聊天
    */
   async chat(ctx: Context) {
-    const { message, history, language } = ctx.request.body as {
+    const { message, history, language } = (ctx.request as any).body as {
       message: string;
       history?: ChatMessage[];
       language?: string;
@@ -35,7 +35,7 @@ export class ChatController {
    * POST /api/chat/stream — 流式聊天（SSE）
    */
   async chatStream(ctx: Context) {
-    const { message, history, language } = ctx.request.body as {
+    const { message, history, language } = (ctx.request as any).body as {
       message: string;
       history?: ChatMessage[];
       language?: string;
@@ -75,7 +75,7 @@ export class ChatController {
    * POST /api/chat/index — 触发知识库重建
    */
   async index(ctx: Context) {
-    const { items } = ctx.request.body as {
+    const { items } = (ctx.request as any).body as {
       items: Array<{
         content: string;
         source: string;
