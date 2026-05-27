@@ -17,11 +17,6 @@ export const LLM_BASE_URL = env('LLM_BASE_URL', 'https://api.longcat.chat/openai
 export const LLM_MODEL = env('LLM_MODEL', 'LongCat-2.0-Preview');
 export const LLM_MAX_TOKENS = parseInt(env('LLM_MAX_TOKENS', '1024'), 10) || 1024;
 
-// ─── Embedding (ModelScope) ──────────────────────────────────
-export const EMBEDDING_API_KEY = required('EMBEDDING_KEY');
-export const EMBEDDING_BASE_URL = env('EMBEDDING_BASE_URL', 'https://ms-ens-4e05e35e-7ddc.api-inference.modelscope.cn/v1');
-export const EMBEDDING_MODEL = env('EMBEDDING_MODEL', 'OllmOne/bge-m3-GGUF');
-
 // ─── 切片 ───────────────────────────────────────────────────
 export const CHUNK_MAX_SIZE = parseInt(env('CHUNK_MAX_SIZE', '400'), 10) || 400;
 export const CHUNK_OVERLAP = parseInt(env('CHUNK_OVERLAP', '50'), 10) || 50;

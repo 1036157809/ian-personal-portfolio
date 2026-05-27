@@ -9,7 +9,9 @@ import { sequelize, testConnection } from 'src/config/database';
 import Contact from 'src/models/contact.model';
 import AiUsageStats from 'src/models/ai-usage.model';
 import { VisitorLog, VisitorDailySummary } from 'src/models/visitor.model';
+import SystemConfig from 'src/models/system-config.model';
 import { startDailyResetScheduler } from 'src/ai-assistant/services/rate-limit.service';
+import { initDefaultConfig } from 'src/services/config.service';
 
 export async function createApp(): Promise<Koa> {
   const app = new Koa();
@@ -40,6 +42,12 @@ export async function createApp(): Promise<Koa> {
     await AiUsageStats.sync();
     await VisitorLog.sync();
     await VisitorDailySummary.sync();
+    await SystemConfig.sync();
+    await initDefaultConfig({
+      embedding_base_url: '',
+      embedding_model: '',
+      embedding_api_key: '',
+    });
     startDailyResetScheduler();
     console.log('Database models synchronized');
   } catch (error) {

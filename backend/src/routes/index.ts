@@ -3,6 +3,7 @@ import contactRoutes from './contact.routes';
 import fileRoutes from './file.routes';
 import openskyRoutes from './opensky.routes';
 import visitorRoutes from './visitor.routes';
+import configRoutes from './config.routes';
 import { chatRoutes } from '../ai-assistant';
 
 const router = new Router();
@@ -23,5 +24,7 @@ router.use(visitorRoutes.routes());
 router.use(visitorRoutes.allowedMethods());
 router.use(chatRoutes.routes());
 router.use(chatRoutes.allowedMethods());
+router.use(configRoutes.routes());
+router.use(configRoutes.allowedMethods());
 
 export default router;

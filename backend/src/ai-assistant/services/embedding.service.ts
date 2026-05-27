@@ -1,32 +1,32 @@
 import OpenAI from 'openai';
-import {
-  EMBEDDING_API_KEY,
-  EMBEDDING_BASE_URL,
-  EMBEDDING_MODEL,
-} from '../config';
+import { getConfig } from 'src/services/config.service';
 
 let client: OpenAI | null = null;
 
-function getClient(): OpenAI {
+async function getClient(): Promise<OpenAI> {
   if (!client) {
-    client = new OpenAI({
-      baseURL: EMBEDDING_BASE_URL,
-      apiKey: EMBEDDING_API_KEY,
-    });
+    const baseURL = await getConfig('embedding_base_url');
+    const apiKey = await getConfig('embedding_api_key');
+    if (!baseURL || !apiKey) {
+      throw new Error('Embedding config missing: embedding_base_url / embedding_api_key');
+    }
+    client = new OpenAI({ baseURL, apiKey });
   }
   return client;
+}
+
+function invalidateClient() {
+  client = null;
 }
 
 /**
  * 计算文本的 embedding 向量
  */
 export async function embedText(text: string): Promise<number[]> {
-  const c = getClient();
-  const res = await c.embeddings.create({
-    model: EMBEDDING_MODEL,
-    input: text,
-    encoding_format: 'float',
-  });
+  const c = await getClient();
+  const model = await getConfig('embedding_model');
+  if (!model) throw new Error('Embedding config missing: embedding_model');
+  const res = await c.embeddings.create({ model, input: text });
   return res.data[0].embedding;
 }
 
@@ -34,11 +34,11 @@ export async function embedText(text: string): Promise<number[]> {
  * 批量计算 embedding 向量
  */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
-  const c = getClient();
-  const res = await c.embeddings.create({
-    model: EMBEDDING_MODEL,
-    input: texts,
-    encoding_format: 'float',
-  });
+  const c = await getClient();
+  const model = await getConfig('embedding_model');
+  if (!model) throw new Error('Embedding config missing: embedding_model');
+  const res = await c.embeddings.create({ model, input: texts });
   return res.data.map((d) => d.embedding);
 }
+
+export { invalidateClient };
