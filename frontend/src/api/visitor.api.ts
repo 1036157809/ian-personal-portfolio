@@ -16,4 +16,8 @@ export const visitorApi = {
   async getStats(): Promise<VisitorStats> {
     return request<VisitorStats>('/visitor/stats');
   },
+
+  async getLocation(): Promise<{ country: string; isChineseRegion: boolean }> {
+    return request<{ country: string; isChineseRegion: boolean }>('/visitor/location');
+  },
 };
