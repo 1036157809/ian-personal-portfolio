@@ -10,6 +10,9 @@ export class VisitorLog extends Model {
   public id!: string;
   public visit_date!: string;
   public ip_hash!: string;
+  public ip!: string;
+  public user_agent!: string;
+  public location!: string;
   public readonly createdAt!: Date;
 }
 
@@ -29,6 +32,16 @@ VisitorLog.init(
       type: DataTypes.STRING(64),
       allowNull: false,
       comment: 'SHA256(ip + salt)',
+    },
+    ip: {
+      type: DataTypes.STRING(64),
+      allowNull: true,
+      comment: '原始 IP 地址',
+    },
+    user_agent: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      comment: '设备信息，格式：设备类型|操作系统|浏览器，例如：Desktop|Windows|Chrome',
     },
     location: {
       type: DataTypes.STRING(100),

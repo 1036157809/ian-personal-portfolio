@@ -10,6 +10,7 @@ services:
       MYSQL_DATABASE: portfolio
       MYSQL_USER: portfolio
       MYSQL_PASSWORD: portfolio
+      TZ: Asia/Shanghai
     ports:
       - "3306:3306"
     volumes:

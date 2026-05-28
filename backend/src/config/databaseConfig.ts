@@ -7,6 +7,7 @@ export const dbConfig = {
   password: process.env.DB_PASSWORD || 'portfolio',
   database: process.env.DB_NAME || 'portfolio',
   dialect: 'mysql' as const,
+  timezone: '+08:00', // 与中国时区一致，MySQL 容器也配置了 TZ: Asia/Shanghai
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: {
     max: 5,

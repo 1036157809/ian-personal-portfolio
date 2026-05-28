@@ -15,7 +15,8 @@ export class VisitorController {
         ctx.ip ||
         'unknown';
 
-      const result = await recordVisit(ip);
+      const userAgent = (ctx.req.headers['user-agent'] as string) || '';
+      const result = await recordVisit(ip, userAgent);
       ctx.body = { success: true, isNewVisitor: result.isNewVisitor };
     } catch (err: any) {
       console.error('Visitor record error:', err);
