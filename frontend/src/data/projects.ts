@@ -1,3 +1,14 @@
+import iposPc1 from 'src/assets/images/pc/ipos-pc-1.webp'
+import iposPc2 from 'src/assets/images/pc/ipos-pc-2.webp'
+import iposPc3 from 'src/assets/images/pc/ipos-pc-3.webp'
+import iposPc4 from 'src/assets/images/pc/ipos-pc-4.webp'
+import iposPc5 from 'src/assets/images/pc/ipos-pc-5.webp'
+import iposPc6 from 'src/assets/images/pc/ipos-pc-6.webp'
+import iposMobile1 from 'src/assets/images/mobile/ipos-mobile-1.webp'
+import iposMobile2 from 'src/assets/images/mobile/ipos-mobile-2.webp'
+import iposMobile3 from 'src/assets/images/mobile/ipos-mobile-3.webp'
+import iposMobile4 from 'src/assets/images/mobile/ipos-mobile-4.webp'
+
 export interface Project {
   id: number;
   title: string;
@@ -21,17 +32,17 @@ export const projects: Project[] = [
     description: 'AIA Philippines requires a hybrid development insurance business system covering PC, mobile, and iOS platforms, implementing complete insurance workflow including user information management, ID OCR recognition, policy PDF generation/preview/download, and electronic signatures.',
     descriptionZh: 'AIA菲律宾需要一款基于混合开发的保险业务系统，覆盖 PC、移动端及 iOS 平台，实现完整的投保工作流，包括用户信息管理、证件 OCR 识别、保单 PDF 生成预览下载、电子签名等。',
     technologies: ['Vue 2/3', 'Quasar', 'Node.js (Express)', 'Java', 'Canvas', 'OCR SDK'],
-    imageUrl: '/images/pc/ipos-pc-1.jpg',
-    mobileImageUrl: '/images/mobile/ipos-mobile-1.jpg',
+    imageUrl: iposPc1,
+    mobileImageUrl: iposMobile1,
     additionalImages: [
-      '/images/pc/ipos-pc-2.jpg',
-      '/images/pc/ipos-pc-3.jpg',
-      '/images/pc/ipos-pc-4.jpg',
-      '/images/pc/ipos-pc-5.jpg',
-      '/images/pc/ipos-pc-6.jpg',
-      '/images/mobile/ipos-mobile-2.jpg',
-      '/images/mobile/ipos-mobile-3.jpg',
-      '/images/mobile/ipos-mobile-4.jpg'
+      iposPc2,
+      iposPc3,
+      iposPc4,
+      iposPc5,
+      iposPc6,
+      iposMobile2,
+      iposMobile3,
+      iposMobile4
     ],
     demoUrl: 'https://ipos.aia.com.ph/phipos/#/loginPage',
     githubUrl: '',

@@ -8,7 +8,7 @@
     <!-- Background Wallpaper -->
     <div class="fixed inset-0 z-0">
       <img
-        src="/wallpapers/car.jpg"
+        :src="carImg"
         alt="Background"
         class="w-full h-full object-cover"
       />
@@ -166,6 +166,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useLanguageStore } from 'src/stores/language'
+import carImg from 'src/assets/images/wallpapers/car.webp'
 
 const languageStore = useLanguageStore()
 

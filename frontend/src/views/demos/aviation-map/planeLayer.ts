@@ -3,7 +3,7 @@ import { Point } from "ol/geom";
 import VectorLayer from "ol/layer/WebGLVector";
 import { fromLonLat } from "ol/proj";
 import VectorSource from "ol/source/Vector";
-import planeIcon from "/images/map/plane.svg";
+import planeIcon from "src/assets/images/map/plane.svg";
 import { openskyApi } from "src/api/opensky.api";
 import { LAYER_NAMES } from "./constants";
 

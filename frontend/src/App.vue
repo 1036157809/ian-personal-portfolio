@@ -5,7 +5,7 @@
     <main class="container mx-auto px-4 py-8 relative z-10 flex-1">
       <router-view />
     </main>
-    <Footer />
+    <Footer v-if="isFooterVisible" />
     <ChatWidget />
     <ChatPanel />
   </div>
@@ -20,8 +20,10 @@ import Footer from 'src/components/common/footer/index.vue'
 import ThemeBackground from 'src/components/BackgroundEffects/ThemeBackground.vue'
 import { ChatWidget, ChatPanel } from 'src/ai-assistant'
 import { visitorApi } from 'src/api/visitor.api'
+import { useFooterVisibility } from 'src/composables/useFooterVisibility'
 
 const themeStore = useThemeStore()
+const { isFooterVisible } = useFooterVisibility()
 
 function getTodayKey(): string {
   return new Date().toISOString().slice(0, 10);

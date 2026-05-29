@@ -94,7 +94,7 @@
           <div class="card h-full flex flex-col">
             <div class="aspect-video overflow-hidden rounded-lg mb-4">
               <img
-                src="/images/map/map-info.png"
+                :src="mapInfoImg"
                 alt="Aviation Map"
                 class="w-full h-full object-cover"
               />
@@ -140,7 +140,7 @@
           <div class="card h-full flex flex-col">
             <div class="aspect-video overflow-hidden rounded-lg mb-4">
               <img
-                src="/wallpapers/car.jpg"
+                :src="carImg"
                 alt="Music Visualizer"
                 class="w-full h-full object-cover"
               />
@@ -358,6 +358,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useLanguageStore } from 'src/stores/language'
 import { projects as projectsData } from 'src/data/projects'
+import carImg from 'src/assets/images/wallpapers/car.webp'
+import mapInfoImg from 'src/assets/images/map/map-info.webp'
 
 const languageStore = useLanguageStore()
 
