@@ -1,9 +1,17 @@
 import * as THREE from 'three';
 
 // ============================================================
-// 设备检测
+// 设备 & 浏览器检测
 // ============================================================
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+/** Safari 浏览器检测（包括 iOS Safari 和 macOS Safari） */
+export const isSafari = (() => {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent;
+  // Safari 的 UA 包含 Safari 但不包含 Chrome/Edge/OPR/Firefox
+  return /Safari/i.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox|FxiOS/i.test(ua);
+})();
 
 // ============================================================
 // Renderer 配置
@@ -28,10 +36,12 @@ export const layerConfig = {
 
 // ============================================================
 // 纹理颜色配置
-// 移动端降低 alpha、使用带蓝调白色，避免 GPU 多层叠加后颜色溢出
-// 桌面端保持纯白高亮
+// 移动端 & Safari 使用带蓝调白色，避免 GPU 多层叠加后颜色溢出
+// 其他桌面端浏览器保持纯白高亮
 // ============================================================
-const cloudMainColors = isMobile
+const isSafariOrMobile = isMobile || isSafari;
+
+const cloudMainColors = isSafariOrMobile
   ? [
       'rgba(245, 248, 252, 0.85)',
       'rgba(240, 245, 250, 0.78)',
@@ -53,7 +63,7 @@ const cloudMainColors = isMobile
       'rgba(255, 255, 255, 0)',
     ];
 
-const cloudBlobColors = isMobile
+const cloudBlobColors = isSafariOrMobile
   ? [
       'rgba(242, 246, 250, 0.72)',
       'rgba(235, 242, 248, 0.48)',
@@ -67,7 +77,7 @@ const cloudBlobColors = isMobile
       'rgba(255, 255, 255, 0)',
     ];
 
-const cloudStrandColors = isMobile
+const cloudStrandColors = isSafariOrMobile
   ? [
       'rgba(240, 245, 250, 0.42)',
       'rgba(232, 240, 246, 0.16)',
@@ -80,15 +90,15 @@ const cloudStrandColors = isMobile
     ];
 
 // 铺底 blob/cluster 的 alpha 范围
-const seaBlobOpacity = isMobile
+const seaBlobOpacity = isSafariOrMobile
   ? { min: 0.15, max: 0.25 }
   : { min: 0.2, max: 0.3 };
 
-const seaClusterOpacity = isMobile
+const seaClusterOpacity = isSafariOrMobile
   ? { min: 0.18, max: 0.25 }
   : { min: 0.25, max: 0.3 };
 
-const seaBlobColor = isMobile
+const seaBlobColor = isSafariOrMobile
   ? { r: 245, g: 248, b: 252 }
   : { r: 255, g: 255, b: 255 };
 
