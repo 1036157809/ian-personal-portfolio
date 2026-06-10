@@ -4,7 +4,6 @@ export default {
     projects: 'Projects',
     about: 'About',
     tools: 'Tools',
-    contact: 'Contact'
   },
   common: {
     back: 'Back',
@@ -290,16 +289,7 @@ export default {
     title: 'Tools',
     subtitle: 'A collection of handy online tools',
   },
-  contact: {
-    title: 'Get In Touch',
-    subtitle: 'Have a project in mind? Let\'s work together!',
-    name: 'Your Name',
-    email: 'Your Email',
-    message: 'Your Message',
-    send: 'Send Message',
-    success: 'Message sent successfully!',
-    error: 'Failed to send message. Please try again.'
-  },
+
   chat: {
     title: 'AI Assistant',
     welcomeTitle: 'Hi! I\'m Ian\'s AI assistant',

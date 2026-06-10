@@ -3,7 +3,6 @@ export const ROUTES = {
   PROJECTS: '/projects',
   ABOUT: '/about',
   TOOLS: '/tools',
-  CONTACT: '/contact',
   DEMO_DS_PORTAL: '/demo/ds-portal',
   DEMO_SHOUGANG: '/demo/shougang',
   DEMO_TONGDAO: '/demo/tongdao',

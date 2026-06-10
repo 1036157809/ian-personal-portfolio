@@ -22,11 +22,6 @@ export const routes = [
     component: () => import('src/views/tools/index.vue'),
   },
   {
-    path: ROUTES.CONTACT,
-    name: 'Contact',
-    component: () => import('src/views/contact/index.vue'),
-  },
-  {
     path: ROUTES.DEMO_DS_PORTAL,
     name: 'DSPortalDemo',
     component: () => import('src/views/demos/ds-portal/index.vue'),

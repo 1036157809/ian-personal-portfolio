@@ -6,7 +6,6 @@ import router from 'src/routes';
 import errorHandler from 'src/middlewares/error.middleware';
 import logger from 'src/middlewares/logger.middleware';
 import { sequelize, testConnection } from 'src/config/database';
-import Contact from 'src/models/contact.model';
 import AiUsageStats from 'src/models/ai-usage.model';
 import { VisitorLog, VisitorDailySummary } from 'src/models/visitor.model';
 import SystemConfig from 'src/models/system-config.model';
@@ -38,7 +37,6 @@ export async function createApp(): Promise<Koa> {
   // Initialize database
   try {
     await testConnection();
-    await Contact.sync();
     await AiUsageStats.sync();
     await VisitorLog.sync({ alter: true });
     await VisitorDailySummary.sync({ alter: true });

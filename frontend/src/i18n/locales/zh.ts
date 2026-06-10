@@ -4,7 +4,6 @@ export default {
     projects: '项目',
     about: '关于',
     tools: '工具',
-    contact: '联系'
   },
   common: {
     back: '返回',
@@ -285,16 +284,7 @@ export default {
     title: '工具',
     subtitle: '实用的在线工具集合',
   },
-  contact: {
-    title: '联系我',
-    subtitle: '有项目想法？让我们一起合作！',
-    name: '您的姓名',
-    email: '您的邮箱',
-    message: '您的留言',
-    send: '发送消息',
-    success: '消息发送成功！',
-    error: '发送失败，请重试。'
-  },
+
   chat: {
     title: 'AI 助手',
     welcomeTitle: '你好！我是 Ian 的 AI 助手',

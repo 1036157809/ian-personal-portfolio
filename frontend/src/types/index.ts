@@ -13,12 +13,6 @@ export interface Project {
   order: number;
 }
 
-export interface ContactForm {
-  name: string;
-  email: string;
-  message: string;
-}
-
 export interface FileUploadProgress {
   fileName: string;
   percentage: number;

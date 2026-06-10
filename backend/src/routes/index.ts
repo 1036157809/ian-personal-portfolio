@@ -1,5 +1,4 @@
 import Router from '@koa/router';
-import contactRoutes from './contact.routes';
 import fileRoutes from './file.routes';
 import openskyRoutes from './opensky.routes';
 import visitorRoutes from './visitor.routes';
@@ -14,8 +13,6 @@ router.get('/', (ctx) => {
 });
 
 // API routes
-router.use(contactRoutes.routes());
-router.use(contactRoutes.allowedMethods());
 router.use(fileRoutes.routes());
 router.use(fileRoutes.allowedMethods());
 router.use(openskyRoutes.routes());

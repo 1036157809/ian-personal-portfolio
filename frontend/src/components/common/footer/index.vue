@@ -56,7 +56,7 @@ const route = useRoute();
 const themeStore = useThemeStore();
 const stats = ref<VisitorStats | null>(null);
 
-const isContactPage = computed(() => route.path === ROUTES.CONTACT);
+const isContactPage = computed(() => false);
 const isDarkTheme = computed(() => themeStore.isDark);
 const shouldShowStats = computed(() => isContactPage.value && isDarkTheme.value);
 

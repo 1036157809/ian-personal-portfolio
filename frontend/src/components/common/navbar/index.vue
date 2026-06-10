@@ -144,7 +144,6 @@ const navItems = [
   { path: '/projects', label: 'nav.projects' },
   { path: '/about', label: 'nav.about' },
   { path: '/tools', label: 'nav.tools' },
-  { path: '/contact', label: 'nav.contact' }
 ]
 
 const toggleLanguage = () => {
