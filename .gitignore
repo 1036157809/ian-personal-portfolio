@@ -12,3 +12,7 @@ backend/dist
 backend/knowledge
 .claude
 docs
+.codex/
+tests/
+playwright-report/
+Test-results/
