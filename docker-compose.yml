@@ -24,8 +24,8 @@ services:
 
   backend:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/backend/Dockerfile
     container_name: ian-portfolio-backend
     restart: unless-stopped
     env_file:
