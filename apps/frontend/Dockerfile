@@ -1,34 +1,22 @@
 # Build stage
 FROM node:20-alpine as builder
 
-WORKDIR /app/frontend
+WORKDIR /app
 
-# Accept build arguments
-ARG VITE_TIANDITU_TOKEN
-ARG VITE_API_BASE_URL
-
-# Set environment variables for build
-ENV VITE_TIANDITU_TOKEN=$VITE_TIANDITU_TOKEN
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
-# Install pnpm
 RUN npm install -g pnpm
 
-# Copy frontend dependency files
-COPY apps/frontend/package.json apps/frontend/pnpm-lock.yaml ./
-RUN pnpm install --no-frozen-lockfile
+# Copy full monorepo for build
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.json ./
+COPY packages ./packages
+COPY apps/frontend ./apps/frontend
 
-# Copy frontend source
-COPY apps/frontend/ ./
-RUN pnpm run build:prod
+RUN pnpm install
+RUN pnpm run build --filter=@ianportfolio/frontend
 
 # Production stage
 FROM nginx:alpine
 
-# Copy built assets from builder
-COPY --from=builder /app/frontend/dist /usr/share/nginx/html
-
-# Copy nginx configuration
+COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
 COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
