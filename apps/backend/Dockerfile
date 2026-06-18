@@ -4,12 +4,17 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
+# Copy full monorepo structure
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/backend ./apps/backend
 
 RUN if [ -f apps/backend/.env.production ]; then cp apps/backend/.env.production .env; fi
 
+# Install all workspace deps (including turbo at root)
+RUN pnpm install
+# Build shared first, then backend
+RUN pnpm run build --filter=@ianportfolio/shared
 RUN pnpm run build --filter=@ianportfolio/backend
 
 # --- Production stage ---
@@ -22,7 +27,7 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/backend ./apps/backend
-RUN pnpm install --production --no-frozen-lockfile
+RUN pnpm install --production
 
 COPY --from=builder /app/apps/backend/dist ./dist
 COPY --from=builder /app/apps/backend/public ./public
