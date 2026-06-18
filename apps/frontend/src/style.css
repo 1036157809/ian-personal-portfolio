@@ -1,6 +1,28 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-day-primary: #4A6FA5;
+  --color-day-secondary: #E8A87C;
+  --color-day-background: #EEF2F7;
+  --color-day-surface: #FFFFFF;
+  --color-day-surface-elevated: #F7F9FC;
+  --color-day-text: #2D3748;
+  --color-day-text-secondary: #718096;
+  --color-day-border: #CBD5E0;
+  --color-day-accent: #68D391;
+
+  --color-night-primary: #7C9CC9;
+  --color-night-secondary: #C4B5FD;
+  --color-night-background: #070B14;
+  --color-night-surface: #0F1629;
+  --color-night-surface-elevated: #162040;
+  --color-night-text: #D4C8E8;
+  --color-night-text-secondary: #8B9BB4;
+  --color-night-border: #1E2D4A;
+  --color-night-accent: #6EE7B7;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   :root {

@@ -193,6 +193,7 @@ function copyMessage() {
 </script>
 
 <style scoped>
+@reference "../../style.css";
 .markdown-body :deep(h1),
 .markdown-body :deep(h2),
 .markdown-body :deep(h3),

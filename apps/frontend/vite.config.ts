@@ -14,7 +14,6 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    historyApiFallback: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
@@ -26,10 +25,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: [],
-    alias: {
-      'src': path.resolve(__dirname, './src'),
-      'public': path.resolve(__dirname, './public')
-    },
     exclude: [
       'tests/e2e/**',
       'node_modules/**',
