@@ -3,7 +3,8 @@ FROM node:20-alpine as builder
 
 WORKDIR /app
 
-RUN npm install -g pnpm --registry=https://registry.npmmirror.com
+ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
+RUN npm install -g pnpm
 
 # Copy full monorepo for build
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.json ./
