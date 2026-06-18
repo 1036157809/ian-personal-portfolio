@@ -28,7 +28,6 @@ COPY apps/backend ./apps/backend
 RUN pnpm install --production
 
 COPY --from=builder /app/apps/backend/dist ./dist
-COPY --from=builder /app/apps/backend/public ./public
 
 RUN mkdir -p public/uploads/temp public/uploads/chunks
 
