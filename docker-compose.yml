@@ -24,12 +24,12 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./apps/backend
       dockerfile: Dockerfile
     container_name: ian-portfolio-backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env.production
+      - ./apps/backend/.env.production
     environment:
       NODE_ENV: production
       DB_HOST: mysql
@@ -39,7 +39,7 @@ services:
       DB_NAME: portfolio
       TZ: Asia/Shanghai
     volumes:
-      - ./backend/public/uploads:/app/public/uploads
+      - ./apps/backend/public/uploads:/app/public/uploads
     depends_on:
       mysql:
         condition: service_healthy
@@ -49,9 +49,9 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: apps/frontend/Dockerfile
       args:
-        VITE_TIANDITU_TOKEN: f68bb17559b334a7ab0ff0e8f5642930
+        VITE_TIANDITU_TOKEN: ${VITE_TIANDITU_TOKEN}
         VITE_API_BASE_URL: '/api'
     container_name: ian-portfolio-frontend
     restart: unless-stopped
@@ -60,7 +60,7 @@ services:
       - "443:443"
     volumes:
       - /etc/nginx/ssl:/etc/nginx/ssl
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./apps/frontend/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - backend
     networks:

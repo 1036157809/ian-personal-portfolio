@@ -6,9 +6,6 @@ uploads/
 backend/public/uploads/*
 !backend/public/uploads/.gitkeep
 .env
-frontend/.env
-frontend/dist
-backend/dist
 backend/knowledge
 .claude
 docs
@@ -16,3 +13,6 @@ docs
 tests/
 playwright-report/
 Test-results/
+.turbo/
+__tests__/
+Dist/

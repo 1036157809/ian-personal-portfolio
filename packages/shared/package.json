@@ -1,0 +1,24 @@
+{
+  "name": "@ianportfolio/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared types and utilities for Ian Portfolio monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^2.0.0"
+  }
+}
