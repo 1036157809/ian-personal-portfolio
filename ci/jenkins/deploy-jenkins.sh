@@ -32,26 +32,26 @@ check_compose() {
 
 setup_directories() {
     log_info "创建项目目录..."
-    mkdir -p /opt/ian-personal-portfolio
+    mkdir -p /root/ian-personal-portfolio
     mkdir -p /var/jenkins_home
     chmod 777 /var/jenkins_home
 }
 
 setup_project() {
-    if [ -d "/opt/ian-personal-portfolio/.git" ]; then
+    if [ -d "/root/ian-personal-portfolio/.git" ]; then
         log_info "更新项目代码..."
-        cd /opt/ian-personal-portfolio
+        cd /root/ian-personal-portfolio
         git fetch origin
         git checkout master
         git pull origin master
     else
         log_info "克隆项目代码..."
-        git clone https://gitee.com/${GITEE_USER}/ian-personal-portfolio.git /opt/ian-personal-portfolio
+        git clone https://gitee.com/${GITEE_USER}/ian-personal-portfolio.git /root/ian-personal-portfolio
     fi
 }
 
 create_env_file() {
-    if [ ! -f "/opt/ian-personal-portfolio/.env.jenkins" ]; then
+    if [ ! -f "/root/ian-personal-portfolio/.env.jenkins" ]; then
         log_warn "请创建 .env.jenkins 文件，内容如下："
         cat << 'ENVEOF'
 GITEE_USER=your_gitee_username
@@ -64,7 +64,7 @@ ENVEOF
 
 start_jenkins() {
     log_info "启动 Jenkins..."
-    cd /opt/ian-personal-portfolio/ci/jenkins
+    cd /root/ian-personal-portfolio/ci/jenkins
 
     if [ -f ../.env.jenkins ]; then
         set -a
