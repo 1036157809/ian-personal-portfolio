@@ -1,0 +1,76 @@
+jenkins:
+  systemMessage: "Ian Portfolio Jenkins - 多分支自动构建部署"
+  numExecutors: 2
+  mode: NORMAL
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${JENKINS_ADMIN_PASSWORD:-admin123}"
+
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:anonymous"
+
+  nodes:
+    - permanent:
+        name: "built-in"
+        labelString: "docker linux"
+        numExecutors: 2
+        remoteFS: "/var/jenkins_home/workspace"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "gitee-credentials"
+              username: "${GITEE_USER}"
+              password: "${GITEE_TOKEN}"
+              description: "Gitee 访问令牌"
+          - string:
+              scope: GLOBAL
+              id: "tianditu-token"
+              secret: "${VITE_TIANDITU_TOKEN}"
+              description: "天地图令牌"
+
+unclassified:
+  globalLibraries:
+    libraries: []
+
+jobs:
+  - script: |
+      multibranchPipelineJob('ian-personal-portfolio') {
+        description('Ian 个人作品集 - 多分支流水线')
+        branchSources {
+          git {
+            id('ian-portfolio-gitee')
+            remote('https://gitee.com/${GITEE_USER}/ian-personal-portfolio.git')
+            credentialsId('gitee-credentials')
+          }
+        }
+        orphanedItemStrategy {
+          discardOldItems {
+            numToKeep(10)
+          }
+        }
+        triggers {
+          periodicFolderTrigger {
+            interval('5m')
+          }
+        }
+        factory {
+          workflowBranchProjectFactory {
+            scriptPath('Jenkinsfile')
+          }
+        }
+        configure { node ->
+          def traits = node / sources / data / 'jenkins.branch.BranchSource' / source / traits
+          traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait' {}
+        }
+      }

@@ -1,349 +1,222 @@
 # Ian's Personal Portfolio Website
 
-A modern, bilingual personal portfolio website for a frontend engineer, built with Vue 3 + TypeScript (frontend) and Node + Koa + Sequelize + SQLite + TypeScript (backend). This project demonstrates full-stack development from scratch with Docker containerization, showcasing the practical impact of AI toolchains (bolt.new, cursor) on development efficiency.
+A modern, bilingual personal portfolio website for a frontend engineer, built with Vue 3 + TypeScript (frontend) and Koa + Sequelize + MySQL + TypeScript (backend). Deployed via Docker Compose.
 
 ## Features
 
-- **Bilingual Support**: Chinese/English language switching
+- **Bilingual Support**: Chinese/English language switching (vue-i18n)
 - **Automatic Theme Switching**: Day/Night theme based on device time (6 AM - 6 PM)
-  - Day theme: Blue-purple gradient
-  - Night theme: Dark theme
-- **Modern UI**: Minimalist design with responsive layout
+  - Day theme: Blue-sand gradient
+  - Night theme: Deep space blue-purple
 - **Project Showcase**: Dynamic project display from backend API
-- **Contact Form**: Functional contact form with backend storage
+- **AI Chat Assistant**: RAG-powered chat with knowledge base (ChromaDB + LongCat LLM), SSE streaming
+- **Aviation Map**: Real-time flight tracking with OpenLayers + OpenSky API
+- **File Converter**: Markdown/Word/HTML to PDF conversion with CJK font support
+- **Demos**: Music visualization, data portal, Shougang data analysis, football analytics
 
 ## Tech Stack
 
 ### Frontend
-- Vue 3 (Composition API)
-- TypeScript
-- Vue Router
-- Pinia (state management)
-- Vue I18n (internationalization)
-- TailwindCSS (styling)
-- Axios (HTTP client)
-- Vite (build tool)
+- Vue 3.5 (Composition API) + Vite 8 + TypeScript 6
+- Pinia 3 (state management)
+- Vue Router 5 (lazy loading)
+- vue-i18n 11 (internationalization)
+- Tailwind CSS 4 (styling)
+- ECharts 6, OpenLayers 10, Three.js, jsPDF, Marked, Mammoth
+- Vitest 4 + Playwright (testing)
 
 ### Backend
-- Node.js
-- Koa (web framework)
-- Sequelize (ORM)
-- SQLite (database)
-- TypeScript
+- Koa 3 + @koa/router 15 + koa-body 8 + TypeScript 6
+- MySQL 8.0 + Sequelize 6 (ORM)
+- LongCat API (OpenAI-compatible LLM)
+- ChromaDB (vector database for RAG)
+- node-cron (scheduled tasks)
+- Vitest 4 (testing)
 
-## Prerequisites
-
-- Node.js 24.11.1 or higher
-- npm or yarn
-
-## Installation
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-```bash
-cd backend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the backend server:
-```bash
-npm run dev
-```
-
-The backend will run on `http://localhost:3001`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the frontend development server:
-```bash
-npm run dev
-```
-
-The frontend will run on `http://localhost:3000`
+### Infrastructure
+- Docker + Docker Compose
+- Nginx (reverse proxy + static file serving)
+- Turborepo (monorepo orchestration)
+- pnpm 10 (package management)
 
 ## Project Structure
 
 ```
 ian-personal-portfolio/
-├── backend/
-│   ├── src/
-│   │   ├── database/
-│   │   │   └── index.ts          # Database configuration
-│   │   ├── models/
-│   │   │   ├── Project.ts        # Project model
-│   │   │   └── Contact.ts        # Contact model
-│   │   ├── routes/
-│   │   │   ├── projects.ts       # Project routes
-│   │   │   └── contact.ts        # Contact routes
-│   │   └── index.ts              # Main entry point
-│   ├── package.json
-│   └── tsconfig.json
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Navbar.vue        # Navigation bar
-    │   │   └── Footer.vue        # Footer
-    │   ├── views/
-    │   │   ├── Home.vue          # Home page
-    │   │   ├── Projects.vue      # Projects page
-    │   │   ├── About.vue         # About page
-    │   │   └── Contact.vue       # Contact page
-    │   ├── stores/
-    │   │   ├── theme.ts          # Theme store
-    │   │   └── language.ts       # Language store
-    │   ├── router/
-    │   │   └── index.ts          # Router configuration
-    │   ├── i18n/
-    │   │   └── index.ts          # Internationalization
-    │   ├── App.vue
-    │   ├── main.ts
-    │   └── style.css
-    ├── package.json
-    ├── vite.config.ts
-    ├── tailwind.config.js
-    └── tsconfig.json
+├── apps/
+│   ├── frontend/          # Vue 3 frontend
+│   │   ├── src/
+│   │   │   ├── views/     # Page views
+│   │   │   ├── stores/    # Pinia stores (theme, language)
+│   │   │   ├── router/    # Vue Router config
+│   │   │   ├── i18n/      # Internationalization
+│   │   │   ├── ai-assistant/  # AI chat module
+│   │   │   └── components/
+│   │   ├── public/fonts/  # Subset NotoSansSC (~182KB TTF)
+│   │   ├── Dockerfile
+│   │   └── nginx.conf
+│   └── backend/           # Koa backend
+│       ├── src/
+│       │   ├── app/       # App initialization + DB migration
+│       │   ├── routes/    # Route registration
+│       │   ├── controllers/
+│       │   ├── services/
+│       │   ├── models/    # Sequelize models
+│       │   ├── middlewares/
+│       │   ├── ai-assistant/  # RAG pipeline
+│       │   └── config/    # DB + logger config
+│       ├── Dockerfile
+│       └── .env.production.example
+├── packages/
+│   └── shared/            # Shared types, constants, validators
+├── docker-compose.yml
+├── turbo.json
+├── tsconfig.base.json
+├── pnpm-workspace.yaml
+└── .env.example           # Environment variable template
+```
+
+## Prerequisites
+
+- Node.js 20+ 
+- pnpm 10+
+- Docker + Docker Compose
+- MySQL 8.0 (via Docker)
+
+## Quick Start
+
+### Environment Setup
+
+1. Create `.env` from the example:
+```bash
+cp .env.example .env
+```
+
+2. Configure the required environment variables in `.env`:
+```env
+# Frontend build args (docker-compose reads these)
+VITE_TIANDITU_TOKEN=your_tianditu_token
+VITE_API_BASE_URL=/api
+
+# Backend runtime (loaded by docker-compose env_file or .env.production)
+ANTHROPIC_AUTH_TOKEN=your_longcat_api_key
+LLM_BASE_URL=https://api.longcat.chat/openai/v1
+LLM_MODEL=LongCat-2.0-Preview
+CHROMADB_API_KEY=your_chromadb_api_key
+CHROMADB_HOST=api.trychroma.com
+CHROMADB_TENANT=your_tenant_id
+CHROMADB_DATABASE=your_database_name
+OPENSKY_CLIENT_ID=your_opensky_client_id
+OPENSKY_CLIENT_SECRET=your_opensky_client_secret
+```
+
+### Docker Deployment (Production)
+
+```bash
+docker compose up --build -d
+```
+
+This starts three containers:
+- **mysql**: MySQL 8.0 with persistent volume
+- **backend**: Koa API server on port 3001
+- **frontend**: Nginx serving static files on ports 80/443
+
+### Local Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start all services (Turborepo)
+pnpm dev
+
+# Or start individually:
+pnpm --filter @ianportfolio/frontend run dev  # localhost:3000
+pnpm --filter @ianportfolio/backend run dev   # localhost:3001
+```
+
+### Testing
+
+```bash
+pnpm --filter @ianportfolio/frontend run test  # Frontend unit tests
+pnpm --filter @ianportfolio/backend run test   # Backend unit tests
 ```
 
 ## API Endpoints
 
-### Projects
-- `GET /api/projects` - Get all projects
-- `GET /api/projects/:id` - Get a single project
-- `POST /api/projects` - Create a new project
-- `PUT /api/projects/:id` - Update a project
-- `DELETE /api/projects/:id` - Delete a project
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/` | Health check |
+| `POST` | `/api/file/upload` | File upload |
+| `GET` | `/api/file/:id/download` | File download |
+| `GET` | `/api/opensky/states` | Aviation data proxy |
+| `POST` | `/api/visitor/log` | Visitor tracking |
+| `GET` | `/api/config/:key` | System config |
+| `POST` | `/api/chat/send` | AI chat (SSE streaming) |
 
-### Contact
-- `POST /api/contact` - Submit contact form
-- `GET /api/contact` - Get all contact submissions (admin)
+## RAG Pipeline (AI Assistant)
+
+```
+Document → Chunker (600 chars, 100 overlap)
+         → Embedding (OpenAI-compatible API)
+         → ChromaDB (vector storage)
+         → Indexing (retrieve top-5 with language filter)
+         → Chat (RAG-enhanced, SSE streaming)
+         → Rate Limit (100 calls/day, resets at midnight)
+```
 
 ## Theme System
 
-The theme automatically switches based on device time:
-- **Day Mode**: 6:00 AM - 5:59 PM (Blue-purple theme)
-- **Night Mode**: 6:00 PM - 5:59 AM (Dark theme)
-
-Users can also manually toggle the theme using the button in the navigation bar.
-
-## Language Switching
-
-The website supports English and Chinese. Users can switch languages using the language toggle button in the navigation bar.
+- **Day Mode**: 6:00 AM - 5:59 PM (auto-detect)
+- **Night Mode**: 6:00 PM - 5:59 AM
+- Manual toggle via navbar button
 
 ## Building for Production
 
-### Backend
 ```bash
-cd backend
-npm run build
-npm start
-```
+# Full monorepo build
+pnpm build
 
-### Frontend
-```bash
-cd frontend
-npm run build
+# Individual packages
+pnpm --filter @ianportfolio/shared build
+pnpm --filter @ianportfolio/frontend build
+pnpm --filter @ianportfolio/backend build
 ```
-
-The built files will be in the `dist` directory.
 
 ## Environment Variables
 
-### Backend
-```
-PORT=3001
-```
+### Frontend (build-time, VITE_ prefix)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_TIANDITU_TOKEN` | Tianditu map token | — |
+| `VITE_API_BASE_URL` | Backend API base URL | `/api` |
+
+### Backend (runtime)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NODE_ENV` | Environment | `production` |
+| `DB_HOST` | MySQL host | `mysql` |
+| `DB_PORT` | MySQL port | `3306` |
+| `DB_USER` | MySQL user | `portfolio` |
+| `DB_PASSWORD` | MySQL password | `portfolio` |
+| `DB_NAME` | MySQL database | `portfolio` |
+| `OPENSKY_CLIENT_ID` | OpenSky API client ID | — |
+| `OPENSKY_CLIENT_SECRET` | OpenSky API client secret | — |
+| `ANTHROPIC_AUTH_TOKEN` | LLM API key (LongCat) | — |
+| `LLM_BASE_URL` | LLM API base URL | — |
+| `LLM_MODEL` | LLM model name | `LongCat-2.0-Preview` |
+| `LLM_MAX_TOKENS` | Max tokens per request | `1024` |
+| `CHROMADB_API_KEY` | ChromaDB API key | — |
+| `CHROMADB_HOST` | ChromaDB host | `api.trychroma.com` |
+| `CHROMADB_TENANT` | ChromaDB tenant ID | — |
+| `CHROMADB_DATABASE` | ChromaDB database | — |
+| `CHROMADB_COLLECTION` | ChromaDB collection | `portfolio-knowledge` |
+| `CHUNK_MAX_SIZE` | RAG chunk size | `600` |
+| `CHUNK_OVERLAP` | RAG chunk overlap | `100` |
+| `RETRIEVE_TOP_K` | RAG retrieval count | `5` |
+| `VISITOR_SALT` | Visitor IP hash salt | — |
+| `ADMIN_SECRET` | Admin API secret | — |
 
 ## License
-
-ISC
-
----
-
-# Ian 个人作品集网站
-
-一个现代化的双语个人作品集网站，专为前端工程师打造，使用 Vue 3 + TypeScript（前端）和 Node + Koa + Sequelize + SQLite + TypeScript（后端）构建。本作品集项目从0到1完整覆盖前后端全栈部署，使用Docker容器化部署，展现AI工具链（bolt.new、cursor）在提升开发效率方面的实践成果。
-
-## 功能特性
-
-- **双语支持**：中英文语言切换
-- **自动主题切换**：根据设备时间自动切换日间/夜间主题（早上6点 - 晚上6点）
-  - 日间主题：蓝紫色渐变
-  - 夜间主题：深色主题
-- **现代化 UI**：极简设计，响应式布局
-- **项目展示**：从后端 API 动态获取项目数据
-- **联系表单**：功能完整的联系表单，支持后端存储
-
-## 技术栈
-
-### 前端
-- Vue 3（组合式 API）
-- TypeScript
-- Vue Router
-- Pinia（状态管理）
-- Vue I18n（国际化）
-- TailwindCSS（样式）
-- Axios（HTTP 客户端）
-- Vite（构建工具）
-
-### 后端
-- Node.js
-- Koa（Web 框架）
-- Sequelize（ORM）
-- SQLite（数据库）
-- TypeScript
-
-## 前置要求
-
-- Node.js 24.11.1 或更高版本
-- npm 或 yarn
-
-## 安装
-
-### 后端设置
-
-1. 进入后端目录：
-```bash
-cd backend
-```
-
-2. 安装依赖：
-```bash
-npm install
-```
-
-3. 启动后端服务器：
-```bash
-npm run dev
-```
-
-后端将运行在 `http://localhost:3001`
-
-### 前端设置
-
-1. 进入前端目录：
-```bash
-cd frontend
-```
-
-2. 安装依赖：
-```bash
-npm install
-```
-
-3. 启动前端开发服务器：
-```bash
-npm run dev
-```
-
-前端将运行在 `http://localhost:3000`
-
-## 项目结构
-
-```
-ian-personal-portfolio/
-├── backend/
-│   ├── src/
-│   │   ├── database/
-│   │   │   └── index.ts          # 数据库配置
-│   │   ├── models/
-│   │   │   ├── Project.ts        # 项目模型
-│   │   │   └── Contact.ts        # 联系表单模型
-│   │   ├── routes/
-│   │   │   ├── projects.ts       # 项目路由
-│   │   │   └── contact.ts        # 联系表单路由
-│   │   └── index.ts              # 主入口文件
-│   ├── package.json
-│   └── tsconfig.json
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Navbar.vue        # 导航栏
-    │   │   └── Footer.vue        # 页脚
-    │   ├── views/
-    │   │   ├── Home.vue          # 首页
-    │   │   ├── Projects.vue      # 项目页面
-    │   │   ├── About.vue         # 关于页面
-    │   │   └── Contact.vue       # 联系页面
-    │   ├── stores/
-    │   │   ├── theme.ts          # 主题状态管理
-    │   │   └── language.ts       # 语言状态管理
-    │   ├── router/
-    │   │   └── index.ts          # 路由配置
-    │   ├── i18n/
-    │   │   └── index.ts          # 国际化配置
-    │   ├── App.vue
-    │   ├── main.ts
-    │   └── style.css
-    ├── package.json
-    ├── vite.config.ts
-    ├── tailwind.config.js
-    └── tsconfig.json
-```
-
-## API 接口
-
-### 项目
-- `GET /api/projects` - 获取所有项目
-- `GET /api/projects/:id` - 获取单个项目
-- `POST /api/projects` - 创建新项目
-- `PUT /api/projects/:id` - 更新项目
-- `DELETE /api/projects/:id` - 删除项目
-
-### 联系表单
-- `POST /api/contact` - 提交联系表单
-- `GET /api/contact` - 获取所有联系表单提交（管理员）
-
-## 主题系统
-
-主题根据设备时间自动切换：
-- **日间模式**：上午 6:00 - 下午 5:59（蓝紫色主题）
-- **夜间模式**：下午 6:00 - 上午 5:59（深色主题）
-
-用户也可以使用导航栏中的按钮手动切换主题。
-
-## 语言切换
-
-网站支持英文和中文。用户可以使用导航栏中的语言切换按钮切换语言。
-
-## 生产环境构建
-
-### 后端
-```bash
-cd backend
-npm run build
-npm start
-```
-
-### 前端
-```bash
-cd frontend
-npm run build
-```
-
-构建后的文件将位于 `dist` 目录中。
-
-## 环境变量
-
-### 后端
-```
-PORT=3001
-```
-
-## 许可证
 
 ISC
