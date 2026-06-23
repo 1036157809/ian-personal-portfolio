@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "=== Ian Portfolio Jenkins 一键部署 ==="
+echo "=== Ian Portfolio CI/CD 一键部署 ==="
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 log_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
@@ -28,20 +28,18 @@ else
     git clone https://gitee.com/zyf-zed/ian-personal-portfolio.git .
 fi
 
-# 3. 读取密码（从 .env.jenkins 或环境变量）
+# 3. 读取密码
 if [ -f ".env.jenkins" ]; then
     JENKINS_PASS=$(grep JENKINS_ADMIN_PASSWORD .env.jenkins | cut -d= -f2 | tr -d '\r')
-    GITEE_USER=$(grep GITEE_USER .env.jenkins | cut -d= -f2 | tr -d '\r')
     log_info "已从 .env.jenkins 读取配置"
 else
-    log_warn ".env.jenkins 不存在，使用默认密码 admin123"
     JENKINS_PASS="admin123"
-    GITEE_USER="zyf-zed"
+    log_warn ".env.jenkins 不存在，使用默认密码"
 fi
 
-# 4. 检查 Jenkins 是否已在运行
+# 4. 启动 Jenkins（如果未运行）
 if curl -sf http://localhost:8080/login >/dev/null 2>&1; then
-    log_info "Jenkins 已在运行，跳过容器创建..."
+    log_info "Jenkins 已在运行"
 else
     log_info "启动 Jenkins..."
     cd ci/jenkins
@@ -58,60 +56,92 @@ else
     done
 fi
 
-# 5. 安装插件（如果还没装）
-PLUGIN_DIR="$DEPLOY_DIR/ci/jenkins/plugins"
-if [ ! -f "$PLUGIN_DIR/workflow-multibranch.hpi" ]; then
-    log_info "下载插件..."
-    mkdir -p "$PLUGIN_DIR"
-    UPDATE_JSON=$(curl -fsSL "https://updates.jenkins.io/current/update-center.json")
-    for PLUGIN_NAME in workflow-multibranch branch-api git workflow-aggregator cloudbees-folder; do
-        URL=$(echo "$UPDATE_JSON" | python3 -c "
-import sys, json
-text = sys.stdin.read()
-start = text.index('{')
-data = json.loads(text[start:])
-print(data.get('plugins', {}).get('$PLUGIN_NAME', {}).get('url', ''))
-" 2>/dev/null)
-        if [ -n "$URL" ]; then
-            EXT="${URL##*.}"
-            curl -fsSL "$URL" -o "$PLUGIN_DIR/${PLUGIN_NAME}.${EXT}" 2>/dev/null && log_info "已下载: $PLUGIN_NAME" || log_warn "下载失败: $PLUGIN_NAME"
-        fi
-    done
+# 5. 创建 Jenkins Pipeline job
+log_info "创建 Pipeline job..."
+
+# 获取 crumb
+CRUMB_RESP=$(curl -s "http://localhost:8080/crumbIssuer/api/json" -u admin:$JENKINS_PASS)
+CRUMB=$(echo "$CRUMB_RESP" | grep -o '"crumb":"[^"]*"' | cut -d'"' -f4)
+FIELD=$(echo "$CRUMB_RESP" | grep -o '"crumbRequestField":"[^"]*"' | cut -d'"' -f4)
+
+if [ -z "$CRUMB" ]; then
+    log_error "无法获取 Crumb"
+    exit 1
 fi
 
-# 6. 复制插件到 Jenkins 容器
-log_info "复制插件到 Jenkins 容器..."
-cd "$DEPLOY_DIR"
-docker cp "ci/jenkins/plugins/." ian-jenkins:/var/jenkins_home/plugins/
+# 创建 Pipeline job（用 curl + config.xml）
+JOB_DIR="/tmp/jenkins-job-config"
+mkdir -p "$JOB_DIR"
 
-# 7. 创建 Multibranch Pipeline 配置
-log_info "创建 Multibranch Pipeline..."
-docker exec -i ian-jenkins mkdir -p /var/jenkins_home/jobs/ian-personal-portfolio
-docker cp "ci/jenkins/multibranch-config.xml" ian-jenkins:/var/jenkins_home/jobs/ian-personal-portfolio/config.xml
+cat > "$JOB_DIR/config.xml" << 'XMLEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<flow-definition plugin="workflow-job@latest">
+  <description>Ian Portfolio Pipeline</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_BRANCH</name>
+          <description>Git branch to build</description>
+          <defaultValue>master</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@latest">
+    <scriptPath>Jenkinsfile</scriptPath>
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@latest">
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <url>https://gitee.com/zyf-zed/ian-personal-portfolio.git</url>
+          <credentialsId>gitee-credentials</credentialsId>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec>
+          <name>*/master</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+    </scm>
+  </definition>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H/5 * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <disabled>false</disabled>
+</flow-definition>
+XMLEOF
 
-# 8. 重启 Jenkins
-log_info "重启 Jenkins..."
-cd ci/jenkins
-docker compose -f docker-compose.jenkins.yml restart jenkins
+# 通过 API 创建
+RESPONSE=$(curl -s -X POST "http://localhost:8080/createItem?name=ian-portfolio-deploy" \
+  -u admin:$JENKINS_PASS \
+  -H "$FIELD:$CRUMB" \
+  -H "Content-Type: application/xml" \
+  -d @"$JOB_DIR/config.xml")
 
-log_info "等待 Jenkins 启动..."
-for i in $(seq 1 60); do
-    if curl -sf http://localhost:8080/login >/dev/null 2>&1; then
-        log_info "Jenkins 已启动！"
-        break
-    fi
-    [ $i -eq 60 ] && { log_error "Jenkins 启动超时"; exit 1; }
-    sleep 2
-done
-
-# 9. 验证
-log_info "验证..."
-JOBS=$(curl -s "http://localhost:8080/api/json" -u admin:$JENKINS_PASS 2>&1 | grep -o '"name":"ian-personal-portfolio"' | head -1)
-if [ -n "$JOBS" ]; then
-    log_info "✅ 部署完成！流水线已创建。"
+if echo "$RESPONSE" | grep -qi "error\|403\|404"; then
+    log_error "创建 job 失败"
+    echo "$RESPONSE" | head -5
+    exit 1
 else
-    log_warn "⚠️  流水线未在 API 中出现，可能需要检查 Jenkins 日志。"
-    log_info "请检查: docker logs ian-jenkins | grep -i 'ian-personal\|error\|exception'"
+    log_info "Pipeline job 创建成功！"
+fi
+
+# 6. 确保凭据存在
+log_info "检查凭据..."
+# 凭据已通过 docker-compose 的环境变量注入
+
+# 7. 验证
+log_info "验证..."
+JOBS=$(curl -s "http://localhost:8080/api/json" -u admin:$JENKINS_PASS 2>&1 | grep -o '"name":"ian-portfolio-deploy"' | head -1)
+if [ -n "$JOBS" ]; then
+    log_info "✅ 部署完成！"
+else
+    log_warn "⚠️  需要手动在 Jenkins UI 创建 job"
 fi
 
 log_info "========================================"

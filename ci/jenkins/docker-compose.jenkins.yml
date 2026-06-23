@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk21
+    image: jenkins/jenkins:2.492.3-lts-jdk21
     container_name: ian-jenkins
     restart: unless-stopped
     privileged: true
@@ -16,14 +16,7 @@ services:
       - /usr/bin/docker:/usr/bin/docker
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
-    networks:
-      - jenkins-network
 
 volumes:
   jenkins_home:
     driver: local
-
-networks:
-  jenkins-network:
-    driver: bridge
