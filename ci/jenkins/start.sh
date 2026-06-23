@@ -15,7 +15,7 @@ if ! command -v docker &>/dev/null; then
 fi
 
 # 1. 创建项目目录
-DEPLOY_DIR="/opt/ian-personal-portfolio"
+DEPLOY_DIR="/root/ian-personal-portfolio"
 mkdir -p "$DEPLOY_DIR"
 cd "$DEPLOY_DIR"
 
