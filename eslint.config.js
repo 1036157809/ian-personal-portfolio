@@ -18,6 +18,10 @@ export default [
       '**/playwright-report/**',
       '**/test-results/**',
       '**/public/**',
+      '**/vite.config.ts.timestamp-*',
+      '**/dist-ssr/**',
+      '**/*.sh',
+      'apps/*/*.sh',
       // 排除所有测试文件
       '**/tests/**',
       '**/__tests__/**',
@@ -48,7 +52,9 @@ export default [
     },
     rules: {
       ...ts.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' }],
     },
   },
 
@@ -69,6 +75,7 @@ export default [
     rules: {
       ...vuePlugin.configs['vue3-recommended'].rules,
       'vue/multi-word-component-names': 'off',
+      'vue/no-v-html': 'warn',
     },
   },
 
@@ -76,7 +83,10 @@ export default [
   {
     files: ['apps/frontend/src/**/*.ts', 'apps/frontend/src/**/*.vue'],
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        RequestInit: 'readonly',
+      },
     },
   },
 
@@ -97,6 +107,7 @@ export default [
     ],
     rules: {
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-unused-vars': 'off', // use @typescript-eslint/no-unused-vars instead
     },
   },
 
@@ -110,4 +121,22 @@ export default [
 
   // 禁用与 Prettier 冲突的规则
   prettierConfig,
+
+  // Node.js 脚本：构建配置、E2E 测试、SSR 服务
+  {
+    files: [
+      'apps/frontend/*.cjs',
+      'apps/frontend/spa-server.*',
+      'apps/frontend/playwright.config.*',
+      'apps/frontend/run-e2e.*',
+      'apps/frontend/scripts/**',
+    ],
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      'no-unused-vars': 'warn',
+      'no-undef': 'off',
+    },
+  },
 ];

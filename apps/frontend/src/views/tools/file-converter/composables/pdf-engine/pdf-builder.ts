@@ -15,7 +15,7 @@
 import { jsPDF } from 'jspdf'
 import type { Block, PdfConversionResult } from './types'
 import {
-  PT, PAGE_W_PT, PAGE_H_PT, ML_PT, MR_PT, MT_PT, MB_PT, CW_PT,
+  PT, PAGE_W_PT, PAGE_H_PT, ML_PT, MT_PT, MB_PT, CW_PT,
   FS_H2, FS_H3, FS_BODY, FS_TABLE,
   LH_BODY, LH_H2, LH_H3, LH_TABLE,
   GAP_BEFORE_H2, GAP_H2_RULE, GAP_H2_CONTENT, GAP_BEFORE_H3,

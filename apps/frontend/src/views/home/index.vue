@@ -41,7 +41,7 @@
 import { useI18n } from 'vue-i18n'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const { t } = useI18n()
+const { t: _t } = useI18n()
 
 const isAtBottom = ref(false)
 

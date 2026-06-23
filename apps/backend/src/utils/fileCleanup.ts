@@ -2,12 +2,10 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
-const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');
 
 // Size constants in bytes
 const MAX_TOTAL_SIZE_500MB = 500 * 1024 * 1024;
 const MAX_TOTAL_SIZE_300MB = 300 * 1024 * 1024;
-const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
 // Cache for directory size to avoid repeated calculations
 let cachedSize: number | null = null;
@@ -47,17 +45,6 @@ async function getDirectorySize(dirPath: string): Promise<number> {
   }
   
   return totalSize;
-}
-
-/**
- * Format bytes to human readable string
- */
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
 /**
@@ -107,7 +94,7 @@ async function deleteFilesOlderThan(days: number): Promise<void> {
           // Try to remove empty directory
           try {
             await fs.rmdir(filePath);
-          } catch (e) {
+          } catch {
             // Directory not empty, skip
           }
         } else {

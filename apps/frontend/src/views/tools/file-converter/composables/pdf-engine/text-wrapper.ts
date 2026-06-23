@@ -34,7 +34,7 @@ export function ab2b64(buf: ArrayBuffer): string {
  */
 export function parseSegments(raw: string): Seg[] {
   const segs: Seg[] = []
-  const re = /\*\*(.+?)\*\*|\*(.+?)\*|(https?:\/\/[^\s\)]+)/g
+  const re = /\*\*(.+?)\*\*|\*(.+?)\*|(https?:\/\/[^\s)]+)/g
   let last = 0, m: RegExpExecArray | null
   while ((m = re.exec(raw)) !== null) {
     if (m.index > last) segs.push({ text: raw.slice(last, m.index), bold: false })

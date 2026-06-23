@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { FileMetadata, UploadedFile } from '@ianportfolio/shared';
+import { UploadedFile } from '@ianportfolio/shared';
 
 const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
 const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');
@@ -34,8 +34,8 @@ export async function ensureDirectories() {
     console.log('=== File Upload Configuration ===');
     console.log(`UPLOADS_DIR: ${UPLOADS_DIR}`);
     console.log(`CHUNKS_DIR: ${CHUNKS_DIR}`);
-  } catch (error) {
-    console.error('Error creating directories:', error);
+  } catch (err) {
+    console.error('Error creating directories:', err);
   }
 }
 
@@ -43,9 +43,9 @@ export class FileService {
   private uploadedFiles: UploadedFile[] = [];
 
   async uploadFile(file: any, body: any): Promise<UploadedFile> {
-    const originalFileName = body.name || file.originalFilename || file.name;
-    const fileSize = body.size || file.size;
-    const fileType = body.type || file.mimetype;
+    const originalFileName: string = body.name || file.originalFilename || file.name;
+    const fileSize: number = body.size || file.size;
+    const fileType: string = body.type || file.mimetype;
 
     // Generate unique filename
     const fileExtension = originalFileName.split('.').pop() || '';
@@ -66,7 +66,7 @@ export class FileService {
     try {
       await fsPromises.unlink(file.filepath);
       console.log(`Cleaned up temp file: ${file.filepath}`);
-    } catch (error) {
+    } catch {
       console.log(`Failed to clean up temp file: ${file.filepath}`);
     }
 
@@ -85,8 +85,8 @@ export class FileService {
   }
 
   async uploadChunk(chunk: any, body: any): Promise<{ success: boolean; chunkIndex: number }> {
-    const fileName = body.fileName;
-    const chunkIndex = parseInt(body.chunkIndex);
+    const fileName: string = body.fileName;
+    const chunkIndex: number = parseInt(body.chunkIndex);
 
     // Save chunk
     const chunkPath = path.join(CHUNKS_DIR, `${fileName}.chunk.${chunkIndex}`);
@@ -103,7 +103,7 @@ export class FileService {
     try {
       await fsPromises.unlink(chunk.filepath);
       console.log(`Cleaned up chunk temp file: ${chunk.filepath}`);
-    } catch (error) {
+    } catch {
       console.log(`Failed to clean up chunk temp file: ${chunk.filepath}`);
     }
 
@@ -182,14 +182,14 @@ export class FileService {
     try {
       await fsPromises.access(filePath);
       console.log(`File exists at path: ${filePath}`);
-    } catch (accessError) {
+    } catch {
       console.log(`File does not exist at path: ${filePath}`);
     }
     
     try {
       await fsPromises.unlink(filePath);
       console.log(`Successfully deleted file: ${filePath}`);
-    } catch (error) {
+    } catch {
       console.error(`Failed to delete file: ${filePath}`);
       throw new Error('Failed to delete file from disk');
     }
@@ -208,18 +208,18 @@ export class FileService {
     try {
       await fsPromises.stat(filePath);
       return { filePath, fileName: file.name };
-    } catch (error) {
+    } catch {
       throw new Error('File not found on disk');
     }
   }
 
   async previewFile(id: string): Promise<{ filePath: string; fileName: string; mimeType: string }> {
-    const file = this.uploadedFiles.find(f => f.id === id);
-    if (!file) {
+    const meta = this.uploadedFiles.find(f => f.id === id);
+    if (!meta) {
       throw new Error('File not found');
     }
 
-    const filePath = path.join(UPLOADS_DIR, file.filePath || file.name);
+    const filePath = path.join(UPLOADS_DIR, meta.filePath || meta.name);
     const ext = filePath.split('.').pop() || '';
     
     const contentTypes: Record<string, string> = {
@@ -234,10 +234,10 @@ export class FileService {
       await fsPromises.stat(filePath);
       return {
         filePath,
-        fileName: file.name,
+        fileName: meta.name,
         mimeType: contentTypes[ext] || 'application/octet-stream'
       };
-    } catch (error) {
+    } catch {
       throw new Error('File not found on disk');
     }
   }

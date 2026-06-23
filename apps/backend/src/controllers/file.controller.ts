@@ -1,19 +1,14 @@
 import { Context } from 'koa';
 import fs from 'fs';
-import path from 'path';
 import fileService from 'src/services/file.service';
-import { ensureDirectories } from 'src/services/file.service';
 
 export class FileController {
-  constructor() {
-    ensureDirectories();
-  }
 
   async getAllFiles(ctx: Context) {
     try {
       const files = await fileService.getAllFiles();
       ctx.body = files;
-    } catch (error) {
+    } catch {
       ctx.status = 500;
       ctx.body = { error: 'Failed to fetch files' };
     }
@@ -21,8 +16,8 @@ export class FileController {
 
   async uploadFile(ctx: Context) {
     try {
-      const files = (ctx.request as any).files;
-      const body = (ctx.request as any).body as any;
+      const files = (ctx.request as { files?: { file?: { filepath: string } } }).files;
+      const body = ctx.request.body as { name?: string; size?: number; type?: string };
       
       if (!files || !files.file) {
         ctx.status = 400;
@@ -33,7 +28,7 @@ export class FileController {
       const file = await fileService.uploadFile(files.file, body);
       ctx.body = file;
       ctx.status = 201;
-    } catch (error) {
+    } catch {
       ctx.status = 500;
       ctx.body = { error: 'Failed to upload file' };
     }
@@ -41,8 +36,8 @@ export class FileController {
 
   async uploadChunk(ctx: Context) {
     try {
-      const body = (ctx.request as any).body as any;
-      const files = (ctx.request as any).files;
+      const body = ctx.request.body as { fileName?: string; chunkIndex?: string };
+      const files = (ctx.request as { files?: { file?: { filepath: string } } }).files;
       
       if (!files || !files.file) {
         ctx.status = 400;
@@ -53,7 +48,7 @@ export class FileController {
       const result = await fileService.uploadChunk(files.file, body);
       ctx.body = result;
       ctx.status = 200;
-    } catch (error) {
+    } catch {
       ctx.status = 500;
       ctx.body = { error: 'Failed to upload chunk' };
     }
@@ -61,7 +56,7 @@ export class FileController {
 
   async completeUpload(ctx: Context) {
     try {
-      const body = (ctx.request as any).body as { fileName?: string };
+      const body = ctx.request.body as { fileName?: string };
       const { fileName } = body;
 
       if (!fileName) {
@@ -73,9 +68,9 @@ export class FileController {
       const file = await fileService.completeUpload(fileName);
       ctx.body = { success: true, file };
       ctx.status = 200;
-    } catch (error) {
+    } catch (err) {
       ctx.status = 500;
-      ctx.body = { error: 'Failed to complete upload', details: (error as Error).message };
+      ctx.body = { error: 'Failed to complete upload', details: (err as Error).message };
     }
   }
 

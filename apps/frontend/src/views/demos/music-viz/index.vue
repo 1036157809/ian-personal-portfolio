@@ -168,7 +168,7 @@ import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useLanguageStore } from 'src/stores/language'
 import carImg from 'src/assets/images/wallpapers/car.webp'
 
-const languageStore = useLanguageStore()
+const _languageStore = useLanguageStore()
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const audioRef = ref<HTMLAudioElement | null>(null)

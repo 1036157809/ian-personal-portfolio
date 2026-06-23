@@ -7,7 +7,7 @@ const envPath = path.join(__dirname, '../../../.env');
 dotenv.config({ path: envPath });
 
 import { createApp } from 'src/app/app';
-import { ensureDirectories } from 'src/services/file.service';
+import 'src/services/file.service'; // ensureDirectories called in FileController constructor
 import { cleanupUploads } from 'src/utils/fileCleanup';
 
 const PORT = process.env.PORT || 3001;

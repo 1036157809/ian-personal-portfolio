@@ -512,7 +512,7 @@ onUnmounted(() => {
 })
 
 // Code content from dscode project
-const stateMachineCode = ref(`// State Machine Definition (src/utils/constants.js)
+const _stateMachineCode = ref(`// State Machine Definition (src/utils/constants.js)
 export const RECRUITMENT_PROCESS_STATUS_MAP = {
   CREATED: '1',
   FSC_APPLICATION: '2',
@@ -548,7 +548,7 @@ const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
   return component;
 };`.replace(/@/g, '&#64;'))
 
-const createAppApiCode = ref(`// RTK Query Base API Configuration (src/redux/createAppApi.js)
+const _createAppApiCode = ref(`// RTK Query Base API Configuration (src/redux/createAppApi.js)
 import { createApi, fetchBaseQuery } from '&#64;reduxjs/toolkit/dist/query/react';
 import { BASE_API } from '&#64;utils/constants';
 
@@ -582,7 +582,7 @@ export const baseApiSlice = createApi({
   endpoints: () => ({}),
 });`.replace(/@/g, '&#64;'))
 
-const homePageApiCode = ref(`// API Module Example (src/redux/api/homePageApi.js)
+const _homePageApiCode = ref(`// API Module Example (src/redux/api/homePageApi.js)
 import { baseApiSlice } from '&#64;redux/createAppApi';
 import { parseUrl } from '&#64;utils/request';
 import { getHomePageInfoUrl } from '&#64;utils/apis';
@@ -751,7 +751,7 @@ const Router = () => {
 
 export default Router;`.replace(/@/g, '&#64;'))
 
-const oktaConfigCode = ref(`// Okta OAuth Configuration (src/utils/config.js)
+const _oktaConfigCode = ref(`// Okta OAuth Configuration (src/utils/config.js)
 export const oktaAuthConfig = {
   issuer:
     process.env.REACT_APP_OKTA_ISSUER ||
@@ -807,7 +807,7 @@ const logout = async (accessToken) => {
 
 export { generateToken, logout, refreshToken };`)
 
-const rtkQueryUsageCode = ref(`// Component using RTK Query (src/pages/HomePage/index.jsx)
+const _rtkQueryUsageCode = ref(`// Component using RTK Query (src/pages/HomePage/index.jsx)
 import { useGetHomePageDataQuery } from '&#64;redux/api/homePageApi';
 
 const HomePage = () => {
@@ -861,7 +861,7 @@ const RouteAuth = ({ routeAuthByRecruitmentProcessStepStatus, component }) => {
   return component;
 };`)
 
-const challenge2Code = ref(`// 文件上传
+const _challenge2Code = ref(`// 文件上传
 const uploadFile = build.mutation({
   query(params) {
     let formData = new FormData();
