@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@latest">
+  <description>Ian Portfolio Multibranch Pipeline</description>
+  <properties/>
+  <folderViews class="jenkins.model.BaseView" plugin="branch-api@latest">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <name>All</name>
+  </folderViews>
+  <healthMetrics>
+    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric plugin="cloudbees-folder@latest">
+      <nonRecursive>false</nonRecursive>
+    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+  </healthMetrics>
+  <icon class="com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon" plugin="cloudbees-folder@latest"/>
+  <orphanedItemStrategy class="com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy" plugin="cloudbees-folder@latest">
+    <pruneDeadItems>true</pruneDeadItems>
+    <daysToKeep>10</daysToKeep>
+    <numToKeep>10</numToKeep>
+  </orphanedItemStrategy>
+  <triggers>
+    <com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger plugin="cloudbees-folder@latest">
+      <spec>H/5 * * * *</spec>
+    </com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger>
+  </triggers>
+  <sources class="jenkins.branch.MultiBranchProject$BranchSourceList" plugin="branch-api@latest">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <data>
+      <jenkins.branch.BranchSource plugin="branch-api@latest">
+        <source class="plugins.git.GitSCMSource" plugin="git@latest">
+          <id>ian-portfolio-gitee</id>
+          <remote>https://gitee.com/zyf-zed/ian-personal-portfolio.git</remote>
+          <credentialsId>gitee-credentials</credentialsId>
+          <traits>
+            <jenkins.plugins.git.traits.BranchDiscoveryTrait plugin="git@latest"/>
+          </traits>
+        </source>
+        <strategy class="jenkins.branch.DefaultBranchPropertyStrategy" plugin="branch-api@latest"/>
+      </jenkins.branch.BranchSource>
+    </data>
+  </sources>
+  <factory class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProjectFactory" plugin="workflow-multibranch@latest">
+    <scriptPath>Jenkinsfile</scriptPath>
+  </factory>
+</org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
