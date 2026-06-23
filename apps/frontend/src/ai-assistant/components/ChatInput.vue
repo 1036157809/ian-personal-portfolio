@@ -1,6 +1,6 @@
 <template>
   <div class="border-t border-day-border dark:border-night-border p-4">
-    <form @submit.prevent="onSubmit" class="flex items-end gap-3">
+    <form class="flex items-end gap-3" @submit.prevent="onSubmit">
       <textarea
         v-model="input"
         :placeholder="disabled ? t('chat.thinkingPlaceholder') : t('chat.inputPlaceholder')"

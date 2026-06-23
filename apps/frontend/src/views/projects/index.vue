@@ -195,8 +195,8 @@
             {{ languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh }}
           </h3>
           <button
-            @click="closeProjectDetail"
             class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            @click="closeProjectDetail"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -318,8 +318,8 @@
     >
       <!-- Previous Button -->
       <button
-        @click.stop="navigateImage('prev')"
         class="absolute left-4 text-white text-5xl hover:text-gray-300 transition-colors p-2"
+        @click.stop="navigateImage('prev')"
       >
         &#10094;
       </button>
@@ -333,15 +333,15 @@
       
       <!-- Next Button -->
       <button
-        @click.stop="navigateImage('next')"
         class="absolute right-4 text-white text-5xl hover:text-gray-300 transition-colors p-2"
+        @click.stop="navigateImage('next')"
       >
         &#10095;
       </button>
       
       <button
-        @click="closeImageModal"
         class="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 transition-colors"
+        @click="closeImageModal"
       >
         &times;
       </button>

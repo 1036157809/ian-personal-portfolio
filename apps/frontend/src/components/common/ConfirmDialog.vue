@@ -53,15 +53,15 @@
             <!-- 按钮 -->
             <div class="flex border-t border-day-border/30 dark:border-night-border/30">
               <button
-                @click="handleCancel"
                 class="flex-1 py-3.5 text-sm font-medium text-day-text-secondary dark:text-night-text-secondary hover:bg-day-surface-elevated/50 dark:hover:bg-night-surface-elevated/50 transition-colors"
+                @click="handleCancel"
               >
                 {{ cancelText }}
               </button>
               <div class="w-px bg-day-border/30 dark:bg-night-border/30" />
               <button
-                @click="handleConfirm"
                 class="flex-1 py-3.5 text-sm font-medium text-red-500 hover:bg-red-500/5 dark:hover:bg-red-500/10 transition-colors"
+                @click="handleConfirm"
               >
                 {{ confirmText }}
               </button>

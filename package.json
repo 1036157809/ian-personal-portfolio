@@ -1,6 +1,7 @@
 {
   "name": "ian-personal-portfolio",
   "private": true,
+  "type": "module",
   "description": "Ian's personal portfolio website — monorepo",
   "scripts": {
     "dev": "turbo run dev",
@@ -11,11 +12,13 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
+    "@eslint/js": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-vue": "^9.0.0",
+    "globals": "^17.7.0",
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",

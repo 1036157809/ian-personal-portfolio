@@ -44,8 +44,8 @@
             >
               <div class="flex flex-col items-center gap-2 pointer-events-auto">
                 <button
-                  @click="togglePlay"
                   class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-white/30 transition-all duration-300 group"
+                  @click="togglePlay"
                 >
                   <svg class="w-8 h-8 text-white ml-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
@@ -78,8 +78,8 @@
           :style="{ left: pauseOverlayLeft }"
         >
           <button
-            @click="togglePlay"
             class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-white/30 transition-all duration-300 group"
+            @click="togglePlay"
           >
             <svg class="w-8 h-8 text-white ml-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
@@ -96,8 +96,8 @@
         <div class="flex items-center gap-6">
           <!-- Play Button -->
           <button
-            @click="togglePlay"
             class="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all flex-shrink-0"
+            @click="togglePlay"
           >
             <svg v-if="!isPlaying" class="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
@@ -116,9 +116,9 @@
           <div class="flex items-center gap-3 flex-1">
             <span class="text-white/70 text-xs font-mono w-10 text-right">{{ formatTime(currentTime) }}</span>
             <div
+              ref="progressRef"
               class="flex-1 h-1.5 bg-white/20 rounded-full cursor-pointer group relative"
               @click="seekTo"
-              ref="progressRef"
             >
               <div
                 class="h-full rounded-full relative"
@@ -143,8 +143,8 @@
               max="1"
               step="0.01"
               :value="volume"
-              @input="setVolume"
               class="w-20 accent-indigo-500"
+              @input="setVolume"
             />
           </div>
         </div>

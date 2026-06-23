@@ -32,8 +32,8 @@
 
         <div class="mt-4 flex gap-4">
           <button
-            @click="() => resetView()"
             class="btn-primary px-4 py-2 rounded-lg text-sm"
+            @click="() => resetView()"
           >
             {{ $t('projects.aviationMap.resetView') }}
           </button>

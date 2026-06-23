@@ -52,14 +52,14 @@
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">{{ confirmDialog.message }}</p>
             <div class="flex justify-end gap-3">
               <button
-                @click="confirmDialog.show = false"
                 class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors"
+                @click="confirmDialog.show = false"
               >
                 取消
               </button>
               <button
-                @click="confirmDialog.onConfirm(); confirmDialog.show = false"
                 class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors"
+                @click="confirmDialog.onConfirm(); confirmDialog.show = false"
               >
                 确认
               </button>
@@ -103,7 +103,6 @@
               <button 
                 v-for="(state, index) in processStates" 
                 :key="index"
-                @click="transitionToState(state)"
                 :disabled="!canTransitionTo(state)"
                 :class="{
                   'px-1 py-2 text-[10px] rounded-lg transition-all truncate': true,
@@ -111,6 +110,7 @@
                   'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500': currentState !== state.value && canTransitionTo(state),
                   'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600 cursor-not-allowed': currentState !== state.value && !canTransitionTo(state)
                 }"
+                @click="transitionToState(state)"
               >
                 {{ index + 1 }}. {{ state.label }}
               </button>
@@ -120,8 +120,8 @@
               <p class="text-sm text-gray-600 dark:text-gray-400">{{ currentDescription }}</p>
             </div>
             <div class="mt-4 flex gap-2">
-              <button @click="transitionToNextState" :disabled="!hasNextState" class="flex-1 btn-primary py-2 rounded-lg text-sm">{{ $t('dsPortalDemo.nextState') }}</button>
-              <button @click="resetStateMachine" class="flex-1 btn-secondary py-2 rounded-lg text-sm">{{ $t('dsPortalDemo.reset') }}</button>
+              <button :disabled="!hasNextState" class="flex-1 btn-primary py-2 rounded-lg text-sm" @click="transitionToNextState">{{ $t('dsPortalDemo.nextState') }}</button>
+              <button class="flex-1 btn-secondary py-2 rounded-lg text-sm" @click="resetStateMachine">{{ $t('dsPortalDemo.reset') }}</button>
             </div>
           </div>
         </div>
@@ -136,15 +136,15 @@
               
               <!-- Drag & Drop Zone -->
               <div
-                @drop="handleDrop"
-                @dragover.prevent="handleDragOver"
-                @dragleave.prevent="handleDragLeave"
-                @click="fileInputRef?.click()"
                 :class="{
                   'border-2 border-dashed border-day-primary dark:border-night-primary bg-day-primary/5 dark:bg-night-primary/5': isDragging,
                   'border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500': !isDragging
                 }"
                 class="relative cursor-pointer rounded-lg p-8 text-center transition-colors"
+                @drop="handleDrop"
+                @dragover.prevent="handleDragOver"
+                @dragleave.prevent="handleDragLeave"
+                @click="fileInputRef?.click()"
               >
                 <div class="flex flex-col items-center justify-center">
                   <svg class="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,8 +157,8 @@
                   ref="fileInputRef"
                   type="file"
                   multiple
-                  @change="handleFileUpload"
                   class="hidden"
+                  @change="handleFileUpload"
                 />
               </div>
             </div>
@@ -194,8 +194,8 @@
                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ progress.speed }}</span>
                     <button
                       v-if="progress.paused"
-                      @click="resumeUpload(progress)"
                       class="text-xs text-day-primary dark:text-night-primary hover:underline"
+                      @click="resumeUpload(progress)"
                     >
                       {{ t('dsPortalDemo.resume') }}
                     </button>
@@ -234,20 +234,20 @@
                     <td class="py-3 px-4 flex gap-2">
                       <button
                         v-if="isImage(file.type)"
-                        @click="previewImage(file)"
                         class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors"
+                        @click="previewImage(file)"
                       >
                         {{ t('dsPortalDemo.preview') }}
                       </button>
                       <button
                         v-if="isPDF(file.type)"
-                        @click="previewPDF(file)"
                         class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium transition-colors"
+                        @click="previewPDF(file)"
                       >
                         {{ t('dsPortalDemo.preview') }}
                       </button>
-                      <button @click="downloadFile(file)" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-sm font-medium transition-colors">{{ $t('dsPortalDemo.download') }}</button>
-                      <button @click="deleteFile(file.id)" class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium transition-colors">{{ $t('dsPortalDemo.delete') }}</button>
+                      <button class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-sm font-medium transition-colors" @click="downloadFile(file)">{{ $t('dsPortalDemo.download') }}</button>
+                      <button class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium transition-colors" @click="deleteFile(file.id)">{{ $t('dsPortalDemo.delete') }}</button>
                     </td>
                   </tr>
                 </tbody>
@@ -424,8 +424,8 @@
     >
       <div class="relative max-w-7xl max-h-[95vh]">
         <button
-          @click="closeImagePreview"
           class="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+          @click="closeImagePreview"
         >
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -447,8 +447,8 @@
     >
       <div class="relative w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden" @click.stop>
         <button
-          @click="closePDFPreview"
           class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
+          @click="closePDFPreview"
         >
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

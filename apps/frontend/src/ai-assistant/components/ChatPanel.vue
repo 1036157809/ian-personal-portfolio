@@ -30,8 +30,8 @@
         <!-- 侧边栏顶部：新建对话 -->
         <div class="p-3">
           <button
-            @click="handleNewChat"
             class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-day-border dark:border-night-border transition-colors text-sm font-medium hover:bg-day-primary/10 dark:hover:bg-night-primary/10 text-day-text dark:text-night-text"
+            @click="handleNewChat"
           >
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -45,19 +45,19 @@
           <div
             v-for="conv in chatStore.sortedConversations"
             :key="conv.id"
-            @click="chatStore.switchConversation(conv.id); sidebarOpen = false"
             class="group flex items-center gap-1 px-2 py-2 rounded-lg cursor-pointer transition-colors text-sm"
             :class="conv.id === chatStore.currentConversationId
               ? 'bg-day-primary/15 dark:bg-night-primary/15 text-day-primary dark:text-night-primary font-medium'
               : 'hover:bg-day-primary/5 dark:hover:bg-night-primary/5 text-day-text-secondary dark:text-night-text-secondary'"
+            @click="chatStore.switchConversation(conv.id); sidebarOpen = false"
           >
             <svg class="w-3.5 h-3.5 flex-shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
             <span class="flex-1 truncate">{{ conv.title }}</span>
             <button
-              @click.stop="handleDeleteConversation(conv.id)"
               class="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-500 transition-all"
+              @click.stop="handleDeleteConversation(conv.id)"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -73,8 +73,8 @@
         <div class="flex items-center justify-between px-5 py-4 border-b border-day-border/30 dark:border-night-border/30">
           <div class="flex items-center gap-3">
             <button
-              @click="sidebarOpen = !sidebarOpen"
               class="md:hidden p-1.5 rounded-lg hover:bg-day-primary/10 dark:hover:bg-night-primary/10 transition-colors text-day-text-secondary dark:text-night-text-secondary"
+              @click="sidebarOpen = !sidebarOpen"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -88,8 +88,8 @@
             <h3 class="section-title !text-lg !m-0">{{ t('chat.title') }}</h3>
           </div>
           <button
-            @click="chatStore.closeChat"
             class="p-1.5 rounded-lg hover:bg-day-primary/10 dark:hover:bg-night-primary/10 transition-colors text-day-text-secondary dark:text-night-text-secondary"
+            @click="chatStore.closeChat"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

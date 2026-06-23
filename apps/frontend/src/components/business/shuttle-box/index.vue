@@ -10,8 +10,8 @@
           class="flex-1 px-3 py-2 border rounded text-sm text-black"
         />
         <button
-          @click="selectAllSource"
           class="px-3 py-2 btn-primary min-w-16 text-sm"
+          @click="selectAllSource"
         >
           {{ $t('shuttleBox.selectAll') }}
         </button>
@@ -39,16 +39,16 @@
     <!-- Transfer Buttons -->
     <div class="flex flex-col gap-2 pt-8">
       <button
-        @click="moveToTarget"
         :disabled="selectedSourceIds.length === 0"
         class="px-4 py-2 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        @click="moveToTarget"
       >
         →
       </button>
       <button
-        @click="moveToSource"
         :disabled="selectedTargetIds.length === 0"
         class="px-4 py-2 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        @click="moveToSource"
       >
         ←
       </button>
@@ -64,8 +64,8 @@
           class="flex-1 px-3 py-2 border rounded text-sm text-black"
         />
         <button
-          @click="selectAllTarget"
           class="px-3 py-2 btn-primary min-w-16 text-sm"
+          @click="selectAllTarget"
         >
           {{ $t('shuttleBox.selectAll') }}
         </button>

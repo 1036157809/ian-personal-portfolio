@@ -18,13 +18,13 @@
         <button
           v-for="role in roles"
           :key="role.id"
-          @click="switchRole(role.id)"
           :class="[
             'px-6 py-3 rounded-lg font-medium transition-colors',
             currentRole === role.id
               ? 'btn-primary'
               : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
           ]"
+          @click="switchRole(role.id)"
         >
           {{ role.name }}
         </button>

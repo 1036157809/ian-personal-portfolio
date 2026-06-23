@@ -79,8 +79,8 @@
           <input
             type="file"
             accept="video/*"
-            @change="handleVideoUpload"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-day-text dark:text-night-text file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-day-primary file:text-white dark:file:bg-night-primary dark:file:text-white hover:file:bg-day-primary/90 dark:hover:file:bg-night-primary/90 cursor-pointer"
+            @change="handleVideoUpload"
           />
         </div>
 
@@ -120,8 +120,8 @@
             </div>
             <div class="flex items-end">
               <button
-                @click="captureSegment"
                 class="px-6 py-2 bg-day-primary text-white dark:bg-night-primary rounded-lg hover:opacity-90 transition-opacity"
+                @click="captureSegment"
               >
                 截取片段
               </button>
@@ -142,14 +142,14 @@
                 </span>
                 <div class="flex gap-2">
                   <button
-                    @click="playSegment(segment)"
                     class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                    @click="playSegment(segment)"
                   >
                     回放
                   </button>
                   <button
-                    @click="deleteSegment(index)"
                     class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                    @click="deleteSegment(index)"
                   >
                     删除
                   </button>
