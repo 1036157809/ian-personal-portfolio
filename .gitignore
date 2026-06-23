@@ -12,7 +12,7 @@ docs
 .codex/
 tests/
 playwright-report/
-Test-results/
+test-results/
 .turbo/
 __tests__/
-Dist/
+dist/
