@@ -16,6 +16,7 @@ services:
       - /usr/bin/docker:/usr/bin/docker
       - /usr/libexec/docker/cli-plugins:/usr/lib/docker/cli-plugins
       - ./casc.yaml:/var/jenkins_home/casc.yaml
+      - /root/ian-personal-portfolio:/root/ian-personal-portfolio
     environment:
       - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
