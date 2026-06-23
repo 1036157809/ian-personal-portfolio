@@ -11,9 +11,6 @@ pipeline {
         disableConcurrentBuilds()
     }
 
-    triggers {
-        githubPush()
-    }
 
     stages {
         stage('检出代码') {
