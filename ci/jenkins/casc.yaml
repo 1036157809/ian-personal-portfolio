@@ -11,10 +11,8 @@ jenkins:
           password: "${JENKINS_ADMIN_PASSWORD:-admin123}"
 
   authorizationStrategy:
-    globalMatrix:
-      permissions:
-        - "Overall/Administer:admin"
-        - "Overall/Read:anonymous"
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
 
 credentials:
   system:
@@ -31,40 +29,3 @@ credentials:
               id: "tianditu-token"
               secret: "${VITE_TIANDITU_TOKEN}"
               description: "天地图令牌"
-
-unclassified:
-  globalLibraries:
-    libraries: []
-
-jobs:
-  - script: |
-      multibranchPipelineJob('ian-personal-portfolio') {
-        description('Ian Portfolio - Multibranch Pipeline')
-        branchSources {
-          git {
-            id('ian-portfolio-gitee')
-            remote('https://gitee.com/${GITEE_USER}/ian-personal-portfolio.git')
-            credentialsId('gitee-credentials')
-            includes('master release/* *')
-          }
-        }
-        orphanedItemStrategy {
-          discardOldItems {
-            numToKeep(10)
-          }
-        }
-        triggers {
-          periodicFolderTrigger {
-            interval('5m')
-          }
-        }
-        factory {
-          workflowBranchProjectFactory {
-            scriptPath('Jenkinsfile')
-          }
-        }
-        configure { node ->
-          def traits = node / sources / data / 'jenkins.branch.BranchSource' / source / traits
-          traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait' {}
-        }
-      }

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_DIR = '/opt/ian-personal-portfolio'
+        DEPLOY_DIR = '/root/ian-personal-portfolio'
     }
 
     options {

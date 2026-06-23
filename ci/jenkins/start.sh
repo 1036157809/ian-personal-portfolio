@@ -56,10 +56,7 @@ else
     done
 fi
 
-# 5. 创建 Jenkins Pipeline job（在容器内部执行）
-log_info "创建 Pipeline job..."
-
-# 写 config.xml 到容器内
+# 5. 创建 config.xml
 cat > /tmp/job-config.xml << 'XMLEOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <flow-definition plugin="workflow-job@latest">
@@ -103,14 +100,18 @@ cat > /tmp/job-config.xml << 'XMLEOF'
 </flow-definition>
 XMLEOF
 
+log_info "创建 Pipeline job..."
+
 # 复制 config.xml 到容器内
 docker cp /tmp/job-config.xml ian-jenkins:/tmp/job-config.xml
 
-# 在容器内部创建 job
-docker exec -i ian-jenkins bash -c '
-CRUMB_RESP=$(curl -s "http://localhost:8080/crumbIssuer/api/json" -u admin:'"$JENKINS_PASS"' 2>/dev/null)
-CRUMB=$(echo "$CRUMB_RESP" | grep -o "\"crumb\":\"[^\"]*\"" | cut -d"'"'"' -f4)
-FIELD=$(echo "$CRUMB_RESP" | grep -o "\"crumbRequestField\":\"[^\"]*\"" | cut -d"'"'"' -f4)
+# 在容器内部创建 job（写一个临时脚本执行）
+cat > /tmp/create-job.sh << 'INNER'
+#!/bin/bash
+JENKINS_PASS="$1"
+CRUMB_RESP=$(curl -s "http://localhost:8080/crumbIssuer/api/json" -u admin:$JENKINS_PASS 2>/dev/null)
+CRUMB=$(echo "$CRUMB_RESP" | grep -o '"crumb":"[^"]*"' | cut -d'"' -f4)
+FIELD=$(echo "$CRUMB_RESP" | grep -o '"crumbRequestField":"[^"]*"' | cut -d'"' -f4)
 
 if [ -z "$CRUMB" ]; then
     echo "ERROR: No crumb"
@@ -118,19 +119,23 @@ if [ -z "$CRUMB" ]; then
 fi
 
 RESPONSE=$(curl -s -X POST "http://localhost:8080/createItem?name=ian-portfolio-deploy" \
-  -u admin:'"$JENKINS_PASS"'' \
+  -u admin:$JENKINS_PASS \
   -H "$FIELD:$CRUMB" \
   -H "Content-Type: application/xml" \
   --data-binary @/tmp/job-config.xml)
 
-if echo "$RESPONSE" | grep -qi "error\|403\|404\|html"; then
+if echo "$RESPONSE" | grep -qi "403\|404"; then
     echo "ERROR: Job creation failed"
     echo "$RESPONSE" | head -3
     exit 1
 else
-    echo "SUCCESS: Job created"
+    echo "SUCCESS"
 fi
-'
+INNER
+
+chmod +x /tmp/create-job.sh
+docker cp /tmp/create-job.sh ian-jenkins:/tmp/create-job.sh
+docker exec -i ian-jenkins bash /tmp/create-job.sh "$JENKINS_PASS"
 
 # 6. 验证
 log_info "验证..."
@@ -138,7 +143,7 @@ JOBS=$(curl -s "http://localhost:8080/api/json" -u admin:$JENKINS_PASS 2>&1 | gr
 if [ -n "$JOBS" ]; then
     log_info "✅ 部署完成！"
 else
-    log_warn "⚠️  job 未在 API 中出现，检查 Jenkins 日志"
+    log_warn "⚠️  job 未在 API 中出现"
 fi
 
 log_info "========================================"
