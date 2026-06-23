@@ -56,24 +56,11 @@ else
     done
 fi
 
-# 5. 创建 Jenkins Pipeline job
+# 5. 创建 Jenkins Pipeline job（在容器内部执行）
 log_info "创建 Pipeline job..."
 
-# 获取 crumb
-CRUMB_RESP=$(curl -s "http://localhost:8080/crumbIssuer/api/json" -u admin:$JENKINS_PASS)
-CRUMB=$(echo "$CRUMB_RESP" | grep -o '"crumb":"[^"]*"' | cut -d'"' -f4)
-FIELD=$(echo "$CRUMB_RESP" | grep -o '"crumbRequestField":"[^"]*"' | cut -d'"' -f4)
-
-if [ -z "$CRUMB" ]; then
-    log_error "无法获取 Crumb"
-    exit 1
-fi
-
-# 创建 Pipeline job（用 curl + config.xml）
-JOB_DIR="/tmp/jenkins-job-config"
-mkdir -p "$JOB_DIR"
-
-cat > "$JOB_DIR/config.xml" << 'XMLEOF'
+# 写 config.xml 到容器内
+cat > /tmp/job-config.xml << 'XMLEOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <flow-definition plugin="workflow-job@latest">
   <description>Ian Portfolio Pipeline</description>
@@ -116,32 +103,42 @@ cat > "$JOB_DIR/config.xml" << 'XMLEOF'
 </flow-definition>
 XMLEOF
 
-# 通过 API 创建
-RESPONSE=$(curl -s -X POST "http://localhost:8080/createItem?name=ian-portfolio-deploy" \
-  -u admin:$JENKINS_PASS \
-  -H "$FIELD:$CRUMB" \
-  -H "Content-Type: application/xml" \
-  -d @"$JOB_DIR/config.xml")
+# 复制 config.xml 到容器内
+docker cp /tmp/job-config.xml ian-jenkins:/tmp/job-config.xml
 
-if echo "$RESPONSE" | grep -qi "error\|403\|404"; then
-    log_error "创建 job 失败"
-    echo "$RESPONSE" | head -5
+# 在容器内部创建 job
+docker exec -i ian-jenkins bash -c '
+CRUMB_RESP=$(curl -s "http://localhost:8080/crumbIssuer/api/json" -u admin:'"$JENKINS_PASS"' 2>/dev/null)
+CRUMB=$(echo "$CRUMB_RESP" | grep -o "\"crumb\":\"[^\"]*\"" | cut -d"'"'"' -f4)
+FIELD=$(echo "$CRUMB_RESP" | grep -o "\"crumbRequestField\":\"[^\"]*\"" | cut -d"'"'"' -f4)
+
+if [ -z "$CRUMB" ]; then
+    echo "ERROR: No crumb"
     exit 1
-else
-    log_info "Pipeline job 创建成功！"
 fi
 
-# 6. 确保凭据存在
-log_info "检查凭据..."
-# 凭据已通过 docker-compose 的环境变量注入
+RESPONSE=$(curl -s -X POST "http://localhost:8080/createItem?name=ian-portfolio-deploy" \
+  -u admin:'"$JENKINS_PASS"'' \
+  -H "$FIELD:$CRUMB" \
+  -H "Content-Type: application/xml" \
+  --data-binary @/tmp/job-config.xml)
 
-# 7. 验证
+if echo "$RESPONSE" | grep -qi "error\|403\|404\|html"; then
+    echo "ERROR: Job creation failed"
+    echo "$RESPONSE" | head -3
+    exit 1
+else
+    echo "SUCCESS: Job created"
+fi
+'
+
+# 6. 验证
 log_info "验证..."
 JOBS=$(curl -s "http://localhost:8080/api/json" -u admin:$JENKINS_PASS 2>&1 | grep -o '"name":"ian-portfolio-deploy"' | head -1)
 if [ -n "$JOBS" ]; then
     log_info "✅ 部署完成！"
 else
-    log_warn "⚠️  需要手动在 Jenkins UI 创建 job"
+    log_warn "⚠️  job 未在 API 中出现，检查 Jenkins 日志"
 fi
 
 log_info "========================================"
