@@ -16,3 +16,4 @@ test-results/
 .turbo/
 __tests__/
 dist/
+coverage/
