@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest --coverage"
+    "test": "vitest --coverage --run"
   },
   "devDependencies": {
     "typescript": "^6.0.3",

@@ -9,7 +9,7 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "migrate": "ts-node src/database/migrate.ts",
-    "test": "vitest --coverage",
+    "test": "vitest --coverage --run",
     "test:watch": "vitest",
     "lint": "eslint . --fix"
   },
