@@ -20,7 +20,7 @@
           </p>
         </div>
 
-        <div class="flex space-x-6">
+        <div class="flex flex-wrap items-center justify-center gap-4 md:gap-6">
           <a
             href="https://github.com/1036157809/ian-personal-portfolio"
             target="_blank"
@@ -38,6 +38,14 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
             </svg>
+          </a>
+          <a
+            href="https://beian.mps.gov.cn/#/query/webSearch?code=44133002100367"
+            target="_blank"
+            rel="noreferrer"
+            class="text-sm text-day-text-secondary dark:text-night-text-secondary hover:text-day-primary dark:hover:text-night-primary transition-colors"
+          >
+            粤公网安备44133002100367号
           </a>
         </div>
       </div>
