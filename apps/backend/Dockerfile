@@ -27,9 +27,21 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 COPY packages ./packages
 COPY apps/backend ./apps/backend
 
-RUN pnpm install --production
+RUN pnpm install --prod --frozen-lockfile --node-linker=hoisted
 
+# Build-time self-check: ensure critical modules resolve correctly
+RUN node -e "require('node-cron'); require('koa'); require('@koa/router'); require('mysql2'); console.log('deps OK')"
+
+# Copy built artifacts from builder
 COPY --from=builder /app/apps/backend/dist ./dist
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+
+# Wire up workspace symlink so backend code can resolve @ianportfolio/shared
+RUN mkdir -p node_modules/@ianportfolio/shared \
+    && ln -s ../../packages/shared node_modules/@ianportfolio/shared
+
+# Override root package.json so Node treats *.js as CommonJS (backend tsconfig emits CJS)
+RUN printf '{"name":"@ianportfolio/backend","type":"commonjs","main":"dist/index.js"}' > package.json
 
 RUN mkdir -p public/uploads/temp public/uploads/chunks
 
