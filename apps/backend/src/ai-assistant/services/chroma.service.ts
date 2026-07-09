@@ -1,39 +1,38 @@
 import { CloudClient } from 'chromadb';
 import {
-  CHROMADB_API_KEY,
-  CHROMADB_HOST,
-  CHROMADB_TENANT,
-  CHROMADB_DATABASE,
-  CHROMADB_COLLECTION,
+  getChromaApiKey,
+  getChromaHost,
+  getChromaTenant,
+  getChromaDatabase,
+  getChromaCollection,
 } from '../config';
 
 let client: CloudClient | null = null;
 
-function getClient(): CloudClient {
-  if (!client) {
-    client = new CloudClient({
-      apiKey: CHROMADB_API_KEY,
-      host: CHROMADB_HOST,
-      tenant: CHROMADB_TENANT,
-      database: CHROMADB_DATABASE,
-    });
-  }
+const getClient = async (): Promise<CloudClient> => {
+  if (client) return client;
+  client = new CloudClient({
+    apiKey: await getChromaApiKey(),
+    host: await getChromaHost(),
+    tenant: await getChromaTenant(),
+    database: await getChromaDatabase(),
+  });
   return client;
-}
+};
 
-export async function getOrCreateCollection(name: string = CHROMADB_COLLECTION) {
-  const chroma = getClient();
+export const getOrCreateCollection = async () => {
+  const chroma = await getClient();
+  const name = await getChromaCollection();
   return chroma.getOrCreateCollection({
     name,
     metadata: { 'hnsw:space': 'cosine' },
+    embeddingFunction: null,
   });
-}
+};
 
-/**
- * 删除旧 collection 并重新创建（用于 embedding 维度变更时）
- */
-export async function resetCollection(name: string = CHROMADB_COLLECTION) {
-  const chroma = getClient();
+export const resetCollection = async () => {
+  const chroma = await getClient();
+  const name = await getChromaCollection();
   try {
     await chroma.deleteCollection({ name });
     console.log(`Deleted old collection: ${name}`);
@@ -43,5 +42,6 @@ export async function resetCollection(name: string = CHROMADB_COLLECTION) {
   return chroma.createCollection({
     name,
     metadata: { 'hnsw:space': 'cosine' },
+    embeddingFunction: null,
   });
-}
+};

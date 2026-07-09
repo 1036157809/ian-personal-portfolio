@@ -295,6 +295,10 @@ export const useChatStore = defineStore('chat', () => {
               conv.messages[assistantIndex].content = '';
               error.value = '__DAILY_LIMIT__';
             }
+            if (parsed.error) {
+              conv.messages[assistantIndex].content = '';
+              error.value = parsed.error;
+            }
           } catch { /* ignore */ }
         }
         persist();

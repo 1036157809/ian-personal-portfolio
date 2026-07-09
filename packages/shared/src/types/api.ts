@@ -51,9 +51,3 @@ export interface TracksResponse {
   endTime: number;
   path: TrackPoint[];
 }
-
-export interface VisitorStats {
-  today: { uv: number; pv: number };
-  total: { uv: number; pv: number };
-  recent7days: Array<{ date: string; uv: number; pv: number }>;
-}

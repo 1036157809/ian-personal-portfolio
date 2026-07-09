@@ -2,20 +2,11 @@ import { Collection } from 'chromadb';
 import { resetCollection, getOrCreateCollection } from './chroma.service';
 import { embedTexts } from './embedding.service';
 import { chunkText, Chunk } from '../utils/chunker';
-import { CHUNK_MAX_SIZE, CHUNK_OVERLAP, RETRIEVE_TOP_K } from '../config';
+import { getChunkMaxSize, getChunkOverlap, getRetrieveTopK } from '../config';
 
-/**
- * 索引知识库：切片 → 计算 embedding → 存入 ChromaDB
- */
-export async function indexKnowledge(
-  items: Array<{
-    content: string;
-    source: string;
-    title: string;
-    language: string;
-  }>
-): Promise<{ totalChunks: number }> {
-  // 先尝试获取旧 collection，如果有数据则清空；如果维度不匹配则重建
+export const indexKnowledge = async (
+  items: Array<{ content: string; source: string; title: string; language: string }>
+): Promise<{ totalChunks: number }> => {
   let collection: Collection;
   try {
     collection = await getOrCreateCollection();
@@ -25,37 +16,32 @@ export async function indexKnowledge(
       console.log(`Cleared ${existing.ids.length} old chunks`);
     }
   } catch (err: any) {
-    // 维度不匹配或其他错误，删除重建
     console.log(`Collection reset needed: ${err.message}`);
     collection = await resetCollection();
   }
 
-  // 切片
+  const maxChunkSize = await getChunkMaxSize();
+  const chunkOverlap = await getChunkOverlap();
+
   let allChunks: Chunk[] = [];
   let globalIdx = 0;
   for (const item of items) {
     const chunks = chunkText(
       item.content,
       { source: item.source, title: item.title, language: item.language },
-      { maxChunkSize: CHUNK_MAX_SIZE, overlap: CHUNK_OVERLAP }
+      { maxChunkSize, overlap: chunkOverlap }
     );
-    for (const chunk of chunks) {
-      chunk.id = `${chunk.id}-${globalIdx++}`;
-    }
+    for (const chunk of chunks) chunk.id = `${chunk.id}-${globalIdx++}`;
     allChunks = allChunks.concat(chunks);
   }
 
-  if (allChunks.length === 0) {
-    return { totalChunks: 0 };
-  }
+  if (allChunks.length === 0) return { totalChunks: 0 };
 
-  // 批量计算 embedding（每批 20 条，避免超时和 502）
   const batchSize = 20;
   for (let i = 0; i < allChunks.length; i += batchSize) {
     const batch = allChunks.slice(i, i + batchSize);
     const texts = batch.map((c) => c.text);
 
-    // 重试机制（最多 3 次）
     let embeddings: number[][] | null = null;
     for (let retry = 0; retry < 3; retry++) {
       try {
@@ -63,9 +49,7 @@ export async function indexKnowledge(
         break;
       } catch (err: any) {
         console.warn(`  Batch ${i / batchSize + 1} attempt ${retry + 1} failed: ${err.message}`);
-        if (retry < 2) {
-          await new Promise((r) => setTimeout(r, 2000 * (retry + 1))); // 递增等待
-        }
+        if (retry < 2) await new Promise((r) => setTimeout(r, 2000 * (retry + 1)));
       }
     }
 
@@ -85,38 +69,24 @@ export async function indexKnowledge(
   }
 
   return { totalChunks: allChunks.length };
-}
+};
 
-/**
- * 检索相关片段
- * @param query 用户问题
- * @param topK 返回片段数
- * @param language 语言偏好 ('zh' | 'en')，用于 metadata 过滤
- */
-export async function retrieveChunks(
-  query: string,
-  topK: number = RETRIEVE_TOP_K,
-  language?: string
-): Promise<Chunk[]> {
+export const retrieveChunks = async (query: string, topK?: number, language?: string): Promise<Chunk[]> => {
   const collection = await getOrCreateCollection();
+  const retrieveTopK = await getRetrieveTopK();
+  const finalTopK = topK ?? retrieveTopK;
 
-  // 计算 query 的 embedding
   const { embedText } = await import('./embedding.service');
   const queryEmbedding = await embedText(query);
 
-  // 向量检索（多取一些，过滤后保证数量）
-  const fetchK = language ? Math.min(topK * 3, 20) : topK;
+  const fetchK = language ? Math.min(finalTopK * 3, 20) : finalTopK;
   const queryOpts: any = {
     queryEmbeddings: [queryEmbedding],
     nResults: fetchK,
   };
 
-  // 按语言过滤 metadata
-  if (language === 'zh') {
-    queryOpts.where = { language: 'zh' };
-  } else if (language === 'en') {
-    queryOpts.where = { language: 'en' };
-  }
+  if (language === 'zh') queryOpts.where = { language: 'zh' };
+  else if (language === 'en') queryOpts.where = { language: 'en' };
 
   const results = await collection.query(queryOpts);
 
@@ -125,7 +95,7 @@ export async function retrieveChunks(
   const documents = results.documents?.[0] ?? [];
   const metadatas = results.metadatas?.[0] ?? [];
 
-  for (let i = 0; i < ids.length && chunks.length < topK; i++) {
+  for (let i = 0; i < ids.length && chunks.length < finalTopK; i++) {
     if (documents[i]) {
       chunks.push({
         id: ids[i] as string,
@@ -140,4 +110,4 @@ export async function retrieveChunks(
   }
 
   return chunks;
-}
+};

@@ -1,18 +1,6 @@
 <template>
   <footer class="bg-transparent border-t border-day-border/20 dark:border-night-border/20 mt-16 pb-20 md:pb-8 relative z-10">
     <div class="container mx-auto px-4 py-8">
-      <!-- 访问量统计 -->
-      <div v-if="shouldShowStats" class="text-center mb-4">
-        <p class="text-sm md:text-xs text-day-text-secondary dark:text-night-text-secondary">
-          <span v-if="stats">
-            👀 今日 {{ stats.today.uv }} 人来访 · 累计 {{ stats.total.uv }} 位访客
-          </span>
-          <span v-else>
-            &nbsp;
-          </span>
-        </p>
-      </div>
-
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="text-center md:text-left mb-4 md:mb-0">
           <p class="text-day-text dark:text-night-text">
@@ -54,27 +42,4 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { visitorApi, type VisitorStats } from 'src/api/visitor.api';
-import { ROUTES } from 'src/constants';
-import { useThemeStore } from 'src/stores/theme';
-
-const route = useRoute();
-const themeStore = useThemeStore();
-const stats = ref<VisitorStats | null>(null);
-
-const isContactPage = computed(() => false);
-const isDarkTheme = computed(() => themeStore.isDark);
-const shouldShowStats = computed(() => isContactPage.value && isDarkTheme.value);
-
-watch(shouldShowStats, async (show) => {
-  if (show && !stats.value) {
-    try {
-      stats.value = await visitorApi.getStats();
-    } catch {
-      // 静默失败
-    }
-  }
-}, { immediate: true });
 </script>

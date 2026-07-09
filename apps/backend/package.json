@@ -23,7 +23,6 @@
     "axios": "^1.18.0",
     "chromadb": "^3.4.3",
     "dotenv": "^17.4.2",
-    "geoip-lite": "^1.4.10",
     "ip2region": "^2.3.0",
     "koa": "^3.2.1",
     "koa-body": "^8.0.0",
