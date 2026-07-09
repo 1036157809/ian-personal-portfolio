@@ -11,6 +11,10 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 COPY packages ./packages
 COPY apps/frontend ./apps/frontend
 
+# Declare build args for Vite env vars
+ARG VITE_TIANDITU_TOKEN
+ARG VITE_API_BASE_URL=/api
+
 RUN pnpm install
 RUN pnpm run build --filter=@ianportfolio/frontend
 
