@@ -45,7 +45,7 @@
       >
         <div
           v-if="confirmDialog.show"
-          class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
         >
           <div class="glass-solid rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
             <h3 class="text-lg font-bold mb-4 text-day-text dark:text-night-text">确认操作</h3>
@@ -422,15 +422,7 @@
       class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
       @click="closeImagePreview"
     >
-      <div class="relative max-w-7xl max-h-[95vh]">
-        <button
-          class="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
-          @click="closeImagePreview"
-        >
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+      <div class="relative max-w-7xl max-h-[95vh]" @click.stop>
         <img
           :src="previewImageUrl"
           :alt="previewFile?.name"
@@ -445,15 +437,7 @@
       class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-2"
       @click="closePDFPreview"
     >
-      <div class="relative w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden" @click.stop>
-        <button
-          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-10"
-          @click="closePDFPreview"
-        >
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+      <div class="relative w-full h-full glass-solid rounded-lg overflow-hidden shadow-xl" @click.stop>
         <div class="p-4 h-full flex flex-col">
           <h3 class="text-lg font-bold mb-4 text-day-text dark:text-night-text">{{ previewFile?.name }}</h3>
           <div class="flex-1 overflow-auto">

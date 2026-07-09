@@ -13,10 +13,10 @@
         class="fixed inset-0 z-[100] flex items-center justify-center p-4"
       >
         <!-- 遮罩层 -->
-        <div
-          class="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          @click="handleCancel"
-        />
+      <div
+        class="absolute inset-0 bg-black/80"
+        @click="handleCancel"
+      />
 
         <!-- 弹窗内容 -->
         <Transition
@@ -29,7 +29,7 @@
         >
           <div
             v-if="visible"
-            class="glass-solid rounded-2xl shadow-2xl w-full max-w-sm relative z-10 overflow-hidden"
+            class="glass-solid rounded-2xl shadow-xl w-full max-w-sm relative z-10 overflow-hidden"
           >
             <!-- 图标 -->
             <div class="flex justify-center pt-6 pb-2">

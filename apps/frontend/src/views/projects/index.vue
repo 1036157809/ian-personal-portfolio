@@ -186,10 +186,10 @@
     <!-- Project Detail Modal -->
     <div
       v-if="selectedProject"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
       @click.self="closeProjectDetail"
     >
-      <div class="glass-solid rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
+      <div class="glass-solid rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-2xl font-bold text-day-text dark:text-night-text">
             {{ languageStore.currentLang === 'en' ? selectedProject.title : selectedProject.titleZh }}
@@ -313,7 +313,7 @@
     <!-- Image Modal -->
     <div
       v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
       @click="closeImageModal"
     >
       <!-- Previous Button -->
