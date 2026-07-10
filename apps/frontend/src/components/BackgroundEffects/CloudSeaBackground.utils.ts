@@ -109,7 +109,7 @@ const seaBlobColor = isSafariOrMobile
 /**
  * 生成单朵云的纹理 — 圆形径向渐变，边缘完全透明
  */
-export function createCloudTexture(texSize: number): THREE.CanvasTexture {
+export const createCloudTexture =  (texSize: number): THREE.CanvasTexture  => {
   const canvas = document.createElement('canvas');
   canvas.width = texSize;
   canvas.height = texSize;
@@ -179,7 +179,7 @@ export function createCloudTexture(texSize: number): THREE.CanvasTexture {
 /**
  * 生成云海铺底纹理
  */
-export function createSeaTexture(width: number, height: number): THREE.CanvasTexture {
+export const createSeaTexture =  (width: number, height: number): THREE.CanvasTexture  => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -243,7 +243,7 @@ export function createSeaTexture(width: number, height: number): THREE.CanvasTex
 /**
  * 生成天空渐变背景纹理
  */
-export function createGradientBackground(): THREE.CanvasTexture {
+export const createGradientBackground =  (): THREE.CanvasTexture  => {
   const canvas = document.createElement('canvas');
   canvas.width = 2;
   canvas.height = 512;

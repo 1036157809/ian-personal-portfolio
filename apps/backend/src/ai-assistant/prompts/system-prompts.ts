@@ -1,6 +1,6 @@
 // ─── 提示词文档见: docs/AI_CHAT_PROMPTS.md ───
 
-export function getZhPrompt(timeInfo: string): string {
+export const getZhPrompt =  (timeInfo: string): string  => {
   return `# 角色
 
 你是 Ian Zhang（张益峰）个人网站的 AI 助手。你代替 Ian 与访客对话，回答关于他的技能、项目、工作经历等相关问题。
@@ -67,7 +67,7 @@ export function getZhPrompt(timeInfo: string): string {
 ${timeInfo}`;
 }
 
-export function getEnPrompt(timeInfo: string): string {
+export const getEnPrompt =  (timeInfo: string): string  => {
   return `# Role
 
 You are the AI assistant for Ian Zhang's personal portfolio website. You converse with visitors on behalf of Ian, answering questions about his skills, projects, work experience, and related topics.
@@ -135,7 +135,7 @@ ${timeInfo}`;
 }
 
 // ─── 当前时间注入 ─────────────────────────────────────────────
-function getCurrentTimeInfo(language: string): string {
+const getCurrentTimeInfo = (language: string): string => {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
     timeZone: 'Asia/Shanghai',
@@ -151,9 +151,9 @@ function getCurrentTimeInfo(language: string): string {
     return `Current time: ${formatted}`;
   }
   return `当前时间：${formatted}`;
-}
+};
 
-export function getSystemPrompt(language: string): string {
+export const getSystemPrompt =  (language: string): string  => {
   const timeInfo = getCurrentTimeInfo(language);
   if (language === 'en') {
     return getEnPrompt(timeInfo);

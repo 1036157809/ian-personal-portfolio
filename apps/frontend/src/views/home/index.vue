@@ -45,7 +45,7 @@ const { t: _t } = useI18n()
 
 const isAtBottom = ref(false)
 
-function checkScroll() {
+const checkScroll = () => {
   const scrollTop = window.scrollY || document.documentElement.scrollTop
   const windowHeight = window.innerHeight
   const docHeight = document.documentElement.scrollHeight

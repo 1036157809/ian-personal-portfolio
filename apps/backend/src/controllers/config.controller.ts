@@ -4,7 +4,7 @@ import { invalidateClient } from '../ai-assistant/services/embedding.service';
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
-function checkAuth(ctx: Context): boolean {
+const checkAuth = (ctx: Context): boolean => {
   const secret = ctx.headers['x-admin-secret'];
   if (secret !== ADMIN_SECRET) {
     ctx.status = 403;
@@ -12,7 +12,7 @@ function checkAuth(ctx: Context): boolean {
     return false;
   }
   return true;
-}
+};
 
 export class ConfigController {
   /**

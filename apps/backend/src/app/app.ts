@@ -8,11 +8,12 @@ import logger from 'src/middlewares/logger.middleware';
 import { testConnection } from 'src/config/database';
 import AiUsageStats from 'src/models/ai-usage.model';
 import SystemConfig from 'src/models/system-config.model';
+import { loadConfig } from 'src/services/config.service';
 import { startDailyResetScheduler } from 'src/ai-assistant/services/rate-limit.service';
 
 const ALLOWED_ORIGINS = ['https://yfeng.site', 'https://www.yfeng.site'];
 
-export async function createApp(): Promise<Koa> {
+export const createApp = async (): Promise<Koa> => {
   const app = new Koa();
 
   app.use(cors({
@@ -45,6 +46,7 @@ export async function createApp(): Promise<Koa> {
     await testConnection();
     await AiUsageStats.sync();
     await SystemConfig.sync();
+    await loadConfig();
     startDailyResetScheduler();
     console.log('Database models synchronized');
   } catch (error) {

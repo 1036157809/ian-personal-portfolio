@@ -17,11 +17,11 @@ export interface Chunk {
   };
 }
 
-export function chunkText(
+export const chunkText = (
   content: string,
   metadata: Chunk['metadata'],
   options: { maxChunkSize?: number; overlap?: number } = {}
-): Chunk[] {
+): Chunk[] => {
   const { maxChunkSize = 400, overlap = 50 } = options;
   const chunks: Chunk[] = [];
 
@@ -98,10 +98,10 @@ export function chunkText(
   return chunks;
 }
 
-function createChunk(text: string, metadata: Chunk['metadata'], index: number): Chunk {
+const createChunk = (text: string, metadata: Chunk['metadata'], index: number): Chunk => {
   return {
     id: `${metadata.source}-${metadata.language}-${index}`,
     text: text.trim(),
     metadata,
   };
-}
+};

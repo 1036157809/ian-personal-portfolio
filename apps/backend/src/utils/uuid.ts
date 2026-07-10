@@ -5,7 +5,7 @@ import crypto from 'crypto';
  * 格式: xxxxxxxx-xxxx-7xxx-yxxx-xxxxxxxxxxxx
  * 前 48 位是 Unix 时间戳（毫秒），保证时间有序
  */
-export function uuidv7(): string {
+export const uuidv7 =  (): string  => {
   const timestamp = Date.now();
   const rand = crypto.randomBytes(10); // 80 bits of randomness
 

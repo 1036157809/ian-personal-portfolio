@@ -16,11 +16,11 @@ export interface ChatMessage {
   content: string;
 }
 
-const buildRequest = async (body: any, stream: boolean) => {
-  const baseUrl = await getLlmBaseUrl();
+const buildRequest = (body: any, stream: boolean) => {
+  const baseUrl = getLlmBaseUrl();
   const url = new URL(`${baseUrl}/chat/completions`);
-  const apiKey = await getLlmApiKey();
-  const model = await getLlmModel();
+  const apiKey = getLlmApiKey();
+  const model = getLlmModel();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${apiKey}`,
@@ -30,8 +30,8 @@ const buildRequest = async (body: any, stream: boolean) => {
   return { url, headers, bodyStr };
 };
 
-const sendRequest = async (url: URL, headers: Record<string, string>, bodyStr: string) => {
-  return new Promise<import('http').IncomingMessage>((resolve, reject) => {
+const sendRequest = (url: URL, headers: Record<string, string>, bodyStr: string) =>
+  new Promise<import('http').IncomingMessage>((resolve, reject) => {
     const req = https.request(
       { hostname: url.hostname, path: url.pathname, method: 'POST', headers, timeout: 60000 },
       resolve
@@ -41,10 +41,9 @@ const sendRequest = async (url: URL, headers: Record<string, string>, bodyStr: s
     req.write(bodyStr);
     req.end();
   });
-};
 
 export const llmRequest = async (body: any): Promise<{ status: number; body: any }> => {
-  const { url, headers, bodyStr } = await buildRequest(body, false);
+  const { url, headers, bodyStr } = buildRequest(body, false);
   const res = await sendRequest(url, headers, bodyStr);
   let data = '';
   res.on('data', (c) => (data += c));
@@ -57,7 +56,7 @@ export const llmRequest = async (body: any): Promise<{ status: number; body: any
 };
 
 export const llmStream = async function *(body: any): AsyncGenerator<string> {
-  const { url, headers, bodyStr } = await buildRequest(body, true);
+  const { url, headers, bodyStr } = buildRequest(body, true);
   const res = await sendRequest(url, headers, bodyStr);
 
   let buffer = '';
@@ -102,14 +101,14 @@ export const chat = async (message: string, history: ChatMessage[] = [], languag
   const allowed = await checkAndIncrement();
   if (!allowed) return getDailyLimitMessage(language);
 
-  const chunks = await retrieveChunks(message, await getRetrieveTopK(), language);
+  const chunks = await retrieveChunks(message, getRetrieveTopK(), language);
   const messages = [
     { role: 'system', content: getSystemPrompt(language) },
     ...history.map((h) => ({ role: h.role, content: h.content })),
     { role: 'user', content: buildPrompt(message, chunks, language) },
   ];
 
-  const res = await llmRequest({ messages, max_tokens: await getLlmMaxTokens() });
+  const res = await llmRequest({ messages, max_tokens: getLlmMaxTokens() });
   if (res.status >= 400) throw new Error(`LLM API error: ${JSON.stringify(res.body)}`);
   return res.body.choices?.[0]?.message?.content || (language === 'en' ? 'Sorry, I could not generate an answer.' : '抱歉，我无法生成回答。');
 };
@@ -118,12 +117,12 @@ export const chatStream = async function *(message: string, history: ChatMessage
   const allowed = await checkAndIncrement();
   if (!allowed) { yield getDailyLimitMessage(language); return; }
 
-  const chunks = await retrieveChunks(message, await getRetrieveTopK(), language);
+  const chunks = await retrieveChunks(message, getRetrieveTopK(), language);
   const messages = [
     { role: 'system', content: getSystemPrompt(language) },
     ...history.map((h) => ({ role: h.role, content: h.content })),
     { role: 'user', content: buildPrompt(message, chunks, language) },
   ];
 
-  yield* llmStream({ messages, max_tokens: await getLlmMaxTokens() });
+  yield* llmStream({ messages, max_tokens: getLlmMaxTokens() });
 };

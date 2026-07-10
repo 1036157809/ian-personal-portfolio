@@ -9,20 +9,23 @@ import {
 
 let client: CloudClient | null = null;
 
-const getClient = async (): Promise<CloudClient> => {
+const getClient = (): CloudClient => {
   if (client) return client;
   client = new CloudClient({
-    apiKey: await getChromaApiKey(),
-    host: await getChromaHost(),
-    tenant: await getChromaTenant(),
-    database: await getChromaDatabase(),
+    apiKey: getChromaApiKey(),
+    host: getChromaHost(),
+    tenant: getChromaTenant(),
+    database: getChromaDatabase(),
+    fetchOptions: {
+      signal: AbortSignal.timeout(60000),
+    },
   });
   return client;
 };
 
 export const getOrCreateCollection = async () => {
-  const chroma = await getClient();
-  const name = await getChromaCollection();
+  const chroma = getClient();
+  const name = getChromaCollection();
   return chroma.getOrCreateCollection({
     name,
     metadata: { 'hnsw:space': 'cosine' },
@@ -31,8 +34,8 @@ export const getOrCreateCollection = async () => {
 };
 
 export const resetCollection = async () => {
-  const chroma = await getClient();
-  const name = await getChromaCollection();
+  const chroma = getClient();
+  const name = getChromaCollection();
   try {
     await chroma.deleteCollection({ name });
     console.log(`Deleted old collection: ${name}`);

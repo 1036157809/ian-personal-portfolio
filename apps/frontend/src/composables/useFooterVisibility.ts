@@ -6,7 +6,7 @@ const HIDDEN_FOOTER_ROUTES = [
   ROUTES.DEMO_MUSIC_VIZ,
 ] as const
 
-export function useFooterVisibility() {
+export const useFooterVisibility =  ()  => {
   const route = useRoute()
   const isFooterVisible = computed(() => !HIDDEN_FOOTER_ROUTES.includes(route.path as any))
   return { isFooterVisible }

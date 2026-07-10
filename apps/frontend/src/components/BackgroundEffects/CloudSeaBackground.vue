@@ -21,7 +21,7 @@ let cloudMeshes: THREE.Mesh[] = [];
 let particles: THREE.Points | null = null;
 let animationId: number;
 
-function init() {
+const init = () => {
   scene = new THREE.Scene();
   scene.background = createGradientBackground();
 
@@ -164,7 +164,7 @@ function init() {
   window.addEventListener('resize', onResize);
 }
 
-function animate() {
+const animate = () => {
   animationId = requestAnimationFrame(animate);
   const time = Date.now() * 0.001;
 
@@ -191,13 +191,13 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-function onResize() {
+const onResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function dispose() {
+const dispose = () => {
   cancelAnimationFrame(animationId);
   window.removeEventListener('resize', onResize);
   renderer.dispose();

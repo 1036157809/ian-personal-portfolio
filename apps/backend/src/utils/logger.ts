@@ -31,7 +31,7 @@ export class Logger {
   }
 }
 
-export function createLogger(context: string): Logger {
+export const createLogger =  (context: string): Logger  => {
   return new Logger(context);
 }
 

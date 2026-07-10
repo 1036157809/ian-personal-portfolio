@@ -87,11 +87,11 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-function handleConfirm() {
+const handleConfirm = () => {
   emit('confirm');
 }
 
-function handleCancel() {
+const handleCancel = () => {
   emit('cancel');
 }
 </script>

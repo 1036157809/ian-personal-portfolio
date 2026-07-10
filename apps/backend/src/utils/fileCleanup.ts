@@ -15,7 +15,7 @@ const CACHE_DURATION = 60000; // 1 minute cache
 /**
  * Calculate the total size of a directory recursively (async)
  */
-async function getDirectorySize(dirPath: string): Promise<number> {
+const getDirectorySize = async  (dirPath: string): Promise<number>  => {
   // Use cache if available and fresh
   if (cachedSize !== null && Date.now() - cacheTime < CACHE_DURATION) {
     return cachedSize;
@@ -50,7 +50,7 @@ async function getDirectorySize(dirPath: string): Promise<number> {
 /**
  * Clear all files in the uploads directory (async)
  */
-async function clearUploadsDirectory(): Promise<void> {
+const clearUploadsDirectory = async  (): Promise<void>  => {
   try {
     const files = await fs.readdir(UPLOADS_DIR);
     
@@ -76,13 +76,13 @@ async function clearUploadsDirectory(): Promise<void> {
 /**
  * Delete files older than specified days (async)
  */
-async function deleteFilesOlderThan(days: number): Promise<void> {
+const deleteFilesOlderThan = async  (days: number): Promise<void>  => {
   try {
     const maxAge = days * 24 * 60 * 60 * 1000;
     const now = Date.now();
     let deletedCount = 0;
 
-    async function deleteOldFiles(dirPath: string): Promise<void> {
+    const deleteOldFiles = async  (dirPath: string): Promise<void>  => {
       const files = await fs.readdir(dirPath);
       
       for (const file of files) {
@@ -118,7 +118,7 @@ async function deleteFilesOlderThan(days: number): Promise<void> {
 /**
  * Main cleanup function based on size thresholds (async)
  */
-export async function cleanupUploads(): Promise<void> {
+export const cleanupUploads = async  (): Promise<void>  => {
   try {
     const totalSize = await getDirectorySize(UPLOADS_DIR);
     
@@ -142,7 +142,7 @@ export async function cleanupUploads(): Promise<void> {
 /**
  * Manual cleanup function for testing (async)
  */
-export async function forceCleanupOldFiles(days: number): Promise<void> {
+export const forceCleanupOldFiles = async  (days: number): Promise<void>  => {
   console.log(`=== Force deleting files older than ${days} days ===`);
   await deleteFilesOlderThan(days);
   cachedSize = null; // Invalidate cache
@@ -152,7 +152,7 @@ export async function forceCleanupOldFiles(days: number): Promise<void> {
 /**
  * Manual cleanup function for testing (async)
  */
-export async function forceClearAll(): Promise<void> {
+export const forceClearAll = async  (): Promise<void>  => {
   console.log('=== Force clearing entire uploads directory ===');
   await clearUploadsDirectory();
   cachedSize = null; // Invalidate cache

@@ -22,7 +22,7 @@ let mouseX = 0, mouseY = 0;
 let targetX = 0, targetY = 0;
 
 // 生成球形分布粒子位置（均匀分布在球体内）
-function generateSpherePositions(count: number, radius: number): Float32Array {
+const generateSpherePositions = (count: number, radius: number): Float32Array => {
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const theta = Math.random() * Math.PI * 2;
@@ -39,7 +39,7 @@ function generateSpherePositions(count: number, radius: number): Float32Array {
 }
 
 // 生成每个粒子的基准亮度系数（用于闪烁频率）
-function generateBrightnessFactors(count: number): number[] {
+const generateBrightnessFactors = (count: number): number[] => {
   const factors = [];
   for (let i = 0; i < count; i++) {
     factors.push(0.3 + Math.random() * 0.7);
@@ -48,7 +48,7 @@ function generateBrightnessFactors(count: number): number[] {
 }
 
 // 根据当前时间和系数计算亮度值（0.1~1.0）
-function computeCurrentBrightness(time: number, factors: number[]): number[] {
+const computeCurrentBrightness = (time: number, factors: number[]): number[] => {
   const brightness = [];
   for (let i = 0; i < factors.length; i++) {
     const value = 0.3 + 0.7 * Math.sin(time * 0.6 * factors[i]);
@@ -58,7 +58,7 @@ function computeCurrentBrightness(time: number, factors: number[]): number[] {
 }
 
 // 更新粒子颜色（闪烁）- 偏蓝白的星辉色
-function updateColors(brightness: number[]) {
+const updateColors = (brightness: number[]) => {
   const colors = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
     const b = brightness[i];
@@ -75,7 +75,7 @@ function updateColors(brightness: number[]) {
   colorAttribute.needsUpdate = true;
 }
 
-function init() {
+const init = () => {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x070B14);
 
@@ -135,7 +135,7 @@ function init() {
 }
 
 let time = 0;
-function animate() {
+const animate = () => {
   animationId = requestAnimationFrame(animate);
   time += 0.016;
 
@@ -153,18 +153,18 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-function onMouseMove(event: MouseEvent) {
+const onMouseMove = (event: MouseEvent) => {
   mouseX = event.clientX;
   mouseY = event.clientY;
 }
 
-function onResize() {
+const onResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function dispose() {
+const dispose = () => {
   cancelAnimationFrame(animationId);
   window.removeEventListener('mousemove', onMouseMove);
   window.removeEventListener('resize', onResize);

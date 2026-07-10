@@ -6,7 +6,7 @@ export interface ConversionResult {
   filename: string
 }
 
-export function useImageConverter() {
+export const useImageConverter =  ()  => {
   const converting = ref(false)
   const error = ref('')
 

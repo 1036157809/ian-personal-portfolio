@@ -188,7 +188,7 @@ const lastUserIndex = computed(() => {
   return -1;
 });
 
-function handleNewChat() {
+const handleNewChat = () => {
   const switched = chatStore.newConversation();
   if (!switched) {
     showToast(t('chat.alreadyNew'));
@@ -197,12 +197,12 @@ function handleNewChat() {
   }
 }
 
-function handleDeleteConversation(id: string) {
+const handleDeleteConversation = (id: string) => {
   confirmTarget.value = { type: 'conversation', id };
   showConfirm.value = true;
 }
 
-function handleConfirmDelete() {
+const handleConfirmDelete = () => {
   if (confirmTarget.value?.type === 'conversation') {
     chatStore.deleteConversation(confirmTarget.value.id);
   } else if (confirmTarget.value?.type === 'message') {
@@ -212,24 +212,24 @@ function handleConfirmDelete() {
   confirmTarget.value = null;
 }
 
-async function onSend(text: string) {
+const onSend = async  (text: string)  => {
   await chatStore.sendMessageStream(text);
 }
 
-function handleEditSubmit(index: number, newContent: string) {
+const handleEditSubmit = (index: number, newContent: string) => {
   chatStore.editMessage(index, newContent);
 }
 
-function handleDeleteMessage(index: number) {
+const handleDeleteMessage = (index: number) => {
   confirmTarget.value = { type: 'message', index };
   showConfirm.value = true;
 }
 
-function handleRegenerate(index: number) {
+const handleRegenerate = (index: number) => {
   chatStore.regenerateMessage(index);
 }
 
-function showToast(message: string) {
+const showToast = (message: string) => {
   const el = document.createElement('div');
   el.textContent = message;
   el.className = 'fixed top-[85px] left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-lg bg-day-surface-elevated dark:bg-night-surface-elevated text-day-text dark:text-night-text text-sm shadow-lg border border-day-border dark:border-night-border transition-opacity duration-300';

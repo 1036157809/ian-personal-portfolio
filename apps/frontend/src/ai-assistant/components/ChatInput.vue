@@ -42,7 +42,7 @@ const emit = defineEmits<{
 
 const input = ref('');
 
-function onSubmit() {
+const onSubmit = () => {
   const text = input.value.trim();
   if (!text || props.disabled) return;
   emit('send', text);

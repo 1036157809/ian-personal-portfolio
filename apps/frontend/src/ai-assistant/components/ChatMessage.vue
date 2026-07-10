@@ -149,24 +149,24 @@ const renderedContent = computed(() => {
   return marked.parse(props.message.content, { async: false }) as string;
 });
 
-function startEdit() {
+const startEdit = () => {
   editContent.value = props.message.content;
   isEditing.value = true;
   nextTick(() => textareaEl.value?.focus());
 }
 
-function cancelEdit() {
+const cancelEdit = () => {
   isEditing.value = false;
   editContent.value = '';
 }
 
-function handleEnterKey() {
+const handleEnterKey = () => {
   if (isContentChanged.value) {
     confirmEdit();
   }
 }
 
-function confirmEdit() {
+const confirmEdit = () => {
   const trimmed = editContent.value.trim();
   if (!trimmed || !isContentChanged.value) return;
   if (props.onConfirmEdit) {
@@ -175,7 +175,7 @@ function confirmEdit() {
   cancelEdit();
 }
 
-function copyMessage() {
+const copyMessage = () => {
   navigator.clipboard.writeText(props.message.content).then(() => {
     copied.value = true;
     setTimeout(() => (copied.value = false), 2000);

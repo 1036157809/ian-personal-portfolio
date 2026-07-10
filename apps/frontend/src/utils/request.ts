@@ -4,10 +4,10 @@ interface RequestOptions extends RequestInit {
   responseType?: 'blob' | 'json';
 }
 
-export async function request<T>(
+export const request = async <T>(
   url: string,
   options: RequestOptions = {}
-): Promise<T> {
+): Promise<T> => {
   // Don't set Content-Type for FormData (browser sets it automatically with boundary)
   const isFormData = options.body instanceof FormData;
   const headers = isFormData

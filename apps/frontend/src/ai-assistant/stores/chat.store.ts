@@ -13,11 +13,11 @@ export interface Conversation {
   updatedAt: number;
 }
 
-function generateId(): string {
+const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function loadFromSession(): Conversation[] {
+const loadFromSession = (): Conversation[] => {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
@@ -25,7 +25,7 @@ function loadFromSession(): Conversation[] {
   return [];
 }
 
-function saveToSession(conversations: Conversation[]) {
+const saveToSession = (conversations: Conversation[]) => {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
   } catch { /* ignore quota errors */ }
@@ -59,7 +59,7 @@ export const useChatStore = defineStore('chat', () => {
   // ── abort controller for streaming ──────────────────
   let currentAbortController: AbortController | null = null;
 
-  function abortCurrentStream() {
+  const abortCurrentStream = () => {
     if (currentAbortController) {
       currentAbortController.abort();
       currentAbortController = null;
@@ -67,12 +67,12 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // ── persistence ────────────────────────────────────
-  function persist() {
+  const persist = () => {
     saveToSession(conversations.value);
   }
 
   // ── conversation CRUD ──────────────────────────────
-  function createConversation(): Conversation {
+  const createConversation = (): Conversation => {
     const conv: Conversation = {
       id: generateId(),
       title: '',
@@ -86,7 +86,7 @@ export const useChatStore = defineStore('chat', () => {
     return conv;
   }
 
-  function deleteConversation(id: string) {
+  const deleteConversation = (id: string) => {
     const idx = conversations.value.findIndex(c => c.id === id);
     if (idx === -1) return;
 
@@ -106,7 +106,7 @@ export const useChatStore = defineStore('chat', () => {
     persist();
   }
 
-  function switchConversation(id: string) {
+  const switchConversation = (id: string) => {
     if (conversations.value.some(c => c.id === id)) {
       abortCurrentStream();
       currentConversationId.value = id;
@@ -118,7 +118,7 @@ export const useChatStore = defineStore('chat', () => {
    * Enter "new conversation" state (blank page, no sidebar selection).
    * Returns false if already in new-conversation state.
    */
-  function newConversation(): boolean {
+  const newConversation = (): boolean => {
     if (currentConversationId.value === null) return false;
     abortCurrentStream();
     currentConversationId.value = null;
@@ -127,12 +127,12 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // ── messaging ──────────────────────────────────────
-  function generateTitle(content: string): string {
+  const generateTitle = (content: string): string => {
     const trimmed = content.trim();
     return trimmed.length > 20 ? trimmed.slice(0, 20) + '…' : trimmed;
   }
 
-  function addMessage(msg: ChatMessage) {
+  const addMessage = (msg: ChatMessage) => {
     const conv = currentConversation.value;
     if (!conv) return;
     conv.messages.push(msg);
@@ -147,7 +147,7 @@ export const useChatStore = defineStore('chat', () => {
    * Delete a user message and its corresponding assistant reply.
    * `index` is the index of the user message.
    */
-  function deleteMessagePair(index: number) {
+  const deleteMessagePair = (index: number) => {
     const conv = currentConversation.value;
     if (!conv) return;
     // Remove user message + assistant reply (index and index+1)
@@ -174,7 +174,7 @@ export const useChatStore = defineStore('chat', () => {
    * Edit a user message: remove it and everything after it,
    * then re-send with the new content.
    */
-  async function editMessage(index: number, newContent: string) {
+  const editMessage = async (index: number, newContent: string) => {
     const conv = currentConversation.value;
     if (!conv) return;
 
@@ -195,7 +195,7 @@ export const useChatStore = defineStore('chat', () => {
    * Regenerate the assistant reply for the AI message at `index`.
    * Finds the preceding user message, removes the old reply, and re-sends.
    */
-  async function regenerateMessage(index: number) {
+  const regenerateMessage = async (index: number) => {
     const conv = currentConversation.value;
     if (!conv) return;
 
@@ -222,7 +222,7 @@ export const useChatStore = defineStore('chat', () => {
     await sendMessageStream(userMsg.content);
   }
 
-  async function sendMessage(content: string) {
+  const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading.value) return;
 
     if (!currentConversation.value) {
@@ -244,7 +244,7 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  async function sendMessageStream(content: string) {
+  const sendMessageStream = async (content: string) => {
     if (!content.trim() || isLoading.value) return;
 
     if (!currentConversation.value) {
@@ -313,15 +313,15 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // ── panel ──────────────────────────────────────────
-  function toggleChat() {
+  const toggleChat = () => {
     isOpen.value = !isOpen.value;
   }
 
-  function openChat() {
+  const openChat = () => {
     isOpen.value = true;
   }
 
-  function closeChat() {
+  const closeChat = () => {
     isOpen.value = false;
   }
 

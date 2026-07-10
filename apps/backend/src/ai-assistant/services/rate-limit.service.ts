@@ -3,15 +3,15 @@ import AiUsageStats from 'src/models/ai-usage.model';
 
 const DAILY_LIMIT = 100;
 
-function getTodayStr(): string {
+const getTodayStr = (): string => {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-}
+};
 
 /**
  * 每天零点重置计数器
  * 将昨天的记录 call_count 清零（或直接删除，这里选择清零保留历史）
  */
-export function startDailyResetScheduler(): void {
+export const startDailyResetScheduler =  (): void  => {
   // 每天 00:00:00 执行
   cron.schedule('0 0 * * *', async () => {
     const today = getTodayStr();
@@ -35,7 +35,7 @@ export function startDailyResetScheduler(): void {
  * 检查并递增调用次数
  * @returns true = 未超限，false = 已达上限
  */
-export async function checkAndIncrement(): Promise<boolean> {
+export const checkAndIncrement = async  (): Promise<boolean>  => {
   const today = getTodayStr();
 
   const [record] = await AiUsageStats.findOrCreate({
@@ -54,7 +54,7 @@ export async function checkAndIncrement(): Promise<boolean> {
 /**
  * 获取今日已调用次数
  */
-export async function getTodayCount(): Promise<number> {
+export const getTodayCount = async  (): Promise<number>  => {
   const today = getTodayStr();
   const record = await AiUsageStats.findOne({ where: { call_date: today } });
   return record?.call_count ?? 0;

@@ -22,7 +22,7 @@ interface IndexItem {
 /**
  * 加载指定语言目录下的所有 .md 文件
  */
-function loadMarkdownKnowledge(language: string): IndexItem[] {
+const loadMarkdownKnowledge = (language: string): IndexItem[] => {
   const items: IndexItem[] = [];
   // apps/backend/src/ai-assistant/scripts → ../../../../knowledge/{language}
   const knowledgeDir = path.join(__dirname, `../../../../knowledge/${language}`);
@@ -60,9 +60,9 @@ function loadMarkdownKnowledge(language: string): IndexItem[] {
   }
 
   return items;
-}
+};
 
-async function main() {
+const main = async () => {
   console.log('=== Building knowledge base ===\n');
 
   const zhItems = loadMarkdownKnowledge('zh');

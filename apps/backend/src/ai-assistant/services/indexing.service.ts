@@ -20,8 +20,8 @@ export const indexKnowledge = async (
     collection = await resetCollection();
   }
 
-  const maxChunkSize = await getChunkMaxSize();
-  const chunkOverlap = await getChunkOverlap();
+  const maxChunkSize = getChunkMaxSize();
+  const chunkOverlap = getChunkOverlap();
 
   let allChunks: Chunk[] = [];
   let globalIdx = 0;
@@ -73,7 +73,7 @@ export const indexKnowledge = async (
 
 export const retrieveChunks = async (query: string, topK?: number, language?: string): Promise<Chunk[]> => {
   const collection = await getOrCreateCollection();
-  const retrieveTopK = await getRetrieveTopK();
+  const retrieveTopK = getRetrieveTopK();
   const finalTopK = topK ?? retrieveTopK;
 
   const { embedText } = await import('./embedding.service');

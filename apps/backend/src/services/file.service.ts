@@ -7,25 +7,25 @@ const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
 const CHUNKS_DIR = path.join(UPLOADS_DIR, 'chunks');
 
 // Helper function to format bytes
-function formatBytes(bytes: number): string {
+const formatBytes = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-}
+};
 
 // Helper function to get file type
-function getFileType(mimeType: string): string {
+const getFileType = (mimeType: string): string => {
   if (mimeType.includes('pdf')) return 'PDF';
   if (mimeType.includes('image')) return 'Image';
   if (mimeType.includes('word') || mimeType.includes('document')) return 'DOC';
   if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'XLS';
   return 'File';
-}
+};
 
 // Ensure directories exist
-export async function ensureDirectories() {
+export const ensureDirectories = async  ()  => {
   try {
     await fsPromises.mkdir(UPLOADS_DIR, { recursive: true });
     await fsPromises.mkdir(CHUNKS_DIR, { recursive: true });

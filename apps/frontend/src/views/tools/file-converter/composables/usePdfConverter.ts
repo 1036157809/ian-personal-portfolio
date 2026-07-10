@@ -21,7 +21,7 @@ import { parseBlocks, Builder } from './pdf-engine'
 
 export type { PdfConversionResult }
 
-export function usePdfConverter() {
+export const usePdfConverter =  ()  => {
   const converting = ref(false)
   const error = ref('')
 

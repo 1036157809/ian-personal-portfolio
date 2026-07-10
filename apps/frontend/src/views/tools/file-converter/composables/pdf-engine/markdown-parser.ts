@@ -11,7 +11,7 @@ import type { Block } from './types'
  * 使用 marked 的 lexer 进行词法分析，支持标题、段落、列表、表格、引用块。
  * 嵌套列表通过 depth 字段记录层级，子列表内容不会重复出现在父列表项中。
  */
-export function parseBlocks(md: string): Block[] {
+export const parseBlocks =  (md: string): Block[]  => {
   const tokens = marked.lexer(md)
   const blocks: Block[] = []
 
@@ -20,7 +20,7 @@ export function parseBlocks(md: string): Block[] {
    * 如果列表项内包含嵌套子列表，只提取非列表的文本内容作为当前项的 text，
    * 避免子项内容在父项中重复渲染。
    */
-  function processList(listToken: any, depth: number) {
+  const processList = (listToken: any, depth: number) => {
     for (const item of listToken.items) {
       let itemText = item.text
 
@@ -93,7 +93,7 @@ export function parseBlocks(md: string): Block[] {
  * 去除 Markdown 格式标记，返回纯文本。
  * 处理：**粗体**、*斜体*、`代码`、[链接](url)、~~删除行~~、HTML 标签。
  */
-export function stripMD(s: string): string {
+export const stripMD =  (s: string): string  => {
   return s
     .replace(/\*\*(.+?)\*\*/g, '$1')
     .replace(/\*(.+?)\*/g, '$1')

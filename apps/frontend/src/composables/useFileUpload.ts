@@ -3,7 +3,7 @@ import { fileApi } from 'src/api/file.api';
 import { config } from 'src/config';
 import type { FileUploadProgress } from 'src/types';
 
-export function useFileUpload() {
+export const useFileUpload =  ()  => {
   const uploadProgress = ref<FileUploadProgress[]>([]);
   const isLoading = ref(false);
   const error = ref('');

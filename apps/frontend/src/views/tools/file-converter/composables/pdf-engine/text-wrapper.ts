@@ -16,7 +16,7 @@ import type { Seg } from './types'
  * ArrayBuffer → Base64 字符串。
  * 用于将下载的字体文件转为 jsPDF addFileToVFS 需要的格式。
  */
-export function ab2b64(buf: ArrayBuffer): string {
+export const ab2b64 =  (buf: ArrayBuffer): string  => {
   let b = ''
   const bytes = new Uint8Array(buf)
   for (let i = 0; i < bytes.byteLength; i++) b += String.fromCharCode(bytes[i])
@@ -32,7 +32,7 @@ export function ab2b64(buf: ArrayBuffer): string {
  *   - *斜体*    → 去除标记，作为普通文本
  *   - 裸 URL     → link: url（蓝色+下划线+可点击）
  */
-export function parseSegments(raw: string): Seg[] {
+export const parseSegments =  (raw: string): Seg[]  => {
   const segs: Seg[] = []
   const re = /\*\*(.+?)\*\*|\*(.+?)\*|(https?:\/\/[^\s)]+)/g
   let last = 0, m: RegExpExecArray | null
@@ -70,7 +70,7 @@ export function parseSegments(raw: string): Seg[] {
  * @param maxWidthMm    最大行宽（mm）
  * @returns             换行后的每行 { text, widthPt }
  */
-export function safeWrapText(doc: any, text: string, maxWidthMm: number): { text: string; widthPt: number }[] {
+export const safeWrapText = (doc: any, text: string, maxWidthMm: number): { text: string; widthPt: number }[] => {
   if (!text) return []
   const lines: { text: string; widthPt: number }[] = []
 

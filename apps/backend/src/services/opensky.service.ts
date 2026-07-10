@@ -17,8 +17,8 @@ export class OpenSkyService {
   private async getAccessToken(): Promise<string> {
     if (this.accessToken && Date.now() < this.tokenExpiry) return this.accessToken;
 
-    const clientId = await getOpenSkyClientId();
-    const clientSecret = await getOpenSkyClientSecret();
+    const clientId = getOpenSkyClientId();
+    const clientSecret = getOpenSkyClientSecret();
     if (!clientId) throw new Error('opensky_client_id is missing');
     if (!clientSecret) throw new Error('opensky_client_secret is missing');
 

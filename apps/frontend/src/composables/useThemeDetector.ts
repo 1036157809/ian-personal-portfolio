@@ -1,6 +1,6 @@
 import { useThemeStore } from 'src/stores/theme';
 
-export function useThemeDetector() {
+export const useThemeDetector =  ()  => {
   const store = useThemeStore();
   const updateByTime = () => {
     const hour = new Date().getHours();

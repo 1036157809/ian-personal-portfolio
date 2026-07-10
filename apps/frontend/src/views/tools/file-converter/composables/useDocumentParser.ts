@@ -7,7 +7,7 @@ export interface ParseResult {
   text: string
 }
 
-export function useDocumentParser() {
+export const useDocumentParser =  ()  => {
   const parsing = ref(false)
   const error = ref('')
 

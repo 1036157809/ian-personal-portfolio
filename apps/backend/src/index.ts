@@ -1,7 +1,9 @@
 import cron from 'node-cron';
+import path from 'path';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// Load .env from project root (apps/backend/src → ../../../.env)
+dotenv.config({ path: path.join(__dirname, '../../../.env') });
 
 import { createApp } from 'src/app/app';
 import 'src/services/file.service';
@@ -9,7 +11,7 @@ import { cleanupUploads } from 'src/utils/fileCleanup';
 
 const PORT = process.env.PORT || 3001;
 
-async function start() {
+const start = async  ()  => {
   try {
     const app = await createApp();
     await cleanupUploads();

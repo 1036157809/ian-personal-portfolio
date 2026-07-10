@@ -24,7 +24,7 @@ export const sequelize = new Sequelize(
   dbConfig
 );
 
-export async function testConnection() {
+export const testConnection = async  ()  => {
   try {
     await sequelize.authenticate();
     console.log('Database connection established successfully');
