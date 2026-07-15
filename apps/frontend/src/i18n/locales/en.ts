@@ -178,7 +178,9 @@ export default {
       solution3Title: 'Diff Algorithm for Data Sync',
       solution3Desc: 'Use Diff algorithm to compare remote data with local data, only update changed aircraft states, reducing unnecessary DOM operations and redraws',
       solution4Title: 'Dual-Track Update Mechanism',
-      solution4Desc: 'Combine local updates (simulation based on speed/heading) with remote updates (API polling, 10s interval) to ensure smooth aircraft movement while maintaining data accuracy'
+      solution4Desc: 'Combine local updates (simulation based on speed/heading) with remote updates (API polling, 10s interval) to ensure smooth aircraft movement while maintaining data accuracy',
+      switchToRemote: 'Switch to Live Data',
+      switchToCache: 'Switch to Cache Data'
     }
   },
   shuttleBox: {

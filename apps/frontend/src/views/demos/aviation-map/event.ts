@@ -3,28 +3,18 @@ import { showToast } from "./index";
 import { LineString, SimpleGeometry } from "ol/geom";
 import { fromLonLat } from "ol/proj";
 import { openskyApi } from "src/api/opensky.api";
+import type { TracksResponse } from "@ianportfolio/shared";
 import BaseLayer from "ol/layer/Base";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
 import { LAYER_NAMES } from "./constants";
-import { setLayerRefs as _setLayerRefs } from "./update";
-
-// Cached layer refs shared with update.ts
-let planeLayerRef: VectorLayer<VectorSource> | null = null;
-let pathLayerRef: VectorLayer<VectorSource> | null = null;
-
-export const setLayerRefs = (plane: VectorLayer<VectorSource>, path: VectorLayer<VectorSource>) => {
-  planeLayerRef = plane;
-  pathLayerRef = path;
-  _setLayerRefs(plane, path);
-};
+import { getPlaneLayer, getPathLayer, getDataMode } from "./dataSource";
+import { generateSyntheticTrack } from "./trackUtils";
 
 let isTrackLoading = false;
 let trackDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 let lastClickedFeatureRef: Feature | null = null;
 
 // Frontend track cache (5 min TTL)
-const trackCache = new Map<string, { data: any; time: number }>();
+const trackCache = new Map<string, { data: TracksResponse; time: number }>();
 const TRACK_CACHE_TTL = 300000; // 5 minutes
 
 export const invalidateClickedFeature = (feature: Feature) => {
@@ -96,36 +86,52 @@ const attachClickEvents = (map: OLMap) => {
       trackDebounceTimer = null;
     }
     trackDebounceTimer = setTimeout(async () => {
-      const icao24 = planeFeature.get("icao24") as string;
       isTrackLoading = true;
       try {
-        // Check frontend cache first
-        const now = Date.now();
-        const cached = trackCache.get(icao24);
-        let pathData: any;
-        if (cached && (now - cached.time) < TRACK_CACHE_TTL) {
-          pathData = cached.data;
-        } else {
-          const response = await openskyApi.getTracks(icao24);
-          pathData = response;
-          trackCache.set(icao24, { data: response, time: now });
-        }
-        const { path } = pathData;
-        if (!path || path.length === 0) {
-          showToast('该飞机暂无轨迹数据（可能为地面停机、数据不足或超出覆盖范围）');
-          return;
-        }
         const geometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
         if (!geometry) return;
         const curPoint = geometry.getCoordinates() as number[];
-        const featurePath = path.map(({ lon, lat }: { lon: number; lat: number }) => fromLonLat([lon, lat]));
-        if (pathLayerRef) {
-          pathLayerRef
+        const [curX, curY] = curPoint;
+
+        let lineCoords: number[][];
+
+        if (getDataMode() === "cache") {
+          // cache 模式：用本地数据模拟轨迹，不调用任何接口
+          const heading = (planeFeature.get("heading") as number | null) ?? 0;
+          const velocity = (planeFeature.get("velocity") as number | null) ?? 0;
+          lineCoords = generateSyntheticTrack(curX, curY, heading, velocity);
+        } else {
+          // remote 模式：从真实接口获取轨迹
+          const icao24 = planeFeature.get("icao24") as string;
+          const now = Date.now();
+          const cached = trackCache.get(icao24);
+          let pathData: TracksResponse;
+          if (cached && (now - cached.time) < TRACK_CACHE_TTL) {
+            pathData = cached.data;
+          } else {
+            const response = await openskyApi.getTracks(icao24);
+            pathData = response;
+            trackCache.set(icao24, { data: response, time: now });
+          }
+          const { path } = pathData;
+          if (!path || path.length === 0) {
+            showToast('该飞机暂无轨迹数据（可能为地面停机、数据不足或超出覆盖范围）');
+            return;
+          }
+          // 按时间升序排序，确保轨迹从过去到现在
+          const sortedPath = [...path].sort((a, b) => a.time - b.time);
+          const featurePath = sortedPath.map(({ lon, lat }: { lon: number; lat: number }) => fromLonLat([lon, lat]));
+          lineCoords = [...featurePath, [curX, curY]];
+        }
+
+        const pathLayer = getPathLayer();
+        if (pathLayer) {
+          pathLayer
             .getSource()
             ?.addFeature(
               new Feature({
-                geometry: new LineString([...featurePath, curPoint]),
-                icao24,
+                geometry: new LineString(lineCoords),
+                icao24: planeFeature.get("icao24") as string,
               }),
             );
         }
@@ -138,26 +144,29 @@ const attachClickEvents = (map: OLMap) => {
     }, 300);
   };
   const removePath = () => {
-    if (pathLayerRef) {
-      pathLayerRef.getSource()?.clear();
+    const pathLayer = getPathLayer();
+    if (pathLayer) {
+      pathLayer.getSource()?.clear();
     }
   };
 };
 
 export const clearSelection = () => {
   // Clear all selected states
-  if (planeLayerRef) {
-    const source = planeLayerRef.getSource();
+  const planeLayer = getPlaneLayer();
+  if (planeLayer) {
+    const source = planeLayer.getSource();
     if (source) {
       source.getFeatures().forEach((feature) => {
         feature.set("isSelected", 0);
       });
     }
   }
-  
+
   // Clear path layer
-  if (pathLayerRef) {
-    pathLayerRef.getSource()?.clear();
+  const pathLayer = getPathLayer();
+  if (pathLayer) {
+    pathLayer.getSource()?.clear();
   }
 };
 

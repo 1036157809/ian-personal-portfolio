@@ -3,9 +3,23 @@ import { Map as OLMap } from "ol";
 import View from "ol/View";
 import { fromLonLat } from "ol/proj";
 import { createMapLayers } from "./mapLayer";
-import { createPlaneLayers } from "./planeLayer";
-import { attachEvents, clearSelection, setLayerRefs } from "./event";
-import { startUpdate, stopUpdate, refreshStates } from "./update";
+import { createPlaneLayersFromCache } from "./planeLayer";
+import { attachEvents, clearSelection } from "./event";
+import {
+  startUpdate,
+  stopUpdate,
+  setLayerRefs,
+} from "./update";
+import {
+  loadCacheData,
+  setCacheData,
+  switchDataMode,
+  getDataMode,
+  refreshStates,
+} from "./dataSource";
+import { checkNetworkQuality } from "src/utils/network";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
 import { LAYER_NAMES } from "./constants";
 
 const center = fromLonLat([116.4074, 39.9042]);
@@ -41,9 +55,15 @@ export const initMap = async (container: HTMLElement) => {
   createMapLayers().forEach((layer) => {
     map.addLayer(layer);
   });
-  const planeLayers = await createPlaneLayers();
 
-  // Don't proceed if map was destroyed during async initialization
+  // 懒加载缓存数据 JSON
+  const cacheData = await loadCacheData();
+  setCacheData(cacheData);
+
+  // 用缓存数据秒加载飞机图层
+  const planeLayers = createPlaneLayersFromCache(cacheData);
+
+  // Don't proceed if map was destroyed during initialization
   if (!mapInstance) return;
 
   planeLayers.forEach((layer) => {
@@ -58,7 +78,7 @@ export const initMap = async (container: HTMLElement) => {
     (layer) => layer.get("name") === LAYER_NAMES.PATHS,
   );
   if (planeLayer && pathLayer) {
-    setLayerRefs(planeLayer as any, pathLayer as any);
+    setLayerRefs(planeLayer as unknown as VectorLayer<VectorSource>, pathLayer as unknown as VectorLayer<VectorSource>);
   }
 
   attachEvents(map);
@@ -75,20 +95,27 @@ export const destroyMap = () => {
 
 export const resetView = () => {
   if (mapInstance) {
-    // Stop update loop and cancel pending requests
+    // 停止动画循环
     stopUpdate();
-    
-    // Clear selected aircraft state
+
+    // 清除选中状态
     clearSelection();
-    
-    // Reset view
+
+    // 切换到 cache 模式（重新注入缓存飞机数据）
+    switchDataMode("cache");
+
+    // 重置地图视图
     mapInstance.getView().setCenter(center);
     mapInstance.getView().setZoom(1);
-    
-    // Immediately call states API (cancels any pending requests)
-    refreshStates(mapInstance);
-    
-    // Restart update loop
+
+    // 重启动画循环（cache 模式下不会调远程 API）
     startUpdate(mapInstance);
   }
 };
+
+// 导出数据模式切换 API 供外部调用
+export { switchDataMode, getDataMode };
+// 导出刷新远程数据
+export { refreshStates };
+// 导出弱网检测
+export { checkNetworkQuality };

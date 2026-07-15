@@ -1,58 +1,47 @@
-import { fromLonLat, toLonLat } from "ol/proj";
-import { openskyApi, cancelPendingRequest } from "src/api/opensky.api";
-import { Feature, Map as OLMap } from "ol";
-import { Point, SimpleGeometry } from "ol/geom";
+import { Map as OLMap } from "ol";
+import { SimpleGeometry } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import type { AircraftState, BBox } from "src/api/opensky.api";
-import { invalidateClickedFeature } from "./event";
+import { cancelPendingRequest } from "src/api/opensky.api";
+import {
+  tickRemoteUpdate,
+  applyRemoteState,
+  getPlaneLayer,
+  getPathLayer,
+  setLayerRefs,
+  resetDataState,
+  injectCacheData,
+  getDataMode,
+} from "./dataSource";
 
-// Cached layer refs to avoid repeated find() lookups
-let planeLayerRef: VectorLayer<VectorSource> | null = null;
-let pathLayerRef: VectorLayer<VectorSource> | null = null;
-
-export const setLayerRefs = (plane: VectorLayer<VectorSource>, path: VectorLayer<VectorSource>) => {
-  planeLayerRef = plane;
-  pathLayerRef = path;
-};
+// rAf 相关状态
+let rafId: number | null = null;
+let lastFrameTime = 0;
 let lastUpdateTime = 0;
-let lastRemoteUpdateTime = Date.now();
-const REMOTE_UPDATE_INTERVAL = 15000;
-const remoteAircraftData: AircraftState[] = [];
-let updateTimerId: ReturnType<typeof setTimeout> | null = null;
-let isRunning = false;
+const lastRemoteUpdateTime = { value: 0 };
 
+/**
+ * 根据 zoom 级别获取帧间隔（ms）
+ */
 const getInterval = (zoom: number) => {
-  zoom = Math.floor(zoom);
-  // Intervals per zoom level (1-8+), minimum 100ms to reduce CPU usage
+  const z = Math.floor(zoom);
   const intervals: Record<number, number> = {
     1: 5000, 2: 4000, 3: 3000, 4: 2000,
     5: 1000, 6: 500, 7: 200, 8: 100,
   };
-  return intervals[zoom] || 100;
+  return intervals[z] || 100;
 };
 
-export const update = (map: OLMap) => {
-  if (!isRunning) return;
-  const now = Date.now();
+/**
+ * 核心 rAf 动画循环
+ */
+const tick = (map: OLMap) => {
+  const now = performance.now();
 
-  // Check if it's time for remote update
-  if (now - lastRemoteUpdateTime >= REMOTE_UPDATE_INTERVAL) {
-    lastRemoteUpdateTime = Date.now();
-    const bbox = getViewBBox(map);
-    openskyApi
-      .getStates(bbox)
-      .then((res) => {
-        if (!isRunning) return;
-        remoteAircraftData.length = 0;
-        remoteAircraftData.push(...res.states);
-      })
-      .catch((error: unknown) => {
-        if (!isRunning) return;
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        console.error("Failed to fetch remote aircraft data:", error);
-      });
-  }
+  // 远程数据更新判断（仅在 remote 模式下执行）
+  tickRemoteUpdate(map, now, lastRemoteUpdateTime);
+
+  // 根据 zoom 级别间隔更新飞机位置
   const zoom = map.getView().getZoom() ?? 1;
   const interval = getInterval(zoom);
 
@@ -61,48 +50,78 @@ export const update = (map: OLMap) => {
     lastUpdateTime = now;
   }
 
-  // Schedule next update at the appropriate interval
-  updateTimerId = setTimeout(() => update(map), interval);
+  // 继续下一帧
+  rafId = requestAnimationFrame((timestamp) => {
+    lastFrameTime = timestamp;
+    tick(map);
+  });
 };
+
+/**
+ * 更新图层：飞机位置 + 路径
+ */
 const updateLayers = () => {
-  if (remoteAircraftData.length) {
-    applyRemoteState();
-  }
+  const planeLayer = getPlaneLayer();
+  if (!planeLayer) return;
+  const source = planeLayer.getSource();
+  if (!source) return;
+
+  // 如果有待处理的远程数据，先应用
+  applyRemoteState();
+
   updatePlaneLayers();
   updatePathLayer();
 };
+
+/**
+ * 逐帧增量更新飞机位置（基于速度和朝向）
+ * 修复：使用 currentX/currentY 做增量计算，避免基于固定 timePosition 的漂移
+ */
 const updatePlaneLayers = () => {
-  if (!planeLayerRef) return;
-  const source = planeLayerRef.getSource();
+  const planeLayer = getPlaneLayer();
+  if (!planeLayer) return;
+  const source = planeLayer.getSource();
   if (!source) return;
   const features = source.getFeatures();
-  const now = Date.now();
+  const now = performance.now();
   for (const feature of features) {
-    const heading = feature.get("heading") as number;
-    const velocity = feature.get("velocity") as number;
-    const timePosition = feature.get("timePosition") as number;
-    if (!velocity || !heading) {
-      continue;
-    }
-    // Use cached projected coordinates instead of recalculating every frame
-    const x = feature.get("projX") as number;
-    const y = feature.get("projY") as number;
-    if (x == null || y == null) continue;
-    const t = (now - timePosition) / 1000;
-    const d = velocity * t;
-    const newPoint = [x + d * Math.sin(heading), y + d * Math.cos(heading)];
+    const heading = feature.get("heading") as number | null ?? 0;
+    const velocity = feature.get("velocity") as number | null ?? 0;
+    if (!velocity || !heading) continue;
+    // 获取上一帧位置（增量计算的基础）
+    const prevX = feature.get("currentX") as number | undefined;
+    const prevY = feature.get("currentY") as number | undefined;
+    const lastTick = feature.get("lastTickTime") as number | undefined ?? now;
+    if (prevX == null || prevY == null) continue;
+    // 计算时间差（秒），首次或异常值做保护
+    const deltaTime = Math.min((now - lastTick) / 1000, 5);
+    if (deltaTime <= 0) continue;
+    // heading 为度数，转弧度用于三角计算
+    const headingRad = heading * Math.PI / 180;
+    // 增量位移 = 速度 × 时间差 × 方向
+    const d = velocity * deltaTime;
+    const newX = prevX + d * Math.sin(headingRad);
+    const newY = prevY + d * Math.cos(headingRad);
+    // 更新 feature 状态
+    feature.set("currentX", newX);
+    feature.set("currentY", newY);
+    feature.set("lastTickTime", now);
+    // 更新几何坐标
     const geometry = feature.getGeometry() as SimpleGeometry | undefined;
     if (geometry) {
-      geometry.setCoordinates(newPoint);
+      geometry.setCoordinates([newX, newY]);
     }
   }
 };
-// Map for O(1) icao24 -> feature lookup
-const featureMap = new Map<string, Feature>();
 
+/**
+ * 更新路径图层：路径终点跟随飞机当前位置
+ */
 const updatePathLayer = () => {
-  if (!pathLayerRef || !planeLayerRef) return;
-  const source = pathLayerRef.getSource();
+  const pathLayer = getPathLayer();
+  const planeLayer = getPlaneLayer();
+  if (!pathLayer || !planeLayer) return;
+  const source = pathLayer.getSource();
   if (!source) return;
   const features = source.getFeatures();
   for (const feature of features) {
@@ -110,7 +129,11 @@ const updatePathLayer = () => {
     if (!geometry) continue;
     const pathPoints = geometry.getCoordinates() as number[][];
     const icao24 = feature.get("icao24") as string;
-    const planeFeature = featureMap.get(icao24);
+    // 从飞机图层找到对应 feature
+    const planeSource = planeLayer.getSource();
+    if (!planeSource) continue;
+    const planeFeatures = planeSource.getFeatures();
+    const planeFeature = planeFeatures.find((f) => f.get("icao24") === icao24);
     if (!planeFeature) continue;
     const planeGeometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
     if (!planeGeometry) continue;
@@ -120,104 +143,39 @@ const updatePathLayer = () => {
   }
 };
 
+/**
+ * 启动 rAf 动画循环
+ */
 export const startUpdate = (map: OLMap) => {
-  isRunning = true;
-  update(map);
+  // 如果是首次启动且当前是 cache 模式，先注入缓存数据
+  if (getDataMode() === "cache") {
+    injectCacheData();
+  }
+
+  if (rafId !== null) return; // 已在运行
+  lastRemoteUpdateTime.value = performance.now();
+  rafId = requestAnimationFrame((timestamp) => {
+    lastFrameTime = timestamp;
+    tick(map);
+  });
 };
 
+/**
+ * 停止 rAf 动画循环并重置模块状态
+ */
 export const stopUpdate = () => {
-  isRunning = false;
-  if (updateTimerId !== null) {
-    clearTimeout(updateTimerId);
-    updateTimerId = null;
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
   }
   // Cancel any pending API request
   cancelPendingRequest();
+  // 重置模块级状态，确保二次初始化正常
+  resetDataState();
+  lastFrameTime = 0;
+  lastUpdateTime = 0;
+  lastRemoteUpdateTime.value = 0;
 };
 
-const getViewBBox = (map: OLMap): BBox | undefined => {
-  const view = map.getView();
-  const zoom = view.getZoom() ?? 1;
-  // Only filter by bbox when zoomed in enough (zoom > 3)
-  // At low zoom levels, the view covers most of the world, so filtering is not useful
-  if (zoom < 3) return undefined;
-  
-  const extent = view.calculateExtent(map.getSize());
-  const bottomLeft = toLonLat([extent[0], extent[1]]);
-  const topRight = toLonLat([extent[2], extent[3]]);
-  
-  return {
-    lamin: bottomLeft[1],
-    lamax: topRight[1],
-    lomin: bottomLeft[0],
-    lomax: topRight[0],
-  };
-};
-
-export const refreshStates = async (map: OLMap) => {
-  cancelPendingRequest();
-  remoteAircraftData.length = 0;
-  try {
-    const bbox = getViewBBox(map);
-    const res = await openskyApi.getStates(bbox);
-    if (!isRunning) return;
-    remoteAircraftData.push(...res.states);
-    if (remoteAircraftData.length) {
-      applyRemoteState();
-    }
-  } catch (error: unknown) {
-    if (error instanceof DOMException && error.name === "AbortError") return;
-    console.error("Failed to refresh states:", error);
-  }
-};
-
-const applyRemoteState = () => {
-  if (!planeLayerRef) return;
-  const airplaneSource = planeLayerRef.getSource();
-  if (!airplaneSource) return;
-  const planeFeatures = airplaneSource.getFeatures();
-
-  const remoteStateMap = remoteAircraftData.reduce((acc, state) => {
-    acc.set(state.icao24, state);
-    return acc;
-  }, new Map());
-  for (const feature of planeFeatures) {
-    const icao24 = feature.get("icao24");
-    const newState = remoteStateMap.get(icao24);
-    if (newState) {
-      // Batch update with setProperties to reduce change events
-      const [projX, projY] = fromLonLat([newState.lon, newState.lat]);
-      feature.setProperties({
-        icao24: newState.icao24,
-        lon: newState.lon,
-        lat: newState.lat,
-        heading: newState.heading,
-        velocity: newState.velocity,
-        timePosition: newState.timePosition,
-        altitude: newState.altitude,
-        projX,
-        projY,
-      });
-      featureMap.set(newState.icao24, feature);
-      remoteStateMap.delete(icao24);
-    } else {
-      invalidateClickedFeature(feature);
-      featureMap.delete(icao24);
-      airplaneSource.removeFeature(feature);
-    }
-  }
-  for (const [_, newState] of remoteStateMap) {
-    const [projX, projY] = fromLonLat([newState.lon, newState.lat]);
-    const feature = new Feature({
-      geometry: new Point([projX, projY]),
-      ...newState,
-      isHovered: 0,
-      isSelected: 0,
-      projX,
-      projY,
-    });
-    featureMap.set(newState.icao24, feature);
-    airplaneSource.addFeature(feature as any);
-  }
-  remoteAircraftData.length = 0;
-};
+// 保留 setLayerRefs 导出供 index.ts 使用
+export { setLayerRefs };

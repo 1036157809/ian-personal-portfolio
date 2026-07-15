@@ -37,6 +37,12 @@
           >
             {{ $t('projects.aviationMap.resetView') }}
           </button>
+          <button
+            class="btn-primary px-4 py-2 rounded-lg text-sm"
+            @click="handleToggleMode"
+          >
+            {{ dataMode === 'cache' ? $t('projects.aviationMap.switchToRemote') : $t('projects.aviationMap.switchToCache') }}
+          </button>
         </div>
       </div>
 
@@ -123,12 +129,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, useTemplateRef } from "vue";
-import { initMap, destroyMap, resetView, setToast } from ".";
+import { onMounted, onUnmounted, ref, useTemplateRef } from "vue";
+import { initMap, destroyMap, resetView, setToast, getDataMode, switchDataMode, checkNetworkQuality } from ".";
 import Toast from "src/components/common/toast/index.vue";
 
 const mapRef = useTemplateRef<HTMLElement>("mapRef");
 const toastRef = useTemplateRef<{ show: (_message: string) => void }>("toastRef");
+const dataMode = ref<"cache" | "remote">("cache");
 
 onMounted(() => {
   if (mapRef.value) {
@@ -142,4 +149,28 @@ onMounted(() => {
 onUnmounted(() => {
   destroyMap();
 });
+
+/**
+ * 处理数据模式切换按钮点击
+ */
+const handleToggleMode = async () => {
+  const current = getDataMode();
+  if (current === "cache") {
+    // cache → remote：先做网络检测
+    const quality = await checkNetworkQuality();
+    if (quality === "weak") {
+      // 弱网提示后直接切换
+      toastRef.value?.show("当前网络不佳，切换到真实数据可能失败");
+      switchDataMode("remote");
+      dataMode.value = "remote";
+    } else {
+      switchDataMode("remote");
+      dataMode.value = "remote";
+    }
+  } else {
+    // remote → cache：直接切，无提示
+    switchDataMode("cache");
+    dataMode.value = "cache";
+  }
+};
 </script>

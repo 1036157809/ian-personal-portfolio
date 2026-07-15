@@ -178,8 +178,9 @@ export default {
       solution3Title: 'Diff 算法数据同步',
       solution3Desc: '使用 Diff 算法对比远程数据与本地数据，只更新变化的飞机状态，减少不必要的 DOM 操作和重绘',
       solution4Title: '双轨更新机制',
-      solution4Desc: '本地更新（基于速度和朝向模拟）与远程更新（API 轮询，10s 间隔）相结合，确保飞机位置流畅移动的同时保持数据准确性'
-    }
+      solution4Desc: '本地更新（基于速度和朝向模拟）与远程更新（API 轮询，10s 间隔）相结合，确保飞机位置流畅移动的同时保持数据准确性',
+      switchToRemote: '切换到真实数据',
+      switchToCache: '切换到本地数据'    }
   },
   shuttleBox: {
     search: '搜索...',
