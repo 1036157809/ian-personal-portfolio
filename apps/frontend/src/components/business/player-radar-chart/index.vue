@@ -10,7 +10,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+import { RadarChart } from 'echarts/charts'
+import { TooltipComponent, RadarComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+
+echarts.use([RadarChart, TooltipComponent, RadarComponent, CanvasRenderer])
 
 const props = defineProps<{
   playerName: string

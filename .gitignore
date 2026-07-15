@@ -17,3 +17,5 @@ test-results/
 __tests__/
 dist/
 coverage/
+.codex/
+.codex-hook/

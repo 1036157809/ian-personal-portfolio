@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@ianportfolio/shared": "workspace:*",
-    "axios": "^1.18.0",
     "echarts": "^6.1.0",
     "jspdf": "^4.2.1",
     "mammoth": "^1.12.0",

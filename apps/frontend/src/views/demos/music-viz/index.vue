@@ -154,7 +154,7 @@
     <!-- Hidden Audio Element -->
     <audio
       ref="audioRef"
-      src="/audio/Sacred Play Secret Place.mp3"
+      src="/audio/Sacred Play Secret Place.m4a"
       preload="auto"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
