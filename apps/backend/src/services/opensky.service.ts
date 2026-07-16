@@ -53,7 +53,7 @@ export class OpenSkyService {
       .map((state: any) => ({
         icao24: state[0],
         altitude: state[7] ?? state[13] ?? 0,
-        heading: state[10] !== null && state[10] !== undefined ? state[10] * Math.PI / 180 : null,
+        heading: state[10] !== null && state[10] !== undefined ? state[10] : null,
         lat: state[6],
         lon: state[5],
         timePosition: state[3] * 1000,
@@ -76,7 +76,7 @@ export class OpenSkyService {
         lat: item[1],
         lon: item[2],
         baro_altitude: item[3],
-        true_track: item[4] * Math.PI / 180,
+        true_track: item[4],
         on_ground: item[5],
       }));
     }

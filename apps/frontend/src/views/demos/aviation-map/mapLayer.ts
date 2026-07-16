@@ -5,11 +5,13 @@ const TOKEN = import.meta.env.VITE_TIANDITU_TOKEN;
 
 export const createMapLayers = () => [
   new TileLayer({
+    preload: 2,
     source: new XYZ({
       url: `https://t0.tianditu.gov.cn/ter_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ter&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${TOKEN}`,
     }),
   } as any),
   new TileLayer({
+    preload: 2,
     source: new XYZ({
       url: `https://t0.tianditu.gov.cn/cta_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cta&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${TOKEN}`,
     }),

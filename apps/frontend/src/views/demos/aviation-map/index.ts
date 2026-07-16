@@ -16,6 +16,8 @@ import {
   switchDataMode,
   getDataMode,
   refreshStates,
+  getPlaneLayer,
+  getPathLayer,
 } from "./dataSource";
 import { checkNetworkQuality } from "src/utils/network";
 import VectorLayer from "ol/layer/Vector";
@@ -28,6 +30,8 @@ interface ToastInstance {
 }
 
 let mapInstance: OLMap | null = null;
+
+export const getMap = (): OLMap | null => mapInstance;
 let toastInstance: ToastInstance | null = null;
 
 export const setToast = (toast: ToastInstance) => {
@@ -95,11 +99,20 @@ export const destroyMap = () => {
 
 export const resetView = () => {
   if (mapInstance) {
+    // 先清除选中状态（必须在 stopUpdate 之前，否则 pathLayerRef 会被置 null）
+    clearSelection();
+
+    // 保存图层引用（stopUpdate 内部的 resetDataState 会将其置 null）
+    const savedPlaneLayer = getPlaneLayer();
+    const savedPathLayer = getPathLayer();
+
     // 停止动画循环
     stopUpdate();
 
-    // 清除选中状态
-    clearSelection();
+    // 恢复图层引用，确保后续 injectCacheData / addPath 能正常工作
+    if (savedPlaneLayer && savedPathLayer) {
+      setLayerRefs(savedPlaneLayer, savedPathLayer);
+    }
 
     // 切换到 cache 模式（重新注入缓存飞机数据）
     switchDataMode("cache");
@@ -117,5 +130,7 @@ export const resetView = () => {
 export { switchDataMode, getDataMode };
 // 导出刷新远程数据
 export { refreshStates };
+// 导出清除选区
+export { clearSelection };
 // 导出弱网检测
 export { checkNetworkQuality };

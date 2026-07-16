@@ -1,4 +1,5 @@
 import { fromLonLat, toLonLat } from "ol/proj";
+import { degToRad } from "src/utils/geo";
 
 /**
  * 根据飞机当前状态生成模拟历史轨迹（从远到近，末端衔接飞机当前位置）
@@ -22,7 +23,7 @@ export const generateSyntheticTrack = (
 
   // 反推当前位置对应的地理坐标，用于计算该纬度下米→度的转换系数
   const [curLon, curLat] = toLonLat([curX, curY]);
-  const headingRad = (heading * Math.PI) / 180;
+  const headingRad = degToRad(heading);
   const SECONDS_PER_STEP = 30;
   const METERS_PER_STEP = velocity * SECONDS_PER_STEP;
 

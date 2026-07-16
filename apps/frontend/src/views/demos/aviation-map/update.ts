@@ -1,7 +1,7 @@
 import { Map as OLMap } from "ol";
+import { degToRad } from "src/utils/geo";
+import { containsExtent, buffer as bufferExtent } from "ol/extent";
 import { SimpleGeometry } from "ol/geom";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
 import { cancelPendingRequest } from "src/api/opensky.api";
 import {
   tickRemoteUpdate,
@@ -19,6 +19,12 @@ let rafId: number | null = null;
 let lastFrameTime = 0;
 let lastUpdateTime = 0;
 const lastRemoteUpdateTime = { value: 0 };
+// 缩放动画暂停标志
+let isPaused = false;
+// 暂停开始时间，用于恢复时批量补偿
+let pauseStartTime = 0;
+// 视口 buffer（像素），避免边缘飞机频繁显隐
+const VIEW_BUFFER_RATIO = 0.2;
 
 /**
  * 根据 zoom 级别获取帧间隔（ms）
@@ -33,9 +39,29 @@ const getInterval = (zoom: number) => {
 };
 
 /**
+ * 计算当前视口 extent（带 buffer）
+ */
+const getVisibleExtent = (map: OLMap) => {
+  const size = map.getSize();
+  if (!size) return undefined;
+  const extent = map.getView().calculateExtent(size);
+  const buffer = (size[0] * VIEW_BUFFER_RATIO) / 2;
+  return bufferExtent(extent, buffer);
+};
+
+/**
  * 核心 rAf 动画循环
  */
 const tick = (map: OLMap) => {
+  // 缩放动画期间暂停位置更新，仅维持 rAf 链
+  if (isPaused) {
+    rafId = requestAnimationFrame((timestamp) => {
+      lastFrameTime = timestamp;
+      tick(map);
+    });
+    return;
+  }
+
   const now = performance.now();
 
   // 远程数据更新判断（仅在 remote 模式下执行）
@@ -46,7 +72,7 @@ const tick = (map: OLMap) => {
   const interval = getInterval(zoom);
 
   if (now - lastUpdateTime >= interval) {
-    updateLayers();
+    updateLayers(map);
     lastUpdateTime = now;
   }
 
@@ -60,7 +86,7 @@ const tick = (map: OLMap) => {
 /**
  * 更新图层：飞机位置 + 路径
  */
-const updateLayers = () => {
+const updateLayers = (map: OLMap) => {
   const planeLayer = getPlaneLayer();
   if (!planeLayer) return;
   const source = planeLayer.getSource();
@@ -69,22 +95,35 @@ const updateLayers = () => {
   // 如果有待处理的远程数据，先应用
   applyRemoteState();
 
-  updatePlaneLayers();
+  updatePlaneLayers(map);
   updatePathLayer();
 };
 
 /**
  * 逐帧增量更新飞机位置（基于速度和朝向）
- * 修复：使用 currentX/currentY 做增量计算，避免基于固定 timePosition 的漂移
+ * 优化：仅更新视口可见的 planes，视野外跳过
  */
-const updatePlaneLayers = () => {
+const updatePlaneLayers = (map: OLMap) => {
   const planeLayer = getPlaneLayer();
   if (!planeLayer) return;
   const source = planeLayer.getSource();
   if (!source) return;
   const features = source.getFeatures();
   const now = performance.now();
+  const visibleExtent = getVisibleExtent(map);
+
   for (const feature of features) {
+    // 视锥体裁剪：不可见的飞机跳过几何更新
+    if (visibleExtent) {
+      const projX = feature.get("projX") as number | undefined;
+      const projY = feature.get("projY") as number | undefined;
+      if (projX != null && projY != null) {
+        if (!containsExtent(visibleExtent, [projX, projY, projX, projY])) {
+          continue;
+        }
+      }
+    }
+
     const heading = feature.get("heading") as number | null ?? 0;
     const velocity = feature.get("velocity") as number | null ?? 0;
     if (!velocity || !heading) continue;
@@ -97,7 +136,7 @@ const updatePlaneLayers = () => {
     const deltaTime = Math.min((now - lastTick) / 1000, 5);
     if (deltaTime <= 0) continue;
     // heading 为度数，转弧度用于三角计算
-    const headingRad = heading * Math.PI / 180;
+    const headingRad = degToRad(heading);
     // 增量位移 = 速度 × 时间差 × 方向
     const d = velocity * deltaTime;
     const newX = prevX + d * Math.sin(headingRad);
@@ -144,6 +183,57 @@ const updatePathLayer = () => {
 };
 
 /**
+ * 暂停动画循环（缩放动画期间调用）
+ */
+export const pauseUpdate = () => {
+  if (isPaused) return;
+  isPaused = true;
+  pauseStartTime = performance.now();
+};
+
+/**
+ * 恢复动画循环，批量补偿暂停期间的位置
+ */
+export const resumeUpdate = () => {
+  if (!isPaused) return;
+  isPaused = false;
+  const now = performance.now();
+  const pausedDuration = now - pauseStartTime;
+  pauseStartTime = 0;
+
+  // 如果暂停时间较短（< 100ms），无需补偿
+  if (pausedDuration < 100) return;
+
+  // 批量补偿：对所有可见 planes 按暂停时长做一次位置更新
+  const planeLayer = getPlaneLayer();
+  if (!planeLayer) return;
+  const source = planeLayer.getSource();
+  if (!source) return;
+
+  const features = source.getFeatures();
+  for (const feature of features) {
+    const heading = feature.get("heading") as number | null ?? 0;
+    const velocity = feature.get("velocity") as number | null ?? 0;
+    if (!velocity || !heading) continue;
+    const prevX = feature.get("currentX") as number | undefined;
+    const prevY = feature.get("currentY") as number | undefined;
+    if (prevX == null || prevY == null) continue;
+    const deltaTime = Math.min(pausedDuration / 1000, 10);
+    const headingRad = degToRad(heading);
+    const d = velocity * deltaTime;
+    const newX = prevX + d * Math.sin(headingRad);
+    const newY = prevY + d * Math.cos(headingRad);
+    feature.set("currentX", newX);
+    feature.set("currentY", newY);
+    feature.set("lastTickTime", now);
+    const geometry = feature.getGeometry() as SimpleGeometry | undefined;
+    if (geometry) {
+      geometry.setCoordinates([newX, newY]);
+    }
+  }
+};
+
+/**
  * 启动 rAf 动画循环
  */
 export const startUpdate = (map: OLMap) => {
@@ -153,6 +243,7 @@ export const startUpdate = (map: OLMap) => {
   }
 
   if (rafId !== null) return; // 已在运行
+  isPaused = false;
   lastRemoteUpdateTime.value = performance.now();
   rafId = requestAnimationFrame((timestamp) => {
     lastFrameTime = timestamp;
@@ -168,6 +259,8 @@ export const stopUpdate = () => {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
+  isPaused = false;
+  pauseStartTime = 0;
   // Cancel any pending API request
   cancelPendingRequest();
   // 重置模块级状态，确保二次初始化正常

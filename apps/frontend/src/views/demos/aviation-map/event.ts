@@ -8,6 +8,7 @@ import BaseLayer from "ol/layer/Base";
 import { LAYER_NAMES } from "./constants";
 import { getPlaneLayer, getPathLayer, getDataMode } from "./dataSource";
 import { generateSyntheticTrack } from "./trackUtils";
+import { pauseUpdate, resumeUpdate } from "./update";
 
 let isTrackLoading = false;
 let trackDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -55,31 +56,40 @@ const attachMoveEvents = (map: OLMap) => {
 
 const attachClickEvents = (map: OLMap) => {
   (map as any).on("click", (e: any) => {
+    // 清除之前的选中状态和轨迹
     if (lastClickedFeatureRef) {
       lastClickedFeatureRef.set("isSelected", 0);
       lastClickedFeatureRef = null;
       removePath();
     }
+    // 清除待执行的轨迹加载定时器，防止点击空白区后仍加载轨迹
+    if (trackDebounceTimer) {
+      clearTimeout(trackDebounceTimer);
+      trackDebounceTimer = null;
+    }
+    isTrackLoading = false;
+
     const features = map.getFeaturesAtPixel(e.pixel, {
       layerFilter: (layer: BaseLayer) => layer.get("name") === LAYER_NAMES.PLANES,
       hitTolerance: 3,
     });
     const clickedFeature = features[0] as Feature | undefined;
     if (clickedFeature) {
-      addPath(clickedFeature);
       lastClickedFeatureRef = clickedFeature;
       lastClickedFeatureRef.set("isSelected", 1);
-      const geometry = clickedFeature.getGeometry() as SimpleGeometry | undefined;
-      const center = geometry?.getCoordinates() as number[] | undefined;
-      if (center) {
-        map.getView().setCenter(center);
-        map
-          .getView()
-          .animate({ center, duration: 500 }, { zoom: 12, duration: 500 });
-      }
+      // 先获取轨迹数据，更新飞机位置后再统一移动地图（避免闪烁）
+      addPath(clickedFeature, map);
     }
   });
-  const addPath = (planeFeature: Feature) => {
+  /**
+   * 暂停更新并移动到指定中心点
+   */
+  const moveMapTo = (center: number[]) => {
+    pauseUpdate();
+    map.getView().animate({ center, duration: 500 }, { zoom: 12, duration: 500 });
+  };
+
+  const addPath = (planeFeature: Feature, map: OLMap) => {
     if (isTrackLoading) return;
     if (trackDebounceTimer) {
       clearTimeout(trackDebounceTimer);
@@ -88,18 +98,24 @@ const attachClickEvents = (map: OLMap) => {
     trackDebounceTimer = setTimeout(async () => {
       isTrackLoading = true;
       try {
-        const geometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
-        if (!geometry) return;
-        const curPoint = geometry.getCoordinates() as number[];
-        const [curX, curY] = curPoint;
-
         let lineCoords: number[][];
 
         if (getDataMode() === "cache") {
           // cache 模式：用本地数据模拟轨迹，不调用任何接口
+          const geometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
+          if (!geometry) return;
+          const [curX, curY] = geometry.getCoordinates() as number[];
           const heading = (planeFeature.get("heading") as number | null) ?? 0;
           const velocity = (planeFeature.get("velocity") as number | null) ?? 0;
           lineCoords = generateSyntheticTrack(curX, curY, heading, velocity);
+          // cache 模式：画完轨迹后直接移动地图
+          const pathLayer = getPathLayer();
+          if (pathLayer) {
+            pathLayer.getSource()?.addFeature(
+              new Feature({ geometry: new LineString(lineCoords), icao24: planeFeature.get("icao24") as string }),
+            );
+          }
+          moveMapTo([curX, curY]);
         } else {
           // remote 模式：从真实接口获取轨迹
           const icao24 = planeFeature.get("icao24") as string;
@@ -118,22 +134,33 @@ const attachClickEvents = (map: OLMap) => {
             showToast('该飞机暂无轨迹数据（可能为地面停机、数据不足或超出覆盖范围）');
             return;
           }
-          // 按时间升序排序，确保轨迹从过去到现在
+          // 按时间排序，OpenSky path 可能是逆序的（最新位置在前），需要确保升序
           const sortedPath = [...path].sort((a, b) => a.time - b.time);
+          if (sortedPath.length > 1 && sortedPath[0].time > sortedPath[sortedPath.length - 1].time) {
+            sortedPath.reverse();
+          }
           const featurePath = sortedPath.map(({ lon, lat }: { lon: number; lat: number }) => fromLonLat([lon, lat]));
-          lineCoords = [...featurePath, [curX, curY]];
-        }
+          lineCoords = featurePath;
 
-        const pathLayer = getPathLayer();
-        if (pathLayer) {
-          pathLayer
-            .getSource()
-            ?.addFeature(
-              new Feature({
-                geometry: new LineString(lineCoords),
-                icao24: planeFeature.get("icao24") as string,
-              }),
+          // remote 模式：将飞机位置更新到轨迹最新点，避免闪烁
+          const lastPoint = featurePath[featurePath.length - 1];
+          const geometry = planeFeature.getGeometry() as SimpleGeometry | undefined;
+          if (geometry && lastPoint) {
+            geometry.setCoordinates(lastPoint);
+            planeFeature.set("currentX", lastPoint[0]);
+            planeFeature.set("currentY", lastPoint[1]);
+          }
+
+          // 画轨迹（不重复添加飞机当前位置，因为已经同步到最新点了）
+          const pathLayer = getPathLayer();
+          if (pathLayer) {
+            pathLayer.getSource()?.addFeature(
+              new Feature({ geometry: new LineString(lineCoords), icao24: icao24 }),
             );
+          }
+
+          // 最后才移动地图到飞机最新位置
+          moveMapTo(lastPoint);
         }
       } catch (error) {
         console.error('Failed to fetch track:', error);
@@ -152,7 +179,7 @@ const attachClickEvents = (map: OLMap) => {
 };
 
 export const clearSelection = () => {
-  // Clear all selected states
+  // Clear selected state on all aircraft
   const planeLayer = getPlaneLayer();
   if (planeLayer) {
     const source = planeLayer.getSource();
@@ -168,10 +195,17 @@ export const clearSelection = () => {
   if (pathLayer) {
     pathLayer.getSource()?.clear();
   }
+
+  // Clear clicked feature reference
+  if (lastClickedFeatureRef) {
+    lastClickedFeatureRef.set("isSelected", 0);
+    lastClickedFeatureRef = null;
+  }
 };
 
 const attachMoveEndEvent = (map: OLMap) => {
   map.on("moveend", () => {
+    resumeUpdate();
     const view = map.getView();
     const center = view.getCenter();
     const projection = view.getProjection();
@@ -194,4 +228,6 @@ export const attachEvents = (map: OLMap) => {
   attachMoveEvents(map);
   attachClickEvents(map);
   attachMoveEndEvent(map);
+  // 缩放开始时暂停动画循环，避免与瓦片加载抢资源
+  (map as any).on("movebegin", () => pauseUpdate());
 };

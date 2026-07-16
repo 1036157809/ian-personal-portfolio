@@ -130,7 +130,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, useTemplateRef } from "vue";
-import { initMap, destroyMap, resetView, setToast, getDataMode, switchDataMode, checkNetworkQuality } from ".";
+import { initMap, destroyMap, resetView, setToast, getDataMode, switchDataMode, checkNetworkQuality, refreshStates, getMap, clearSelection } from ".";
 import Toast from "src/components/common/toast/index.vue";
 
 const mapRef = useTemplateRef<HTMLElement>("mapRef");
@@ -155,6 +155,17 @@ onUnmounted(() => {
  */
 const handleToggleMode = async () => {
   const current = getDataMode();
+
+  // 切换模式前清除选中和轨迹（无论切向哪个模式）
+  clearSelection();
+
+  // 夜间模式：18:00-6:00 禁止切换到真实数据
+  const currentHour = new Date().getHours();
+  if (currentHour >= 18 || currentHour < 6) {
+    toastRef.value?.show("夜间模式（18:00-6:00）仅支持本地缓存数据");
+    return;
+  }
+
   if (current === "cache") {
     // cache → remote：先做网络检测
     const quality = await checkNetworkQuality();
@@ -163,9 +174,15 @@ const handleToggleMode = async () => {
       toastRef.value?.show("当前网络不佳，切换到真实数据可能失败");
       switchDataMode("remote");
       dataMode.value = "remote";
+      // 立即请求真实数据，不等下一个 tick 周期
+      const map = getMap();
+      if (map) refreshStates(map);
     } else {
       switchDataMode("remote");
       dataMode.value = "remote";
+      // 立即请求真实数据，不等下一个 tick 周期
+      const map = getMap();
+      if (map) refreshStates(map);
     }
   } else {
     // remote → cache：直接切，无提示

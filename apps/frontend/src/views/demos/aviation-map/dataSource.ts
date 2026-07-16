@@ -7,6 +7,18 @@ import VectorSource from "ol/source/Vector";
 import type { AircraftState, BBox } from "src/api/opensky.api";
 import { invalidateClickedFeature } from "./event";
 
+// requestIdleCallback polyfill（Safari 兼容）
+const scheduleIdle = (callback: () => void) => {
+  if (typeof requestIdleCallback !== "undefined") {
+    requestIdleCallback(callback);
+  } else {
+    setTimeout(callback, 1);
+  }
+};
+
+// 渐进注入批次大小
+const CHUNK_SIZE = 200;
+
 // 数据模式类型
 export type DataMode = "cache" | "remote";
 
@@ -25,8 +37,26 @@ let hasCacheData = false;
 let cacheDataFromFile: AircraftState[] | null = null;
 // 标记 injectCacheData 因数据未就绪而被跳过，待 setCacheData 后补注入
 let pendingInjection = false;
-const REMOTE_UPDATE_INTERVAL = 15000;
+const REMOTE_UPDATE_INTERVAL = 45000;
 const remoteAircraftData: AircraftState[] = [];
+
+/**
+ * 根据 AircraftState 创建 Feature（复用逻辑）
+ */
+const createFeatureFromState = (state: AircraftState): Feature => {
+  const [projX, projY] = fromLonLat([state.lon, state.lat]);
+  return new Feature({
+    geometry: new Point([projX, projY]),
+    ...state,
+    isHovered: 0,
+    isSelected: 0,
+    projX,
+    projY,
+    currentX: projX,
+    currentY: projY,
+    lastTickTime: performance.now(),
+  });
+};
 
 // featureMap：icao24 → feature 的快速查找
 const featureMap = new Map<string, Feature>();
@@ -77,43 +107,53 @@ export const injectCacheData = () => {
     return;
   }
   if (!planeLayerRef) return;
-  const source = planeLayerRef.getSource();
-  if (!source) return;
+  const planeSource = planeLayerRef.getSource();
+  if (!planeSource) return;
 
   // 如果 source 中已有 features（initMap 中 createPlaneLayersFromCache 已注入），
-   // 不再清空重建，避免飞机闪烁/消失
-  const existingFeatures = source.getFeatures();
+  // 不再清空重建，避免飞机闪烁/消失
+  const existingFeatures = planeSource.getFeatures();
   if (existingFeatures.length > 0 && cacheDataInjected) {
     return;
   }
   // 清空已有 features 防止重复注入
-  source.clear();
+  planeSource.clear();
   featureMap.clear();
 
-  // 根据缓存数据创建 features
-  for (const state of cacheDataFromFile) {
-    const [projX, projY] = fromLonLat([state.lon, state.lat]);
-    const feature = new Feature({
-      geometry: new Point([projX, projY]),
-      ...state,
-      isHovered: 0,
-      isSelected: 0,
-      projX,
-      projY,
-      currentX: projX,
-      currentY: projY,
-      lastTickTime: performance.now(),
-    });
-    source.addFeature(feature);
+  // 渐进注入：第一批同步 200 架，后续分帧注入
+  const allData = cacheDataFromFile;
+  const firstBatch = allData.slice(0, CHUNK_SIZE);
+  for (const state of firstBatch) {
+    const feature = createFeatureFromState(state);
+    planeSource.addFeature(feature);
     featureMap.set(state.icao24, feature);
   }
-  hasCacheData = true;
-  cacheDataInjected = true;
+
+  // 后续分帧注入
+  if (allData.length > CHUNK_SIZE) {
+    let offset = CHUNK_SIZE;
+    const injectChunk = () => {
+      if (!planeLayerRef || !cacheDataFromFile) return; // 已销毁则停止
+      const chunk = allData.slice(offset, offset + CHUNK_SIZE);
+      for (const state of chunk) {
+        const feature = createFeatureFromState(state);
+        planeSource.addFeature(feature);
+        featureMap.set(state.icao24, feature);
+      }
+      offset += CHUNK_SIZE;
+      if (offset < allData.length) scheduleIdle(injectChunk);
+      else { hasCacheData = true; cacheDataInjected = true; }
+    };
+    scheduleIdle(injectChunk);
+  } else {
+    hasCacheData = true;
+    cacheDataInjected = true;
+  }
 };
 
 /**
  * 获取当前视图的 BBox
- */
+*/
 const getViewBBox = (map: OLMap): BBox | undefined => {
   const view = map.getView();
   const zoom = view.getZoom() ?? 1;
@@ -148,8 +188,13 @@ export const tickRemoteUpdate = (map: OLMap, now: number, lastRemoteUpdateTime: 
     })
     .catch((error: unknown) => {
       if (error instanceof DOMException && error.name === "AbortError") return;
-      console.error("Failed to fetch remote aircraft data:", error);
-      // 远程失败且有缓存数据时，回退到 cache 模式
+      const isNightMode = error instanceof Error && error.message === "night_mode";
+      if (isNightMode) {
+        console.log("夜间模式：回退到本地缓存数据");
+      } else {
+        console.error("Failed to fetch remote aircraft data:", error);
+      }
+      // 夜间模式或远程失败时，回退到 cache 模式
       if (hasCacheData) {
         currentMode = "cache";
       }
@@ -171,7 +216,13 @@ export const refreshStates = async (map: OLMap) => {
     }
   } catch (error: unknown) {
     if (error instanceof DOMException && error.name === "AbortError") return;
-    console.error("Failed to refresh states:", error);
+    const isNightMode = error instanceof Error && error.message === "night_mode";
+    if (isNightMode) {
+      console.log("夜间模式：回退到本地缓存数据");
+      if (hasCacheData) currentMode = "cache";
+    } else {
+      console.error("Failed to refresh states:", error);
+    }
   }
 };
 
@@ -199,7 +250,7 @@ export const applyRemoteState = () => {
         icao24: newState.icao24,
         lon: newState.lon,
         lat: newState.lat,
-        heading: newState.heading !== null ? newState.heading * 180 / Math.PI : null,
+        heading: newState.heading !== null ? newState.heading : null,
         velocity: newState.velocity,
         timePosition: newState.timePosition,
         altitude: newState.altitude,
@@ -220,18 +271,7 @@ export const applyRemoteState = () => {
   }
 
   for (const [, newState] of remoteStateMap) {
-    const [projX, projY] = fromLonLat([newState.lon, newState.lat]);
-    const feature = new Feature({
-      geometry: new Point([projX, projY]),
-      ...newState,
-      isHovered: 0,
-      isSelected: 0,
-      projX,
-      projY,
-      currentX: projX,
-      currentY: projY,
-      lastTickTime: performance.now(),
-    });
+    const feature = createFeatureFromState(newState);
     featureMap.set(newState.icao24, feature);
     airplaneSource.addFeature(feature);
   }
@@ -267,4 +307,6 @@ export const resetDataState = () => {
   featureMap.clear();
   hasCacheData = false;
   remoteAircraftData.length = 0;
+  cacheDataFromFile = null;
+  pendingInjection = false;
 };

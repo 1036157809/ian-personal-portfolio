@@ -12,7 +12,7 @@ const TRACKS_CACHE_TTL = 15000; // 15 seconds
 const getCacheTTL = (): number => {
   const hour = new Date().getHours();
   if (hour >= 6 && hour < 18) {
-    return 15000; // 15 seconds from 6 AM to 6 PM
+    return 30000; // 30 seconds from 6 AM to 6 PM
   } else {
     return 3600000; // 1 hour for other times
   }
@@ -26,6 +26,15 @@ export class OpenSkyController {
       const bbox = (lamin && lamax && lomin && lomax)
         ? [Number(lamin), Number(lamax), Number(lomin), Number(lomax)]
         : undefined;
+
+
+      // 夜间模式：18:00-6:00 不调用 OpenSky API，强制使用本地数据
+      const hour = new Date().getHours();
+      if (hour >= 18 || hour < 6) {
+        ctx.status = 503;
+        ctx.body = { error: "night_mode", message: "夜间模式（18:00-6:00）仅支持本地缓存数据" };
+        return;
+      }
 
       // Check cache
       const now = Date.now();
