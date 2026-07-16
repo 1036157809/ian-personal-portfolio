@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "Ian Portfolio Jenkins - 多分支自动构建部署"
+  systemMessage: "Ian Portfolio Jenkins - 本机构建 / 远程部署"
   numExecutors: 2
   mode: NORMAL
 
@@ -29,3 +29,5 @@ credentials:
               id: "tianditu-token"
               secret: "${VITE_TIANDITU_TOKEN}"
               description: "天地图令牌"
+          # ssh-remote-deploy 通过 Jenkins UI 凭据管理录入
+          # 不写进 casc.yaml 避免 SSH 私钥入仓库

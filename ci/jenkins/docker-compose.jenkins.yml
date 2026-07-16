@@ -5,18 +5,12 @@ services:
     image: jenkins/jenkins:lts-jdk21
     container_name: ian-jenkins
     restart: unless-stopped
-    privileged: true
-    user: root
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
-      - /usr/libexec/docker/cli-plugins:/usr/lib/docker/cli-plugins
-      - ./casc.yaml:/var/jenkins_home/casc.yaml
-      - /root/ian-personal-portfolio:/root/ian-personal-portfolio
+      - ../..:/workspace/ian-personal-portfolio
     environment:
       - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
