@@ -5,16 +5,24 @@ GIT_BRANCH="${GIT_BRANCH:-master}"
 BUILD_TARGET="${BUILD_TARGET:-both}"
 DEPLOY_ENV="${DEPLOY_ENV:-prod}"
 
-echo "=== Ian Portfolio 部署 ==="
-echo "分支: ${GIT_BRANCH} | 目标: ${BUILD_TARGET} | 环境: ${DEPLOY_ENV}"
-
 cd /root/ian-personal-portfolio
 
+# 拉取最新代码（包括脚本本身）
 echo "--- git pull ---"
 git fetch origin
 git checkout "${GIT_BRANCH}"
 git pull origin "${GIT_BRANCH}"
 echo "当前 commit: $(git rev-parse --short HEAD)"
+
+# 如果脚本刚被更新，用最新版本重新执行（仅一次，防止死循环）
+if [ "${_REEXEC:-}" != "true" ]; then
+  echo "--- 检测到脚本更新，重新执行新版本 ---"
+  export _REEXEC=true
+  exec bash "$0"
+fi
+
+echo "=== Ian Portfolio 部署 ==="
+echo "分支: ${GIT_BRANCH} | 目标: ${BUILD_TARGET} | 环境: ${DEPLOY_ENV}"
 
 echo "--- docker compose 重启 ---"
 case "${BUILD_TARGET}" in
