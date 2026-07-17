@@ -8,24 +8,20 @@ pipeline {
     }
 
     stages {
-        stage('SSH 远程构建部署') {
+        stage('SSH 远程拉取 + 构建 + 部署') {
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'ssh-remote-deploy',
-                        keyFileVariable: 'SSH_KEY'
-                    ),
-                    string(credentialsId: 'tianditu-token', variable: 'VITE_TIANDITU_TOKEN'),
-                    string(credentialsId: 'api-base-url', variable: 'VITE_API_BASE_URL')
-                ]) {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'ssh-remote-deploy',
+                    keyFileVariable: 'SSH_KEY'
+                )]) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no \
                             -o UserKnownHostsFile=/dev/null \
                             -o ConnectTimeout=10 \
                             -i "$SSH_KEY" \
                             root@106.12.54.57 \
-                            "VITE_TIANDITU_TOKEN=$VITE_TIANDITU_TOKEN VITE_API_BASE_URL=$VITE_API_BASE_URL DEPLOY_ENV=$DEPLOY_ENV bash -s" \
-                            < scripts/remote-build.sh "$GIT_BRANCH" "$BUILD_TARGET" "$DEPLOY_ENV"
+                            "GIT_BRANCH=$GIT_BRANCH BUILD_TARGET=$BUILD_TARGET DEPLOY_ENV=$DEPLOY_ENV VITE_TIANDITU_TOKEN=$VITE_TIANDITU_TOKEN VITE_API_BASE_URL=$VITE_API_BASE_URL bash -s" \
+                            < scripts/remote-build.sh
                     '''
                 }
             }

@@ -1,47 +1,76 @@
 #!/bin/bash
 set -euo pipefail
 
-GIT_BRANCH="${1:-master}"
-BUILD_TARGET="${2:-both}"
-DEPLOY_ENV="${3:-prod}"
+GIT_BRANCH="${GIT_BRANCH:-master}"
+BUILD_TARGET="${BUILD_TARGET:-both}"
+DEPLOY_ENV="${DEPLOY_ENV:-prod}"
 TIANDITU_TOKEN="${VITE_TIANDITU_TOKEN:-}"
 API_BASE_URL="${VITE_API_BASE_URL:-/api}"
 REMOTE_DIR="/root/ian-personal-portfolio"
 
 echo "=== Ian Portfolio 远程构建 ==="
 echo "分支: ${GIT_BRANCH} | 目标: ${BUILD_TARGET} | 环境: ${DEPLOY_ENV}"
-cd "${REMOTE_DIR}"
 
 # 根据环境选择 docker-compose 配置
-# 当前只有 prod，未来可扩展 staging/dev
 case "${DEPLOY_ENV}" in
-  prod)
-    COMPOSE_FILE="docker-compose.yml"
-    ;;
-  staging)
-    COMPOSE_FILE="docker-compose.staging.yml"
-    ;;
-  dev)
-    COMPOSE_FILE="docker-compose.dev.yml"
-    ;;
-  *)
-    echo "❌ 未知环境: ${DEPLOY_ENV}" >&2
-    exit 1
-    ;;
+  prod)    COMPOSE_FILE="docker-compose.yml" ;;
+  staging) COMPOSE_FILE="docker-compose.staging.yml" ;;
+  dev)     COMPOSE_FILE="docker-compose.dev.yml" ;;
+  *)       echo "❌ 未知环境: ${DEPLOY_ENV}" >&2; exit 1 ;;
 esac
 
-# 检查 compose 文件是否存在
-if [ ! -f "${COMPOSE_FILE}" ]; then
+if [ ! -f "${REMOTE_DIR}/${COMPOSE_FILE}" ]; then
   echo "❌ 环境配置文件不存在: ${COMPOSE_FILE}" >&2
-  echo "提示: ${DEPLOY_ENV} 环境尚未配置，请先在服务器创建 ${COMPOSE_FILE}" >&2
   exit 1
 fi
 
+cd "${REMOTE_DIR}"
+
 echo "--- [1/6] 拉取代码 ---"
-git fetch origin
-git checkout "${GIT_BRANCH}"
-git pull origin "${GIT_BRANCH}"
-echo "当前 commit: $(git rev-parse --short HEAD)"
+
+# 尝试 git fetch（带重试）
+MAX_RETRIES=3
+RETRY=0
+GIT_SUCCESS=false
+
+while [ $RETRY -lt $MAX_RETRIES ]; do
+  RETRY=$((RETRY + 1))
+  echo "尝试 git fetch (${RETRY}/${MAX_RETRIES})..."
+  
+  if git fetch --depth 1 origin "${GIT_BRANCH}" 2>&1; then
+    git checkout "${GIT_BRANCH}" 2>/dev/null || git checkout -b "${GIT_BRANCH}" "origin/${GIT_BRANCH}"
+    GIT_SUCCESS=true
+    break
+  fi
+  
+  echo "git fetch 失败，等待 5 秒后重试..."
+  sleep 5
+done
+
+if [ "$GIT_SUCCESS" = false ]; then
+  echo "git fetch 多次失败，尝试 zip 下载兜底..."
+  
+  # 用 zip 下载（单次 HTTP GET，更可靠）
+  TMP_ZIP="/tmp/repo-${GIT_BRANCH}.zip"
+  curl -L --connect-timeout 10 --max-time 120 \
+    "https://gitee.com/zyf-zed/ian-personal-portfolio/repository/archive/${GIT_BRANCH}.zip" \
+    -o "${TMP_ZIP}"
+  
+  # 解压并同步到工作目录
+  TMP_EXTRACT="/tmp/repo-extract"
+  rm -rf "${TMP_EXTRACT}"
+  mkdir -p "${TMP_EXTRACT}"
+  unzip -q "${TMP_ZIP}" -d "${TMP_EXTRACT}"
+  
+  # 找到解压后的目录名
+  EXTRACTED_DIR=$(find "${TMP_EXTRACT}" -maxdepth 1 -type d | tail -1)
+  
+  # 同步到工作目录（保留 .git 如果存在）
+  rsync -a --delete --exclude='.git' "${EXTRACTED_DIR}/" "${REMOTE_DIR}/"
+  rm -f "${TMP_ZIP}"
+fi
+
+echo "当前 commit: $(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')"
 
 echo "--- [2/6] 安装依赖 ---"
 export NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
@@ -91,7 +120,6 @@ fi
 echo "--- [6/6] 重启 Docker 服务 (${DEPLOY_ENV}) ---"
 export VITE_TIANDITU_TOKEN="${TIANDITU_TOKEN}"
 export VITE_API_BASE_URL="${API_BASE_URL}"
-export COMPOSE_FILE="${COMPOSE_FILE}"
 
 if [ -n "${COMPOSE_SERVICES}" ]; then
   docker compose -f "${COMPOSE_FILE}" build ${COMPOSE_SERVICES}
