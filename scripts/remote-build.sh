@@ -41,7 +41,7 @@ esac
 echo "--- 健康检查 ---"
 sleep 5
 for i in $(seq 1 30); do
-  if curl -sf http://localhost:3001/api/health >/dev/null 2>&1; then
+  if curl -sf http://localhost:3001/ >/dev/null 2>&1; then
     echo "✅ 后端就绪"; break
   fi
   [ $i -eq 30 ] && { echo "❌ 后端超时"; docker compose logs --tail=30 backend; exit 1; }
