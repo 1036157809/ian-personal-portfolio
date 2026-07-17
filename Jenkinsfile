@@ -3,6 +3,8 @@ pipeline {
 
     parameters {
         string(name: 'GIT_BRANCH', defaultValue: 'master', description: '要构建的分支')
+        choice(name: 'BUILD_TARGET', choices: ['both', 'frontend', 'backend'], description: '构建目标')
+        choice(name: 'DEPLOY_ENV', choices: ['prod', 'staging', 'dev'], description: '部署环境')
     }
 
     stages {
@@ -22,8 +24,8 @@ pipeline {
                             -o ConnectTimeout=10 \
                             -i "$SSH_KEY" \
                             root@106.12.54.57 \
-                            "VITE_TIANDITU_TOKEN=$VITE_TIANDITU_TOKEN VITE_API_BASE_URL=$VITE_API_BASE_URL bash -s" \
-                            < scripts/remote-build.sh "$GIT_BRANCH"
+                            "VITE_TIANDITU_TOKEN=$VITE_TIANDITU_TOKEN VITE_API_BASE_URL=$VITE_API_BASE_URL DEPLOY_ENV=$DEPLOY_ENV bash -s" \
+                            < scripts/remote-build.sh "$GIT_BRANCH" "$BUILD_TARGET" "$DEPLOY_ENV"
                     '''
                 }
             }
@@ -31,7 +33,7 @@ pipeline {
     }
 
     post {
-        success { echo "✅ 部署成功" }
-        failure { echo '❌ 构建失败，请检查 Jenkins Console Output' }
+        success { echo "✅ 部署成功 [${params.BUILD_TARGET}] @ ${params.GIT_BRANCH} → ${params.DEPLOY_ENV}" }
+        failure { echo "❌ 构建失败 [${params.BUILD_TARGET}] @ ${params.GIT_BRANCH} → ${params.DEPLOY_ENV}" }
     }
 }
