@@ -28,12 +28,12 @@
             </svg>
           </a>
           <a
-            href="https://beian.mps.gov.cn/#/query/webSearch?code=44133002100367"
+            href="https://beian.miit.gov.cn"
             target="_blank"
             rel="noreferrer"
-            class="text-sm text-day-text-secondary dark:text-night-text-secondary hover:text-day-primary dark:hover:text-night-primary transition-colors"
+            class="text-sm text-day-text-secondary dark:text-night-text-secondary hover:text-day-primary dark:hover:text-night-primary transition-colors underline"
           >
-            粤公网安备44133002100367号
+            粤ICP备2026083321号-1
           </a>
         </div>
       </div>
