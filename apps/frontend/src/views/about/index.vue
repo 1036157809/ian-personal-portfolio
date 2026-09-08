@@ -313,8 +313,8 @@
       </div>
     </div>
 
-    <!-- Education -->
-    <div class="card">
+    <!-- Education (暂时隐藏,2026-09-08,以后要恢复把 v-if 改回 true)-->
+    <div v-if="false" class="card">
       <h2 class="text-2xl font-bold mb-6 text-day-text dark:text-night-text">
         {{ $t('about.education') }}
       </h2>
